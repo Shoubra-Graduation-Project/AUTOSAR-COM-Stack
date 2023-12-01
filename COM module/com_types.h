@@ -4,8 +4,6 @@
 
 #include "Std_Types.h"
 
-typedef uint16 Com_SignalIdType;
-typedef uint16 Com_SignalGroupIdType;
 
 /* Transmission modes for I-PDU */
 typedef enum {
