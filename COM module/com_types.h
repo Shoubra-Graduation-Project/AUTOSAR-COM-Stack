@@ -11,7 +11,7 @@ typedef enum {
 	MIXED,
 	NONE,
     PERIODIC
-} ComTxModeMode_enum;
+} ComTxModeMode_type;
 
 
 /* Transfer Property for Signals */
@@ -21,7 +21,7 @@ typedef enum {
     TRIGGERED_ON_CHANGE,
     TRIGGERED_ON_CHANGE_WITHOUT_REPETITION,
     TRIGGERED_WITHOUT_REPETITION
-}ComTransferProperty_enum;
+}ComTransferProperty_type;
 
 
 
@@ -29,20 +29,20 @@ typedef enum {
 typedef enum {
 	RECEIVE,
 	SEND
-} ComIPduDirection_enum;
+} ComIPduDirection_type;
 
 
 
 typedef enum {
 	DEFERRED,
 	IMMEDIATE
-}ComIPduSignalProcessing_enum;
+}ComIPduSignalProcessing_type;
 
 
 typedef enum {
     NORMAL,
     TP
-}ComIPduType_enum;
+}ComIPduType_type;
 
 
 typedef enum {
@@ -57,14 +57,14 @@ typedef enum {
 	SINT64,
 	FLOAT32,
 	FLOAT64
-} ComSignalType_enum;
+} ComSignalType_type;
 
 
 typedef enum {
 	CONFIRMATION,
 	TRANSMIT,
 	TRIGGER_TRANSMIT
-}ComTxIPduClearUpdateBit_enum;
+}ComTxIPduClearUpdateBit_type;
 
 typedef enum{
 	ALWAYS,
@@ -75,12 +75,12 @@ typedef enum{
     NEW_IS_OUTSIDE,
     NEW_IS_WITHIN,
     ONE_EVERY_N
-}ComFilterAlgorithm_enum;
+}ComFilterAlgorithm_type;
 
 /* This container contains the configuration parameters of the AUTOSAR COM module's transmission modes. */
 typedef struct
 {
-	const ComTxModeMode_enum ComTxModeMode;
+	const ComTxModeMode_type ComTxModeMode;
     
 	/* 
 	Defines the number of repetitions for the transmission mode DIRECT and
@@ -92,7 +92,7 @@ typedef struct
     case ComTxModeNumberOfRepetitions is configured greater than or
     equal to 1 and ComTxModeMode is configured to DIRECT or MIXED.
 	*/
-	const uint16 ComTxModeRepetitionPeriod;
+	const float32 ComTxModeRepetitionPeriod;
 
 	const uint32 ComTxModeTimeOffsetFactor;
 
@@ -102,21 +102,21 @@ typedef struct
 	 */
 	const uint16 ComTxModeTimePeriod;
 
-} ComTxMode_struct;
+} ComTxMode_type;
 
 /* If ComFilter evaluates to true */
 typedef struct 
 {
-	const ComTxMode_struct ComTxMode;
+	const ComTxMode_type ComTxMode;
 
-} ComTxModeTrue_struct;
+} ComTxModeTrue_type;
 
 /* If  ComFilter evaluates to ComTxModeFalse */
 typedef struct 
 {
-	const ComTxMode_struct ComTxMode;
+	const ComTxMode_type ComTxMode;
 
-} ComTxModeFalse_struct;
+} ComTxModeFalse_type;
 
 
 /* This container contains additional transmission related configuration parameters of the AUTOSAR COM module's I-PDUs. */
@@ -126,20 +126,44 @@ typedef struct
 	const uint32 ComMinimumDelayTime;
 
    /* Defines when the update-bits of contained in I-PDU will be cleared */
-	const ComTxIPduClearUpdateBit_enum ComTxIPduClearUpdateBit;
+	const ComTxIPduClearUpdateBit_type ComTxIPduClearUpdateBit;
 
 	/* COM module fills not used areas of an I-PDU with this byte pattern*/
 	const uint8 ComTxIPduUnusedAreasDefault;
 
 	/* ComFilter evaluates to true */
-	const ComTxModeTrue_struct ComTxModeTrue ;
+	const ComTxModeTrue_type ComTxModeTrue ;
 
 	/* ComFilter evaluates to ComTxModeFalse */
-	const ComTxModeFalse_struct ComTxModeFalse ;
+	const ComTxModeFalse_type ComTxModeFalse ;
 
-} ComTxIPdu_struct;
+} ComTxIPdu_type;
 
 
+/* This container contains the configuration parameters of the AUTOSAR COM module's IPDUs */
+typedef struct {
+	
+	/*
+	   Defines for I-PDUs with ComIPduType NORMAL: If the underlying IF module supports cancellation of transmit requests.
+       Defines for I-PDUs with ComIPduType TP: If the underlying TP-module supports RX and TX cancellation of ongoing requests.
+    */
+    const boolean ComIPduCancellationSupport;
+
+    /* sent or received */
+    ComIPduDirection_type ComIPduDirection;
+
+    /* The numerical value used as the ID of the I-PDU */
+    uint16 ComIPduHandleId ;
+
+	/* Immediate or Deferred*/
+	ComIPduSignalProcessing_type ComIPduSignalProcessing;
+
+    /*Normal or TP*/
+	ComIPduType_type ComIPduType;
+
+
+   
+} ComIPdu_type;
 
 
 
