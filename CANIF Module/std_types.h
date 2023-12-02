@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   std_types.h
  * Author: DELL
  *
@@ -15,19 +15,21 @@
  /* Section : Data Types Declaration */
 
 typedef unsigned char			boolean;
-typedef unsigned char         	uint8;         
-typedef unsigned short        	uint16;        
-typedef unsigned long         	uint32;        
-typedef signed char           	sint8;       
-typedef signed short          	sint16;      
-typedef signed long           	sint32;         
+typedef unsigned char         	uint8;
+typedef unsigned short        	uint16;
+typedef unsigned long         	uint32;
+typedef signed char           	sint8;
+typedef signed short          	sint16;
+typedef signed long           	sint32;
 typedef signed long long      	sint64;
-typedef unsigned long long    	uint64;         
+typedef unsigned long long    	uint64;
 typedef float                 	float32;
 typedef double                	float64;
 
 
-typedef uint8 STD_ReturnType;
+
+
+typedef uint32 STD_ReturnType;
 
 
  /* Section : Macros Definition */
@@ -45,7 +47,7 @@ typedef uint8 STD_ReturnType;
 #define E_NOT_OK        (STD_ReturnType)0x00
 
 
-#define _XTAL_FREQ  8000000UL
+#define _XTAL_FREQ  16000000UL
 
  /* Section : Function Declaration */
 
