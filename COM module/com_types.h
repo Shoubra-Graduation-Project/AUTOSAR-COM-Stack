@@ -166,5 +166,16 @@ typedef struct {
 } ComIPdu_type;
 
 
+typedef struct {
+
+	const uint64 ComBitPosition;
+
+	
+
+
+
+
+}ComSignal_type;
+
 
 #endif
