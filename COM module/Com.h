@@ -195,13 +195,13 @@ BufReq_ReturnType Com_StartOfReception (PduIdType id, const PduInfoType* info, P
 /** 
   /brief      Copy Reception Data
   /details    This function is called to provide the received data of an I-PDU segment (N-PDU) to the upper layer. Each call to this function provides 
-			  the next part of the I-PDU data. The size of the remaining buffer is written to the position indicated by bufferSizePtr.
-  /param-in	  id: Identification of the received I-PDU.
-			  info: Provides the source buffer (SduDataPtr) and the number of bytes to be copied (SduLength). An SduLength of 0 can be used to query the 
-			  current amount of available buffer in the upper layer module. In this case, the SduDataPtr may be a NULL_PTR.
-  /param-out  bufferSizePtr:     Available receive buffer after data has been copied.
-  /return	  BufReqReturnType:  BUFREQ_OK: Data copied successfully.
-								 BUFREQ_E_NOT_OK: Data was not copied because an error occurred.
+	      the next part of the I-PDU data. The size of the remaining buffer is written to the position indicated by bufferSizePtr.
+  /param-in   id: Identification of the received I-PDU.
+	      info: Provides the source buffer (SduDataPtr) and the number of bytes to be copied (SduLength). An SduLength of 0 can be used to query the 
+		    current amount of available buffer in the upper layer module. In this case, the SduDataPtr may be a NULL_PTR.
+  /param-out  bufferSizePtr: Available receive buffer after data has been copied.
+  /return     BufReqReturnType:  BUFREQ_OK: Data copied successfully.
+				  BUFREQ_E_NOT_OK: Data was not copied because an error occurred.
  */
 BufReq_ReturnType Com_CopyRxData (PduIdType id, const PduInfoType* info, PduLengthType* bufferSizePtr);
 
@@ -209,13 +209,13 @@ BufReq_ReturnType Com_CopyRxData (PduIdType id, const PduInfoType* info, PduLeng
 /** 
   /brief      Copy Reception Data
   /details    This function is called to provide the received data of an I-PDU segment (N-PDU) to the upper layer. Each call to this function provides 
-			  the next part of the I-PDU data. The size of the remaining buffer is written to the position indicated by bufferSizePtr.
-  /param-in	  id: Identification of the received I-PDU.
-			  info: Provides the source buffer (SduDataPtr) and the number of bytes to be copied (SduLength). An SduLength of 0 can be used to query the 
-			  current amount of available buffer in the upper layer module. In this case, the SduDataPtr may be a NULL_PTR.
-  /param-out  bufferSizePtr:     Available receive buffer after data has been copied.
-  /return	  BufReqReturnType:  BUFREQ_OK: Data copied successfully.
-								 BUFREQ_E_NOT_OK: Data was not copied because an error occurred.
+	      the next part of the I-PDU data. The size of the remaining buffer is written to the position indicated by bufferSizePtr.
+  /param-in   id: Identification of the received I-PDU.
+	      info: Provides the source buffer (SduDataPtr) and the number of bytes to be copied (SduLength). An SduLength of 0 can be used to query the 
+		    current amount of available buffer in the upper layer module. In this case, the SduDataPtr may be a NULL_PTR.
+  /param-out  bufferSizePtr: Available receive buffer after data has been copied.
+  /return     BufReqReturnType:  BUFREQ_OK: Data copied successfully.
+				  BUFREQ_E_NOT_OK: Data was not copied because an error occurred.
 
  */
 BufReq_ReturnType Com_CopyRxData (PduIdType id, const PduInfoType* info, PduLengthType* bufferSizePtr);
@@ -224,16 +224,16 @@ BufReq_ReturnType Com_CopyRxData (PduIdType id, const PduInfoType* info, PduLeng
 /** 
   /brief      Copy Transmission Data
   /details    This function is called to acquire the transmit data of an I-PDU segment (N-PDU). Each call to this function provides the next part of 
-			  the I-PDU data unless retry->Tp DataState is TP_DATARETRY.
-  /param-in	  id: Identification of the transmitted I-PDU.
-			  info: Provides the destination buffer (SduDataPtr) and the number of bytes to be copied (SduLength).
-			  retry: This parameter is used to acknowledge transmitted data or to retransmit data after transmission problems.
+	      the I-PDU data unless retry->Tp DataState is TP_DATARETRY.
+  /param-in   id: Identification of the transmitted I-PDU.
+	      info: Provides the destination buffer (SduDataPtr) and the number of bytes to be copied (SduLength).
+	      retry: This parameter is used to acknowledge transmitted data or to retransmit data after transmission problems.
 
   /param-out  availableDataPtr: Indicates the remaining number of bytes that are available in the upper layer module's Tx buffer.
-  /return	  BufReqReturnType: BUFREQ_OK:       Data has been copied to the transmit buffer completely as requested.
-								BUFREQ_E_BUSY:   Request could not be fulfilled, because the required amount of Tx data is not available. The lower layer 
-											     module may retry this call later on. No data has been copied.
-								BUFREQ_E_NOT_OK: Data has not been copied. Request failed.
+  /return     BufReqReturnType: BUFREQ_OK: Data has been copied to the transmit buffer completely as requested.
+				 BUFREQ_E_BUSY:   Request could not be fulfilled, because the required amount of Tx data is not available. The lower layer 
+						  module may retry this call later on. No data has been copied.
+				 BUFREQ_E_NOT_OK: Data has not been copied. Request failed.
 
  */
 BufReq_ReturnType Com_CopyTxData (PduIdType id, const PduInfoType* info, const RetryInfoType* retry, PduLengthType* availableDataPtr);
