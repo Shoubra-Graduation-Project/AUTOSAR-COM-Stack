@@ -161,24 +161,23 @@ typedef struct {
     /*Normal or TP*/
 	ComIPduType_type ComIPduType;
 	
-	/*aya*/ 
-	 /*This parameter defines the existence and the name of a callout function for
-	 the corresponding I-PDU*/
-	 boolean (* ComIPduCallout)  (
-	 PduIdType PduId,
-	 const PduInfoType* PduInfoPtr
-	 );
-	 /*Reference to the Com_MainFunctionRx/Com_MainFunctionTx this I-PDU
-	 belongs to.*/
+
+	 /*This parameter defines the existence and the name of a callout function for the corresponding I-PDU */
+	 boolean (* ComIPduCallout)  (PduIdType PduId, const PduInfoType* PduInfoPtr);
+
+	 /*Reference to the Com_MainFunctionRx/Com_MainFunctionTx this I-PDU belongs to.*/
 	 void (*ComIPduMainFunctionRef)(void);
+
 	  /*Reference to the I-PDU groups this I-PDU belongs to*/
 	 ComIPduGroup* ComIPduGroupRef;
+
 	 /*References to all signal groups contained in this I-Pdu*/
 	 ComSignalGroup* ComIPduSignalGroupRef;
+
 	 /* References to all signals contained in this I-PDU.*/
 	 ComSignal* ComIPduSignalRef;
-	 /*Reference to the "global" Pdu structure to allow harmonization of handle
-	 IDs in the COM-Stack.*/
+
+	 /*Reference to the "global" Pdu structure to allow harmonization of handle IDs in the COM-Stack.*/
 	 Pdu* ComPduIdRef;
 
 
