@@ -77,6 +77,25 @@ typedef enum{
     ONE_EVERY_N
 }ComFilterAlgorithm_type;
 
+
+typedef enum{
+	NOTIFY,
+    REPLACE 
+}ComDataInvalidAction_type;
+
+typedef enum{
+	NONE,
+	REPLACE,
+	SUBSTITUTE
+}ComRxDataTimeoutAction_type;
+
+typedef enum{
+ 	BIG_ENDIAN,
+    LITTLE_ENDIAN,
+    OPAQUE 
+
+}ComSignalEndianness_type;
+
 /* This container contains the configuration parameters of the AUTOSAR COM module's transmission modes. */
 typedef struct
 {
@@ -161,22 +180,23 @@ typedef struct {
     /*Normal or TP*/
 	ComIPduType_type ComIPduType;
 	
-	/*aya*/ 
-	 /*This parameter defines the existence and the name of a callout function for
-	 the corresponding I-PDU*/
-	 boolean (* ComIPduCallout)  (
-	 PduIdType PduId,
-	 const PduInfoType* PduInfoPtr
-	 );
+	
+	 /*This parameter defines the existence and the name of a callout function for the corresponding I-PDU*/
+	 boolean (* ComIPduCallout)  ( PduIdType PduId,const PduInfoType* PduInfoPtr);
+
 	 /*Reference to the Com_MainFunctionRx/Com_MainFunctionTx this I-PDU
 	 belongs to.*/
 	 void (*ComIPduMainFunctionRef)(void);
+
 	  /*Reference to the I-PDU groups this I-PDU belongs to*/
 	 ComIPduGroup* ComIPduGroupRef;
+
 	 /*References to all signal groups contained in this I-Pdu*/
 	 ComSignalGroup* ComIPduSignalGroupRef;
+
 	 /* References to all signals contained in this I-PDU.*/
-	 ComSignal* ComIPduSignalRef;
+	 ComSignal_type* ComIPduSignalRef;
+
 	 /*Reference to the "global" Pdu structure to allow harmonization of handle
 	 IDs in the COM-Stack.*/
 	 Pdu* ComPduIdRef;
@@ -187,13 +207,52 @@ typedef struct {
 
 
 typedef struct {
+    
+	/* Starting position within the I-PDU */
+	const uint32 ComBitPosition;
+    
+	/* Size in bits */
+	const uint8 ComBitSize;
 
-	const uint64 ComBitPosition;
+    /* Notify or Replace */
+    ComDataInvalidAction_type ComDataInvalidAction;
 
-	
+    /* Length of the first deadline monitoring timeout period in s*/
+	const float32 ComFirstTimeout;
+
+    /* This ID identifies signals and signal groups in the COM APIs */
+	const uint16 ComHandleId;
+
+    /* This parameter defines that the respective signal's initial value shall be put
+       into the respective PDU but there will not be any update of the value through the RTE.
+	*/
+	boolean ComInitialValueOnly;
+  
+    /* Replace or Substitute or none*/
+	ComRxDataTimeoutAction_type ComRxDataTimeoutAction;
+
+    /* The data invalid value of the signal. */
+	void *const ComSignalDataInvalidValue;
+
+    /* The endianness of the signal's network representation */
+	ComRxDataTimeoutAction_type ComRxDataTimeoutAction;
 
 
+	void *const ComSignalInitValue;
 
+	ComSignalType_type ComSignalType;
+
+
+	/* The length of the deadline monitoring timeout period in seconds.  */
+	const float32 ComTimeout;
+
+
+    void *const ComTimeoutSubstitutionValue;
+
+	ComTransferProperty_type ComTransferProperty;
+
+
+	const uint32 ComUpdateBitPosition;
 
 }ComSignal_type;
 
