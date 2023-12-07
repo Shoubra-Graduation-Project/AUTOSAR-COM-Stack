@@ -257,4 +257,55 @@ typedef struct {
 }ComSignal_type;
 
 
+typedef struct{
+
+    /* Replace or Notify */
+    ComDataInvalidAction_type ComDataInvalidAction;
+
+	void (*ComErrorNotification) (void);
+
+	const float32 ComFirstTimeout;
+
+	const uint16 ComHandleId;
+
+	boolean ComInitialValueOnly;
+
+	void (*ComInvalidNotification) (void);
+
+	void (*ComNotification) (void);
+
+	ComRxDataTimeoutAction_type ComRxDataTimeoutAction;
+
+	const float32 ComTimeout;
+
+	void (*ComTimeoutNotification) (void);
+
+	ComTransferProperty_type ComTransferProperty;
+
+	const uint32 ComUpdateBitPositionl
+	
+
+}ComSignalGroup_type;
+
+/*This container contains the configuration parameters and sub containers of the COM module.*/
+
+typedef struct{
+
+	
+
+	/* IPDU definitions */
+	const ComIPdu_type * ComIPdu;
+
+	/* Signal definitions */
+	const ComSignal_type *ComSignal;
+
+	/* signal group Definition*/
+	const ComSignalGroup_Type *ComSignalGroup;
+
+
+
+
+}ComConfig_type;
+
+
 #endif
