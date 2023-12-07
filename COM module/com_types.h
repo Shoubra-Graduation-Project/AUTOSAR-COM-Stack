@@ -217,6 +217,9 @@ typedef struct {
     /* Notify or Replace */
     ComDataInvalidAction_type ComDataInvalidAction;
 
+	/* Name of Com_CbkTxErr callback function to be called. */
+	void (*ComErrorNotification) (void);
+
     /* Length of the first deadline monitoring timeout period in s*/
 	const float32 ComFirstTimeout;
 
@@ -227,26 +230,43 @@ typedef struct {
        into the respective PDU but there will not be any update of the value through the RTE.
 	*/
 	boolean ComInitialValueOnly;
-  
+	
+    /* Name of Com_CbkInv callback function to be called */
+	void (*ComInvalidNotification) (void);
+
+    /* 
+	   On sender side: Name of Com_CbkTxAck callback function to be called.
+       On receiver side: Name of Com_CbkRxAck callback function to be called.
+	*/
+	void (*ComNotification) (void);
+
     /* Replace or Substitute or none*/
 	ComRxDataTimeoutAction_type ComRxDataTimeoutAction;
 
     /* The data invalid value of the signal. */
 	void *const ComSignalDataInvalidValue;
 
-    /* The endianness of the signal's network representation */
-	ComRxDataTimeoutAction_type ComRxDataTimeoutAction;
+    /* Defines the endianness of the signal's network representation. */
+	ComSignalEndianness_type ComSignalEndianness;
 
-
+    /* Initial value for this signal. */
 	void *const ComSignalInitValue;
+
+	const uint32 ComSignalLength;
 
 	ComSignalType_type ComSignalType;
 
 
 	/* The length of the deadline monitoring timeout period in seconds.  */
 	const float32 ComTimeout;
+    
+	/* 
+	   On sender side: Name of Com_CbkTxTOut callback function to be called.
+       On receiver side: Name of Com_CbkRxTOut callback function to be called.
+	*/
+	void (*ComTimeoutNotification) (void);
 
-
+    /* The signal substitution value will be used in case of a timeout */
     void *const ComTimeoutSubstitutionValue;
 
 	ComTransferProperty_type ComTransferProperty;
@@ -282,7 +302,7 @@ typedef struct{
 
 	ComTransferProperty_type ComTransferProperty;
 
-	const uint32 ComUpdateBitPositionl
+	const uint32 ComUpdateBitPositionl;
 	
 
 }ComSignalGroup_type;
@@ -300,7 +320,7 @@ typedef struct{
 	const ComSignal_type *ComSignal;
 
 	/* signal group Definition*/
-	const ComSignalGroup_Type *ComSignalGroup;
+	const ComSignalGroup_type *ComSignalGroup;
 
 
 
