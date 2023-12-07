@@ -1,7 +1,7 @@
 #ifndef _COM_H_
 #define _COM_H_
 
-#include "Std_Types.h"
+#include "libraries/Std_Types.h"
 
 /* The service is currently not available */
 #define  COM_SERVICE_NOT_AVAILABLE 0x80

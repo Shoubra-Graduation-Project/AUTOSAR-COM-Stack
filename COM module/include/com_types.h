@@ -2,8 +2,12 @@
 #ifndef _COM_TYPES_H_
 #define _COM_TYPES_H_
 
-#include "Std_Types.h"
+#include "libraries/Std_Types.h"
 
+
+/*****************************************************************
+ *                        Enum Types                             *
+ *****************************************************************/
 
 /* Transmission modes for I-PDU */
 typedef enum {
@@ -96,6 +100,12 @@ typedef enum{
 
 }ComSignalEndianness_type;
 
+
+/*****************************************************************
+ *                        Struct Types                           *
+ *****************************************************************/
+
+
 /* This container contains the configuration parameters of the AUTOSAR COM module's transmission modes. */
 typedef struct
 {
@@ -177,6 +187,12 @@ typedef struct {
 	/* Immediate or Deferred*/
 	ComIPduSignalProcessing_type ComIPduSignalProcessing;
 
+    /* 
+	   If there is a trigger transmit callout defined for this I-PDU this parameter
+       contains the name of the callout function 
+	*/
+	void (*ComIPduTriggerTransmitCallout) (void);
+
     /*Normal or TP*/
 	ComIPduType_type ComIPduType;
 	
@@ -189,10 +205,10 @@ typedef struct {
 	 void (*ComIPduMainFunctionRef)(void);
 
 	  /*Reference to the I-PDU groups this I-PDU belongs to*/
-	 ComIPduGroup* ComIPduGroupRef;
+	 ComIPduGroup_type * ComIPduGroupRef;
 
 	 /*References to all signal groups contained in this I-Pdu*/
-	 ComSignalGroup* ComIPduSignalGroupRef;
+	 ComSignalGroup_type * ComIPduSignalGroupRef;
 
 	 /* References to all signals contained in this I-PDU.*/
 	 ComSignal_type* ComIPduSignalRef;
@@ -205,6 +221,14 @@ typedef struct {
    
 } ComIPdu_type;
 
+typedef struct{
+	/* The numerical value used as the ID of this I-PDU Group */
+	const uint16 ComIPduGroupHandleId;
+    
+	/* References to all I-PDU groups that includes this I-PDU group. I */
+	ComIPduGroup_type const * ComIPduGroupGroupRef;
+
+}ComIPduGroup_type;
 
 typedef struct {
     
@@ -302,10 +326,35 @@ typedef struct{
 
 	ComTransferProperty_type ComTransferProperty;
 
-	const uint32 ComUpdateBitPositionl;
+	const uint32 ComUpdateBitPosition;
 	
 
 }ComSignalGroup_type;
+
+typedef struct {
+
+	const uint32 ComBitPosition;
+
+	const uint8 ComBitSize;
+
+	const uint16 ComHandleId;
+
+	void *const  ComSignalDataInvalidValue;
+
+	ComSignalEndianness_type ComSignalEndianness;
+
+	void *const ComSignalInitValue;
+
+	const uint32 ComSignalLength;
+
+	ComSignalType_type ComSignalType;
+
+	void *const ComTimeoutSubstitutionValue;
+
+	ComTransferProperty_type ComTransferProperty;
+
+
+}ComGroupSignal_type;
 
 /*This container contains the configuration parameters and sub containers of the COM module.*/
 
@@ -329,3 +378,4 @@ typedef struct{
 
 
 #endif
+
