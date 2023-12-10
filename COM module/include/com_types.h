@@ -50,17 +50,19 @@ typedef enum {
 
 
 typedef enum {
-	BOOLEAN,
-	UINT8,
-	UINT16,
-	UINT32,
-	UINT64,
-	SINT8,
-	SINT16,
-	SINT32,
-	SINT64,
-	FLOAT32,
-	FLOAT64
+    BOOLEAN,
+    FLOAT32,
+    FLOAT64,
+    SINT16,
+    SINT32,
+    SINT64,
+    SINT8,
+    UINT16,
+    UINT32,
+    UINT64,
+    UINT8,
+    UINT8_DYN,
+    UINT8_N
 } ComSignalType_type;
 
 
@@ -101,14 +103,69 @@ typedef enum{
 }ComSignalEndianness_type;
 
 
-/*****************************************************************
- *                        Struct Types                           *
- *****************************************************************/
+/**********************************************************************************************************
+ *                                             Struct Types                                               *
+ *********************************************************************************************************/                      
 
 
-/* This container contains the configuration parameters of the AUTOSAR COM module's transmission modes. */
+
+/*Contains the general configuration parameters of the Com module.*/
+typedef struct{
+
+	/* enables/disables the cancellation feature*/
+	const boolean ComCancellationSupport;
+    
+	/*The error hook shall contain code to call the Det.*/
+	const boolean ComConfigurationUseDet;
+    
+	/* Enables globally for the whole Com module the minimum delay time
+       monitoring for cyclic and repeated transmissions
+	*/
+	const boolean ComEnableMDTForCyclicTransmission;
+
+    /* Activate/Deactivate the signal group array access APIs */
+	const boolean ComEnableSignalGroupArrayApi;
+
+	const boolean ComRetryFailedTransmitRequests;
+    
+	/*Defines the maximum number of supported I-PDU groups*/
+	const uint16 ComSupportedIPduGroups;
+    
+	/*Defines the header files for callback functions which shall be included by the COM module.*/
+	void *const ComUserCbkHeaderFile;
+    
+	/*Activate/Deactivate the version information API (Com_GetVersionInfo).*/
+	const boolean ComVersionInfoApi;
+
+
+}ComGeneral_type;
+
+/*This container contains the configuration parameters and sub containers of the COM module*/
+typedef struct{
+    
+	/*Size of internal Com data in units of bytes (static memory allocation) */
+	const uint64 ComDataMemSize;
+    
+	/*Maximum number of IPdus. */
+	const uint64 ComMaxIPduCnt;
+
+	/* IPDU definitions */
+	const ComIPdu_type * ComIPdu;
+
+	const ComIPduGroup_type ComIPduGroup;
+
+	/* Signal definitions */
+	const ComSignal_type *ComSignal;
+
+	/* signal group Definition*/
+	const ComSignalGroup_type *ComSignalGroup;
+
+}ComConfig_type;
+
+/* This container contains the configuration parameters of the COM module's transmission modes. */
 typedef struct
-{
+{ 
+	/*Direct, Mixed, None, Periodic*/
 	const ComTxModeMode_type ComTxModeMode;
     
 	/* 
@@ -123,13 +180,16 @@ typedef struct
 	*/
 	const float32 ComTxModeRepetitionPeriod;
 
-	const uint32 ComTxModeTimeOffsetFactor;
+    /* period in seconds between the start of the I-PDU by Com_IpduGroupStart
+	   and the first transmission request in case PERIODIC or MIXED Mode
+	 */
+	const float32 ComTxModeTimeOffsetFactor;
 
 	/*
-	 Defines the repetition period in ms
+	 Defines the repetition period in seconds
 	 in case ComTxModeMode is configured to PERIODIC or MIXED
 	 */
-	const uint16 ComTxModeTimePeriod;
+	const float32 ComTxModeTimePeriod;
 
 } ComTxMode_type;
 
@@ -152,7 +212,7 @@ typedef struct
 typedef struct 
 {
 	/* Minimum delay time between successive transmissions of the IPdu in s*/
-	const uint32 ComMinimumDelayTime;
+	const float32 ComMinimumDelayTime;
 
    /* Defines when the update-bits of contained in I-PDU will be cleared */
 	const ComTxIPduClearUpdateBit_type ComTxIPduClearUpdateBit;
@@ -222,6 +282,7 @@ typedef struct {
 } ComIPdu_type;
 
 typedef struct{
+
 	/* The numerical value used as the ID of this I-PDU Group */
 	const uint16 ComIPduGroupHandleId;
     
@@ -356,25 +417,36 @@ typedef struct {
 
 }ComGroupSignal_type;
 
-/*This container contains the configuration parameters and sub containers of the COM module.*/
-
 typedef struct{
 
-	
+   /*Name of Com_CbkCounterErr callback function to be called. */
+   void (*ComIPduCounterErrorNotification) (void);
+   
+   /*Size of PDU Counter expressed in bits*/
+   const uint8 ComIPduCounterSize;
 
-	/* IPDU definitions */
-	const ComIPdu_type * ComIPdu;
+   /*Position of PDU counter expressed in bits from start position of data content*/
+   const uint32 ComIPduCounterStartPosition;
+   
+   /* Threshold value of I-PDU counter algorithm*/
+   const uint8 ComIPduCounterThreshold;
 
-	/* Signal definitions */
-	const ComSignal_type *ComSignal;
+}ComIPduCounter_type;
 
-	/* signal group Definition*/
-	const ComSignalGroup_type *ComSignalGroup;
+/*This optional container contains the information needed for each I-PDU replicated.*/
+typedef struct{
+
+   /*The number of identical I-PDUs needed for successful voting.*/
+   const uint8 ComIPduReplicationQuorum;
+
+   Pdu * ComIPduReplicaRef;
 
 
+}ComIPduReplication_type;
+
+/*This container contains the configuration parameters and sub containers of the COM module.*/
 
 
-}ComConfig_type;
 
 
 #endif
