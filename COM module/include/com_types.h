@@ -161,80 +161,11 @@ typedef struct{
 	/* signal group Definition*/
 	const ComSignalGroup_type *ComSignalGroup;
 
+	const ComMainFunctionTx_type *ComMainFunctionRx;
+
+	const ComMainFunctionRx_type *ComMainFunctionRx;
+
 }ComConfig_type;
-
-
-
-/* This container contains the configuration parameters of the COM module's transmission modes. */
-typedef struct
-{ 
-	/*Direct, Mixed, None, Periodic*/
-	const ComTxModeMode_type ComTxModeMode;
-    
-	/* 
-	Defines the number of repetitions for the transmission mode DIRECT and
-    the event driven part of transmission mode MIXED.	
-	*/
-	const uint8 ComTxModeNumberOfRepetitions;
-
-    /* Defines the repetition period in s in
-    case ComTxModeNumberOfRepetitions is configured greater than or
-    equal to 1 and ComTxModeMode is configured to DIRECT or MIXED.
-	*/
-	const float32 ComTxModeRepetitionPeriod;
-
-    /* period in seconds between the start of the I-PDU by Com_IpduGroupStart
-	   and the first transmission request in case PERIODIC or MIXED Mode
-	 */
-	const float32 ComTxModeTimeOffsetFactor;
-
-	/*
-	 Defines the repetition period in seconds
-	 in case ComTxModeMode is configured to PERIODIC or MIXED
-	 */
-	const float32 ComTxModeTimePeriod;
-
-} ComTxMode_type;
-
-
-
-/* If ComFilter evaluates to true */
-typedef struct 
-{
-	const ComTxMode_type ComTxMode;
-
-} ComTxModeTrue_type;
-
-
-
-/* If  ComFilter evaluates to ComTxModeFalse */
-typedef struct 
-{
-	const ComTxMode_type ComTxMode;
-
-} ComTxModeFalse_type;
-
-
-
-/* This container contains additional transmission related configuration parameters of the AUTOSAR COM module's I-PDUs. */
-typedef struct 
-{
-	/* Minimum delay time between successive transmissions of the IPdu in s*/
-	const float32 ComMinimumDelayTime;
-
-   /* Defines when the update-bits of contained in I-PDU will be cleared */
-	const ComTxIPduClearUpdateBit_type ComTxIPduClearUpdateBit;
-
-	/* COM module fills not used areas of an I-PDU with this byte pattern*/
-	const uint8 ComTxIPduUnusedAreasDefault;
-
-	/* ComFilter evaluates to true */
-	const ComTxModeTrue_type ComTxModeTrue ;
-
-	/* ComFilter evaluates to ComTxModeFalse */
-	const ComTxModeFalse_type ComTxModeFalse ;
-
-} ComTxIPdu_type;
 
 
 
@@ -286,6 +217,79 @@ typedef struct {
 } ComIPdu_type;
 
 
+
+/* This container contains additional transmission related configuration parameters of the AUTOSAR COM module's I-PDUs. */
+typedef struct 
+{
+	/* Minimum delay time between successive transmissions of the IPdu in s*/
+	const float32 ComMinimumDelayTime;
+
+   /* Defines when the update-bits of contained in I-PDU will be cleared */
+	const ComTxIPduClearUpdateBit_type ComTxIPduClearUpdateBit;
+
+	/* COM module fills not used areas of an I-PDU with this byte pattern*/
+	const uint8 ComTxIPduUnusedAreasDefault;
+
+	/* ComFilter evaluates to true */
+	const ComTxModeTrue_type ComTxModeTrue ;
+
+	/* ComFilter evaluates to ComTxModeFalse */
+	const ComTxModeFalse_type ComTxModeFalse ;
+
+} ComTxIPdu_type;
+
+
+
+/* If ComFilter evaluates to true */
+typedef struct 
+{
+	const ComTxMode_type ComTxMode;
+
+} ComTxModeTrue_type;
+
+
+
+/* If  ComFilter evaluates to ComTxModeFalse */
+typedef struct 
+{
+	const ComTxMode_type ComTxMode;
+
+} ComTxModeFalse_type;
+
+
+/* This container contains the configuration parameters of the COM module's transmission modes. */
+typedef struct
+{ 
+	/*Direct, Mixed, None, Periodic*/
+	const ComTxModeMode_type ComTxModeMode;
+    
+	/* 
+	Defines the number of repetitions for the transmission mode DIRECT and
+    the event driven part of transmission mode MIXED.	
+	*/
+	const uint8 ComTxModeNumberOfRepetitions;
+
+    /* Defines the repetition period in s in
+    case ComTxModeNumberOfRepetitions is configured greater than or
+    equal to 1 and ComTxModeMode is configured to DIRECT or MIXED.
+	*/
+	const float32 ComTxModeRepetitionPeriod;
+
+    /* period in seconds between the start of the I-PDU by Com_IpduGroupStart
+	   and the first transmission request in case PERIODIC or MIXED Mode
+	 */
+	const float32 ComTxModeTimeOffsetFactor;
+
+	/*
+	 Defines the repetition period in seconds
+	 in case ComTxModeMode is configured to PERIODIC or MIXED
+	 */
+	const float32 ComTxModeTimePeriod;
+
+} ComTxMode_type;
+
+
+
 typedef struct{
      uint8 ComIPduCounterSize;
 
@@ -296,6 +300,7 @@ typedef struct{
      void (*ComIPduCounterErrorNotification) (PduIdType, uint8, uint8);
 
 }ComIPduCounter_type;
+
 
 
 /*This optional container contains the information needed for each I-PDU replicated.*/
@@ -329,42 +334,39 @@ typedef struct {
 	/* Size in bits */
 	const uint8 ComBitSize;
 
-    /* Notify or Replace */
-    ComDataInvalidAction_type ComDataInvalidAction;
+	/* Notify or Replace */
+	ComDataInvalidAction_type ComDataInvalidAction;
 
 	/* Name of Com_CbkTxErr callback function to be called. */
 	void (*ComErrorNotification) (void);
 
-    /* Length of the first deadline monitoring timeout period in s*/
+	/* Length of the first deadline monitoring timeout period in s*/
 	const float32 ComFirstTimeout;
 
-    /* This ID identifies signals and signal groups in the COM APIs */
+	/* This ID identifies signals and signal groups in the COM APIs */
 	const uint16 ComHandleId;
 
-    /* This parameter defines that the respective signal's initial value shall be put
-       into the respective PDU but there will not be any update of the value through the RTE.
-	*/
+	/* This parameter defines that the respective signal's initial value shall be put
+       into the respective PDU but there will not be any update of the value through the RTE.*/
 	boolean ComInitialValueOnly;
 	
-    /* Name of Com_CbkInv callback function to be called */
+	/* Name of Com_CbkInv callback function to be called */
 	void (*ComInvalidNotification) (void);
 
-    /* 
-	   On sender side: Name of Com_CbkTxAck callback function to be called.
-       On receiver side: Name of Com_CbkRxAck callback function to be called.
-	*/
+	/*On sender side: Name of Com_CbkTxAck callback function to be called.
+         On receiver side: Name of Com_CbkRxAck callback function to be called.*/
 	void (*ComNotification) (void);
 
-    /* Replace or Substitute or none*/
+	/* Replace or Substitute or none*/
 	ComRxDataTimeoutAction_type ComRxDataTimeoutAction;
 
-    /* The data invalid value of the signal. */
+	/* The data invalid value of the signal. */
 	void *const ComSignalDataInvalidValue;
 
-    /* Defines the endianness of the signal's network representation. */
+	/* Defines the endianness of the signal's network representation. */
 	ComSignalEndianness_type ComSignalEndianness;
 
-    /* Initial value for this signal. */
+	/* Initial value for this signal. */
 	void *const ComSignalInitValue;
 
 	const uint32 ComSignalLength;
@@ -375,17 +377,14 @@ typedef struct {
 	/* The length of the deadline monitoring timeout period in seconds.  */
 	const float32 ComTimeout;
     
-	/* 
-	   On sender side: Name of Com_CbkTxTOut callback function to be called.
-       On receiver side: Name of Com_CbkRxTOut callback function to be called.
-	*/
+	/*On sender side: Name of Com_CbkTxTOut callback function to be called.
+       On receiver side: Name of Com_CbkRxTOut callback function to be called.*/
 	void (*ComTimeoutNotification) (void);
 
-    /* The signal substitution value will be used in case of a timeout */
-    void *const ComTimeoutSubstitutionValue;
+	/* The signal substitution value will be used in case of a timeout */
+	void *const ComTimeoutSubstitutionValue;
 
 	ComTransferProperty_type ComTransferProperty;
-
 
 	const uint32 ComUpdateBitPosition;
 
@@ -462,6 +461,11 @@ typedef struct{
 }ComMainFunctionTx_type;
 
 
+
+typedef struct{
+	ComFilterAlgorithm_type ComFilterAlgorithm;
+	int64 ComFilterMask;
+}ComFilter_type;
 
 #endif
 
