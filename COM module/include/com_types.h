@@ -137,8 +137,9 @@ typedef struct{
 	/*Activate/Deactivate the version information API (Com_GetVersionInfo).*/
 	const boolean ComVersionInfoApi;
 
-
 }ComGeneral_type;
+
+
 
 /*This container contains the configuration parameters and sub containers of the COM module*/
 typedef struct{
@@ -161,6 +162,8 @@ typedef struct{
 	const ComSignalGroup_type *ComSignalGroup;
 
 }ComConfig_type;
+
+
 
 /* This container contains the configuration parameters of the COM module's transmission modes. */
 typedef struct
@@ -193,6 +196,8 @@ typedef struct
 
 } ComTxMode_type;
 
+
+
 /* If ComFilter evaluates to true */
 typedef struct 
 {
@@ -200,12 +205,15 @@ typedef struct
 
 } ComTxModeTrue_type;
 
+
+
 /* If  ComFilter evaluates to ComTxModeFalse */
 typedef struct 
 {
 	const ComTxMode_type ComTxMode;
 
 } ComTxModeFalse_type;
+
 
 
 /* This container contains additional transmission related configuration parameters of the AUTOSAR COM module's I-PDUs. */
@@ -229,60 +237,80 @@ typedef struct
 } ComTxIPdu_type;
 
 
+
 /* This container contains the configuration parameters of the AUTOSAR COM module's IPDUs */
 typedef struct {
-	
-	/*
-	   Defines for I-PDUs with ComIPduType NORMAL: If the underlying IF module supports cancellation of transmit requests.
-       Defines for I-PDUs with ComIPduType TP: If the underlying TP-module supports RX and TX cancellation of ongoing requests.
-    */
-    const boolean ComIPduCancellationSupport;
-
-    /* sent or received */
-    ComIPduDirection_type ComIPduDirection;
+                   /*------------------------Parameters-------------------------*/
+    /*This parameter defines the existence and the name of a callout function for the corresponding I-PDU*/
+    boolean (* ComIPduCallout)  ( PduIdType PduId,const PduInfoType* PduInfoPtr);
 
     /* The numerical value used as the ID of the I-PDU */
     uint16 ComIPduHandleId ;
 
-	/* Immediate or Deferred*/
-	ComIPduSignalProcessing_type ComIPduSignalProcessing;
+    /* Immediate or Deferred*/
+    ComIPduSignalProcessing_type ComIPduSignalProcessing;
 
-    /* 
-	   If there is a trigger transmit callout defined for this I-PDU this parameter
-       contains the name of the callout function 
-	*/
-	void (*ComIPduTriggerTransmitCallout) (void);
+    /* sent or received */
+    ComIPduDirection_type ComIPduDirection;
+
+    /* If there is a trigger transmit callout defined for this I-PDU this parameter contains the name of the callout function */
+    void (*ComIPduTriggerTransmitCallout) (void);
 
     /*Normal or TP*/
-	ComIPduType_type ComIPduType;
-	
-	
-	 /*This parameter defines the existence and the name of a callout function for the corresponding I-PDU*/
-	 boolean (* ComIPduCallout)  ( PduIdType PduId,const PduInfoType* PduInfoPtr);
+    ComIPduType_type ComIPduType;
 
-	 /*Reference to the Com_MainFunctionRx/Com_MainFunctionTx this I-PDU
-	 belongs to.*/
-	 void (*ComIPduMainFunctionRef)(void);
+    /* Defines for I-PDUs with ComIPduType NORMAL: If the underlying IF module supports cancellation of transmit requests.
+       Defines for I-PDUs with ComIPduType TP: If the underlying TP-module supports RX and TX cancellation of ongoing requests.*/
+    const boolean ComIPduCancellationSupport;
 
-	  /*Reference to the I-PDU groups this I-PDU belongs to*/
-	 ComIPduGroup_type * ComIPduGroupRef;
+    /*Reference to the Com_MainFunctionRx/Com_MainFunctionTx this I-PDU belongs to.*/
+    void (*ComIPduMainFunctionRef)(void);
 
-	 /*References to all signal groups contained in this I-Pdu*/
-	 ComSignalGroup_type * ComIPduSignalGroupRef;
+                   /*------------------------Refrences-------------------------*/
+    /*Reference to the I-PDU groups this I-PDU belongs to*/
+    ComIPduGroup_type * ComIPduGroupRef;
 
-	 /* References to all signals contained in this I-PDU.*/
-	 ComSignal_type* ComIPduSignalRef;
+    /*References to all signal groups contained in this I-Pdu*/
+    ComSignalGroup_type * ComIPduSignalGroupRef;
 
-	 /*Reference to the "global" Pdu structure to allow harmonization of handle
-	 IDs in the COM-Stack.*/
-	 Pdu* ComPduIdRef;
+    /* References to all signals contained in this I-PDU.*/
+    ComSignal_type* ComIPduSignalRef;
 
+    /*Reference to the "global" Pdu structure to allow harmonization of handle IDs in the COM-Stack.*/
+    Pdu* ComPduIdRef;
 
-   
+                   /*------------------------Sub-containers-------------------------*/
+    ComIPduCounter_type ComIPduCounter;
+
+    ComIPduReplication_type ComIPduReplication;
 } ComIPdu_type;
 
+
+typedef struct{
+     uint8 ComIPduCounterSize;
+
+     uint32 ComIPduCounterStartPosition;
+
+     uint8 ComIPduCounterThreshold;
+
+     void (*ComIPduCounterErrorNotification) (PduIdType, uint8, uint8);
+
+}ComIPduCounter_type;
+
+
+/*This optional container contains the information needed for each I-PDU replicated.*/
 typedef struct{
 
+   /*The number of identical I-PDUs needed for successful voting.*/
+   const uint8 ComIPduReplicationQuorum;
+
+   Pdu * ComIPduReplicaRef;
+
+}ComIPduReplication_type;
+
+
+
+typedef struct{
 	/* The numerical value used as the ID of this I-PDU Group */
 	const uint16 ComIPduGroupHandleId;
     
@@ -290,6 +318,8 @@ typedef struct{
 	ComIPduGroup_type const * ComIPduGroupGroupRef;
 
 }ComIPduGroup_type;
+
+
 
 typedef struct {
     
@@ -362,8 +392,8 @@ typedef struct {
 }ComSignal_type;
 
 
-typedef struct{
 
+typedef struct{
     /* Replace or Notify */
     ComDataInvalidAction_type ComDataInvalidAction;
 
@@ -389,8 +419,9 @@ typedef struct{
 
 	const uint32 ComUpdateBitPosition;
 	
-
 }ComSignalGroup_type;
+
+
 
 typedef struct {
 
@@ -414,38 +445,17 @@ typedef struct {
 
 	ComTransferProperty_type ComTransferProperty;
 
-
 }ComGroupSignal_type;
 
+
 typedef struct{
+	/* The numerical value used as the ID of this I-PDU Group */
+	const uint16 ComIPduGroupHandleId;
+    
+	/* References to all I-PDU groups that includes this I-PDU group. I */
+	ComIPduGroup_type const * ComIPduGroupGroupRef;
 
-   /*Name of Com_CbkCounterErr callback function to be called. */
-   void (*ComIPduCounterErrorNotification) (void);
-   
-   /*Size of PDU Counter expressed in bits*/
-   const uint8 ComIPduCounterSize;
-
-   /*Position of PDU counter expressed in bits from start position of data content*/
-   const uint32 ComIPduCounterStartPosition;
-   
-   /* Threshold value of I-PDU counter algorithm*/
-   const uint8 ComIPduCounterThreshold;
-
-}ComIPduCounter_type;
-
-/*This optional container contains the information needed for each I-PDU replicated.*/
-typedef struct{
-
-   /*The number of identical I-PDUs needed for successful voting.*/
-   const uint8 ComIPduReplicationQuorum;
-
-   Pdu * ComIPduReplicaRef;
-
-
-}ComIPduReplication_type;
-
-/*This container contains the configuration parameters and sub containers of the COM module.*/
-
+}ComMainFunctionRx;
 
 
 
