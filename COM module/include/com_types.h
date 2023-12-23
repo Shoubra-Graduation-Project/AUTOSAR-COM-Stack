@@ -449,13 +449,17 @@ typedef struct {
 
 
 typedef struct{
-	/* The numerical value used as the ID of this I-PDU Group */
-	const uint16 ComIPduGroupHandleId;
-    
-	/* References to all I-PDU groups that includes this I-PDU group. I */
-	ComIPduGroup_type const * ComIPduGroupGroupRef;
+	float32 ComMainRxTimeBase;
+	//EcucPartition * ComMainRxPartitionRef;
+}ComMainFunctionRx_type;
 
-}ComMainFunctionRx;
+
+
+typedef struct{
+	float32 ComMainTxTimeBase;
+	//EcucPartition * ComMainTxPartitionRef;
+	void (*ComPreparationNotification) (void);
+}ComMainFunctionTx_type;
 
 
 
