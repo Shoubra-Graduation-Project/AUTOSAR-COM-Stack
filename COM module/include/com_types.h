@@ -373,6 +373,7 @@ typedef struct {
 
 	ComSignalType_type ComSignalType;
 
+	ComFilter_type ComFilter;
 
 	/* The length of the deadline monitoring timeout period in seconds.  */
 	const float32 ComTimeout;
@@ -464,7 +465,12 @@ typedef struct{
 
 typedef struct{
 	ComFilterAlgorithm_type ComFilterAlgorithm;
-	int64 ComFilterMask;
+	sint64 ComFilterMask;
+	sint64 ComFilterMax;
+	sint64 ComFilterMin;
+	uint32 ComFilterOffset;
+	uint32 ComFilterPeriod;
+	sint64 ComFilterX;
 }ComFilter_type;
 
 #endif
