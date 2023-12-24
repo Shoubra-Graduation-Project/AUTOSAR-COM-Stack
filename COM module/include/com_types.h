@@ -207,170 +207,10 @@ typedef struct{
 
 
 
-
-/********************************************************************************************
-Name: ComTxMode
-
-Type: Structure
-
-Description: This container contains the configuration parameters of the
-             COM module's transmission modes.
-********************************************************************************************/
-typedef struct
-{ 
-	/*Direct, Mixed, None, Periodic*/
-	const ComTxModeMode_type ComTxModeMode;
-    
-	/* 
-	Defines the number of repetitions for the transmission mode DIRECT and
-    the event driven part of transmission mode MIXED.	
-	*/
-	const uint8 ComTxModeNumberOfRepetitions;
-
-	const ComMainFunctionTx_type *ComMainFunctionRx;
-
-	const ComMainFunctionRx_type *ComMainFunctionRx;
+	/* signal group Definition*/
+	const ComSignalGroup_type *ComSignalGroup;
 
 }ComConfig_type;
-
-
-
-
-/* This container contains the configuration parameters of the AUTOSAR COM module's IPDUs */
-typedef struct {
-                   /*------------------------Parameters-------------------------*/
-    /*This parameter defines the existence and the name of a callout function for the corresponding I-PDU*/
-    boolean (* ComIPduCallout)  ( PduIdType PduId,const PduInfoType* PduInfoPtr);
-
-    /* The numerical value used as the ID of the I-PDU */
-    uint16 ComIPduHandleId ;
-
-    /* Immediate or Deferred*/
-    ComIPduSignalProcessing_type ComIPduSignalProcessing;
-
-/********************************************************************************************
-Name: ComTxModeTrue
-
-Type: Structure
-
-Description: If ComFilter evaluates to true
-********************************************************************************************/
-typedef struct 
-{
-	const ComTxMode_type ComTxMode;
-
-    /* sent or received */
-    ComIPduDirection_type ComIPduDirection;
-
-    /* If there is a trigger transmit callout defined for this I-PDU this parameter contains the name of the callout function */
-    void (*ComIPduTriggerTransmitCallout) (void);
-
-/********************************************************************************************
-Name: ComTxModeFalse
-
-Type: Structure
-
-Description: If  ComFilter evaluates to ComTxModeFalse.
-********************************************************************************************/
-typedef struct 
-{
-	const ComTxMode_type ComTxMode;
-
-    /*Normal or TP*/
-    ComIPduType_type ComIPduType;
-
-    /* Defines for I-PDUs with ComIPduType NORMAL: If the underlying IF module supports cancellation of transmit requests.
-       Defines for I-PDUs with ComIPduType TP: If the underlying TP-module supports RX and TX cancellation of ongoing requests.*/
-    const boolean ComIPduCancellationSupport;
-
-    /*Reference to the Com_MainFunctionRx/Com_MainFunctionTx this I-PDU belongs to.*/
-    void (*ComIPduMainFunctionRef)(void);
-
-                   /*------------------------Refrences-------------------------*/
-    /*Reference to the I-PDU groups this I-PDU belongs to*/
-    ComIPduGroup_type * ComIPduGroupRef;
-
-    /*References to all signal groups contained in this I-Pdu*/
-    ComSignalGroup_type * ComIPduSignalGroupRef;
-
-    /* References to all signals contained in this I-PDU.*/
-    ComSignal_type* ComIPduSignalRef;
-
-    /*Reference to the "global" Pdu structure to allow harmonization of handle IDs in the COM-Stack.*/
-    Pdu* ComPduIdRef;
-
-                   /*------------------------Sub-containers-------------------------*/
-    ComIPduCounter_type ComIPduCounter;
-
-    ComIPduReplication_type ComIPduReplication;
-} ComIPdu_type;
-
-
-
-
-/********************************************************************************************
-Name: ComTxIPdu
-
-Type: Structure
-
-Description: This container contains additional transmission related configuration
-             parameters of the AUTOSAR COM module's I-PDUs.
-********************************************************************************************/
-typedef struct 
-{
-	/* Minimum delay time between successive transmissions of the IPdu in s*/
-	const float32 ComMinimumDelayTime;
-
-   /* Defines when the update-bits of contained in I-PDU will be cleared */
-	const ComTxIPduClearUpdateBit_type ComTxIPduClearUpdateBit;
-
-	/* COM module fills not used areas of an I-PDU with this byte pattern*/
-	const uint8 ComTxIPduUnusedAreasDefault;
-
-	/* ComFilter evaluates to true */
-	const ComTxModeTrue_type ComTxModeTrue ;
-
-	/* ComFilter evaluates to ComTxModeFalse */
-	const ComTxModeFalse_type ComTxModeFalse ;
-
-} ComTxIPdu_type;
-
-
-
-/********************************************************************************************
-Name: ComIPdu
-
-Type: Structure
-
-Description: This container contains the configuration parameters of 
-             the AUTOSAR COM module's IPDUs 
-********************************************************************************************/
-typedef struct {
-	
-	/*
-	   Defines for I-PDUs with ComIPduType NORMAL: If the underlying IF module supports cancellation of transmit requests.
-       Defines for I-PDUs with ComIPduType TP: If the underlying TP-module supports RX and TX cancellation of ongoing requests.
-    */
-    const boolean ComIPduCancellationSupport;
-
-
-
-/* If ComFilter evaluates to true */
-typedef struct 
-{
-	const ComTxMode_type ComTxMode;
-
-} ComTxModeTrue_type;
-
-
-
-/* If  ComFilter evaluates to ComTxModeFalse */
-typedef struct 
-{
-	const ComTxMode_type ComTxMode;
-
-} ComTxModeFalse_type;
-
 
 /* This container contains the configuration parameters of the COM module's transmission modes. */
 typedef struct
@@ -403,18 +243,93 @@ typedef struct
 
 } ComTxMode_type;
 
+/* If ComFilter evaluates to true */
+typedef struct 
+{
+	const ComTxMode_type ComTxMode;
+
+} ComTxModeTrue_type;
+
+/* If  ComFilter evaluates to ComTxModeFalse */
+typedef struct 
+{
+	const ComTxMode_type ComTxMode;
+
+} ComTxModeFalse_type;
 
 
+/* This container contains additional transmission related configuration parameters of the AUTOSAR COM module's I-PDUs. */
+typedef struct 
+{
+	/* Minimum delay time between successive transmissions of the IPdu in s*/
+	const float32 ComMinimumDelayTime;
 
-    ComTxIPdu_type ComTxIPdu;
-    
-	// Parameters does not exist at SWS
+   /* Defines when the update-bits of contained in I-PDU will be cleared */
+	const ComTxIPduClearUpdateBit_type ComTxIPduClearUpdateBit;
 
-	// Length of IPDU in bytes
-	uint8 ComIPduLength;
-    
-	// Pointer to IPDU data
-	void *const ComIPduDataPtr;  
+	/* COM module fills not used areas of an I-PDU with this byte pattern*/
+	const uint8 ComTxIPduUnusedAreasDefault;
+
+	/* ComFilter evaluates to true */
+	const ComTxModeTrue_type ComTxModeTrue ;
+
+	/* ComFilter evaluates to ComTxModeFalse */
+	const ComTxModeFalse_type ComTxModeFalse ;
+
+} ComTxIPdu_type;
+
+
+/* This container contains the configuration parameters of the AUTOSAR COM module's IPDUs */
+typedef struct {
+	
+	/*
+	   Defines for I-PDUs with ComIPduType NORMAL: If the underlying IF module supports cancellation of transmit requests.
+       Defines for I-PDUs with ComIPduType TP: If the underlying TP-module supports RX and TX cancellation of ongoing requests.
+    */
+    const boolean ComIPduCancellationSupport;
+
+    /* sent or received */
+    ComIPduDirection_type ComIPduDirection;
+
+    /* The numerical value used as the ID of the I-PDU */
+    uint16 ComIPduHandleId ;
+
+	/* Immediate or Deferred*/
+	ComIPduSignalProcessing_type ComIPduSignalProcessing;
+
+    /* 
+	   If there is a trigger transmit callout defined for this I-PDU this parameter
+       contains the name of the callout function 
+	*/
+	void (*ComIPduTriggerTransmitCallout) (void);
+
+    /*Normal or TP*/
+	ComIPduType_type ComIPduType;
+	
+	
+	 /*This parameter defines the existence and the name of a callout function for the corresponding I-PDU*/
+	 boolean (* ComIPduCallout)  ( PduIdType PduId,const PduInfoType* PduInfoPtr);
+
+	 /*Reference to the Com_MainFunctionRx/Com_MainFunctionTx this I-PDU
+	 belongs to.*/
+	 void (*ComIPduMainFunctionRef)(void);
+
+	  /*Reference to the I-PDU groups this I-PDU belongs to*/
+	 ComIPduGroup_type * ComIPduGroupRef;
+
+	 /*References to all signal groups contained in this I-Pdu*/
+	 ComSignalGroup_type * ComIPduSignalGroupRef;
+
+	 /* References to all signals contained in this I-PDU.*/
+	 ComSignal_type* ComIPduSignalRef;
+
+	 /*Reference to the "global" Pdu structure to allow harmonization of handle
+	 IDs in the COM-Stack.*/
+	 Pdu* ComPduIdRef;
+
+    void const * ComIPduDataPtr;
+	ComTxIPdu_type ComTxIPdu;
+	const uint8 ComIPduLength;
    
 } ComIPdu_type;
 
@@ -426,33 +341,6 @@ Type: Structure
 
 Description: 
 ********************************************************************************************/
-
-typedef struct{
-     uint8 ComIPduCounterSize;
-
-     uint32 ComIPduCounterStartPosition;
-
-     uint8 ComIPduCounterThreshold;
-
-     void (*ComIPduCounterErrorNotification) (PduIdType, uint8, uint8);
-
-}ComIPduCounter_type;
-
-
-
-/*This optional container contains the information needed for each I-PDU replicated.*/
-
-typedef struct{
-
-   /*The number of identical I-PDUs needed for successful voting.*/
-   const uint8 ComIPduReplicationQuorum;
-
-   Pdu * ComIPduReplicaRef;
-
-}ComIPduReplication_type;
-
-
-
 typedef struct{
 	/* The numerical value used as the ID of this I-PDU Group */
 	const uint16 ComIPduGroupHandleId;
@@ -464,6 +352,7 @@ typedef struct{
 
 
 
+
 /********************************************************************************************
 Name: ComSignal_type
 
@@ -471,9 +360,6 @@ Type: Structure
 
 Description: 
 ********************************************************************************************/
-
-
-
 typedef struct {
     
 	/* Starting position within the I-PDU */
@@ -522,9 +408,6 @@ typedef struct {
 	ComSignalType_type ComSignalType;
 
 
-	ComFilter_type ComFilter;
-
-
 	/* The length of the deadline monitoring timeout period in seconds.  */
 	const float32 ComTimeout;
     
@@ -545,6 +428,7 @@ typedef struct {
 
 
 
+
 /********************************************************************************************
 Name: ComSignalGroup
 
@@ -552,9 +436,6 @@ Type: Structure
 
 Description: 
 ********************************************************************************************/
-typedef struct{
-
-
 typedef struct{
     /* Replace or Notify */
     ComDataInvalidAction_type ComDataInvalidAction;
@@ -580,14 +461,17 @@ typedef struct{
 	ComTransferProperty_type ComTransferProperty;
 
 	const uint32 ComUpdateBitPosition;
-
-	void *const ComShadowBuffer;
-
-    const ComGroupSignal_type* const *ComGroupSignal;
-
-	const uint16 ComIPduHandleId; 
 	
+	ComGroupSignal_type ComGroupSignal;
+
+	void const * ComShadowBuffer;
+
+	 const uint8 ComIPduHandleId;
+
+
 }ComSignalGroup_type;
+
+
 
 
 /********************************************************************************************
@@ -597,12 +481,6 @@ Type: Structure
 
 Description: 
 ********************************************************************************************/
-
-}ComSignalGroup_type;
-
-
-
-
 typedef struct {
 
 	const uint32 ComBitPosition;
@@ -624,20 +502,10 @@ typedef struct {
 	void *const ComTimeoutSubstitutionValue;
 
 	ComTransferProperty_type ComTransferProperty;
-    
-    void * const ComSignalDataPtr;
+	void const * ComSignalDataPtr;
 
-	const uint16 ComIPduHandleId; 
-
+ 
 }ComGroupSignal_type;
-
-/********************************************************************************************
-Name: ComIPduCounter
-
-Type: Structure
-
-Description: 
-********************************************************************************************/
 
 typedef struct{
 
@@ -655,46 +523,21 @@ typedef struct{
 
 }ComIPduCounter_type;
 
-/********************************************************************************************
-Name: ComIPduReplication
-
-Type: Structure
-
-Description: This optional container contains the information needed for each I-PDU replicated.
-********************************************************************************************/
-
-}ComGroupSignal_type;
-
-
-
+/*This optional container contains the information needed for each I-PDU replicated.*/
 typedef struct{
-	float32 ComMainRxTimeBase;
-	//EcucPartition * ComMainRxPartitionRef;
-}ComMainFunctionRx_type;
 
+   /*The number of identical I-PDUs needed for successful voting.*/
+   const uint8 ComIPduReplicationQuorum;
+
+   Pdu * ComIPduReplicaRef;
 
 
 }ComIPduReplication_type;
 
-
-typedef struct{
-	float32 ComMainTxTimeBase;
-	//EcucPartition * ComMainTxPartitionRef;
-	void (*ComPreparationNotification) (void);
-}ComMainFunctionTx_type;
+/*This container contains the configuration parameters and sub containers of the COM module.*/
 
 
 
-
-typedef struct{
-	ComFilterAlgorithm_type ComFilterAlgorithm;
-	sint64 ComFilterMask;
-	sint64 ComFilterMax;
-	sint64 ComFilterMin;
-	uint32 ComFilterOffset;
-	uint32 ComFilterPeriod;
-	sint64 ComFilterX;
-}ComFilter_type;
 
 #endif
 
