@@ -205,13 +205,6 @@ typedef struct{
 
 
 
-
-
-	/* signal group Definition*/
-	const ComSignalGroup_type *ComSignalGroup;
-
-}ComConfig_type;
-
 /* This container contains the configuration parameters of the COM module's transmission modes. */
 typedef struct
 { 
