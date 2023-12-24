@@ -205,22 +205,7 @@ typedef struct{
 
 
 
-/*This container contains the configuration parameters and sub containers of the COM module*/
-typedef struct{
-    
-	/*Size of internal Com data in units of bytes (static memory allocation) */
-	const uint64 ComDataMemSize;
-    
-	/*Maximum number of IPdus. */
-	const uint64 ComMaxIPduCnt;
 
-	/* IPDU definitions */
-	const ComIPdu_type * ComIPdu;
-
-	const ComIPduGroup_type ComIPduGroup;
-
-	/* Signal definitions */
-	const ComSignal_type *ComSignal;
 
 
 /********************************************************************************************
