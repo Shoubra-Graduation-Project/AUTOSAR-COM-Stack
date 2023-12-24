@@ -2,6 +2,7 @@
 #define _COM_H_
 
 #include "libraries/Std_Types.h"
+#include "com_types.h"
 
 /* The service is currently not available */
 #define  COM_SERVICE_NOT_AVAILABLE 0x80
@@ -26,5 +27,33 @@ typedef enum
  COM_UNINIT = 0x00,
  COM_INIT	
 }Com_StatusType;
+
+
+typedef struct{
+    
+	/*Size of internal Com data in units of bytes (static memory allocation) */
+	const uint64 ComDataMemSize;
+    
+	/*Maximum number of IPdus. */
+	const uint64 ComMaxIPduCnt;
+
+	 /* Contains the configuration parameters of the  COM module's IPDUs. */
+	const ComIPdu_type * ComIPdu;
+
+    /* Contains the configuration parameters of the COM module's IPDU groups. */
+	const ComIPduGroup_type ComIPduGroup;
+
+	 /* Contains the configuration parameters of the COM module's signals. */
+	const ComSignal_type *ComSignal;
+
+	/* Contains the configuration parameters of the COM module's signal groups. */
+	const ComSignalGroup_type *ComSignalGroup;
+
+}Com_ConfigType;
+
+
+void Com_CopyToShadowBuffer();
+void Com_CopyIpduToShadowBuffer();
+void Com_CopyFromShadowBuffer();
 
 #endif
