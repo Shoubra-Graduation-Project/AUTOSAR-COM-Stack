@@ -5,11 +5,14 @@
 #include "libraries/Std_Types.h"
 
 
-/*****************************************************************
- *                        Enum Types                             *
- *****************************************************************/
 
-/* Transmission modes for I-PDU */
+/***************************************************************************************************
+Name: ComTxModeMode
+
+Type: EcucEnumerationParamDef
+
+Description: Transmission modes for I-PDU
+****************************************************************************************************/
 typedef enum {
 	DIRECT,
 	MIXED,
@@ -17,8 +20,13 @@ typedef enum {
     PERIODIC
 } ComTxModeMode_type;
 
+/***************************************************************************************************
+Name: ComTransferProperty
 
-/* Transfer Property for Signals */
+Type: EcucEnumerationParamDef
+
+Description: Transfer Property for Signals
+****************************************************************************************************/
 typedef enum {
     PENDING,
     TRIGGERED,
@@ -28,27 +36,50 @@ typedef enum {
 }ComTransferProperty_type;
 
 
+/***************************************************************************************************
+Name: ComIPduDirection
 
-/* IPDU Directions */
+Type: EcucEnumerationParamDef
+
+Description: IPDU Directions
+****************************************************************************************************/
 typedef enum {
 	RECEIVE,
 	SEND
 } ComIPduDirection_type;
 
 
+/***************************************************************************************************
+Name: ComIPduSignalProcessing
 
+Type: EcucEnumerationParamDef
+
+Description: 
+****************************************************************************************************/
 typedef enum {
 	DEFERRED,
 	IMMEDIATE
 }ComIPduSignalProcessing_type;
 
+/***************************************************************************************************
+Name: ComIPduType
 
+Type: EcucEnumerationParamDef
+
+Description: 
+****************************************************************************************************/
 typedef enum {
     NORMAL,
     TP
 }ComIPduType_type;
 
+/***************************************************************************************************
+Name: ComSignalType
 
+Type: EcucEnumerationParamDef
+
+Description: 
+****************************************************************************************************/
 typedef enum {
     BOOLEAN,
     FLOAT32,
@@ -65,13 +96,26 @@ typedef enum {
     UINT8_N
 } ComSignalType_type;
 
+/***************************************************************************************************
+Name: ComTxIPduClearUpdateBit
 
+Type: EcucEnumerationParamDef
+
+Description: 
+****************************************************************************************************/
 typedef enum {
 	CONFIRMATION,
 	TRANSMIT,
 	TRIGGER_TRANSMIT
 }ComTxIPduClearUpdateBit_type;
 
+/***************************************************************************************************
+Name: ComFilterAlgorithm
+
+Type: EcucEnumerationParamDef
+
+Description: 
+****************************************************************************************************/
 typedef enum{
 	ALWAYS,
     MASKED_NEW_DIFFERS_MASKED_OLD,
@@ -83,18 +127,38 @@ typedef enum{
     ONE_EVERY_N
 }ComFilterAlgorithm_type;
 
+/***************************************************************************************************
+Name: ComDataInvalidAction
 
+Type: EcucEnumerationParamDef
+
+Description: 
+****************************************************************************************************/
 typedef enum{
 	NOTIFY,
     REPLACE 
 }ComDataInvalidAction_type;
 
+/***************************************************************************************************
+Name: ComRxDataTimeoutAction
+
+Type: EcucEnumerationParamDef
+
+Description: 
+****************************************************************************************************/
 typedef enum{
 	NONE,
 	REPLACE,
 	SUBSTITUTE
 }ComRxDataTimeoutAction_type;
 
+/***************************************************************************************************
+Name: ComSignalEndianness
+
+Type: EcucEnumerationParamDef
+
+Description: 
+****************************************************************************************************/
 typedef enum{
  	BIG_ENDIAN,
     LITTLE_ENDIAN,
@@ -103,13 +167,13 @@ typedef enum{
 }ComSignalEndianness_type;
 
 
-/**********************************************************************************************************
- *                                             Struct Types                                               *
- *********************************************************************************************************/                      
+/********************************************************************************************
+Name: ComGeneral
 
+Type: Structure
 
-
-/*Contains the general configuration parameters of the Com module.*/
+Description: Contains the general configuration parameters of the Com module.
+********************************************************************************************/
 typedef struct{
 
 	/* enables/disables the cancellation feature*/
@@ -140,29 +204,15 @@ typedef struct{
 
 }ComGeneral_type;
 
-/*This container contains the configuration parameters and sub containers of the COM module*/
-typedef struct{
-    
-	/*Size of internal Com data in units of bytes (static memory allocation) */
-	const uint64 ComDataMemSize;
-    
-	/*Maximum number of IPdus. */
-	const uint64 ComMaxIPduCnt;
 
-	/* IPDU definitions */
-	const ComIPdu_type * ComIPdu;
+/********************************************************************************************
+Name: ComTxMode
 
-	const ComIPduGroup_type ComIPduGroup;
+Type: Structure
 
-	/* Signal definitions */
-	const ComSignal_type *ComSignal;
-
-	/* signal group Definition*/
-	const ComSignalGroup_type *ComSignalGroup;
-
-}ComConfig_type;
-
-/* This container contains the configuration parameters of the COM module's transmission modes. */
+Description: This container contains the configuration parameters of the
+             COM module's transmission modes.
+********************************************************************************************/
 typedef struct
 { 
 	/*Direct, Mixed, None, Periodic*/
@@ -193,14 +243,26 @@ typedef struct
 
 } ComTxMode_type;
 
-/* If ComFilter evaluates to true */
+/********************************************************************************************
+Name: ComTxModeTrue
+
+Type: Structure
+
+Description: If ComFilter evaluates to true
+********************************************************************************************/
 typedef struct 
 {
 	const ComTxMode_type ComTxMode;
 
 } ComTxModeTrue_type;
 
-/* If  ComFilter evaluates to ComTxModeFalse */
+/********************************************************************************************
+Name: ComTxModeFalse
+
+Type: Structure
+
+Description: If  ComFilter evaluates to ComTxModeFalse.
+********************************************************************************************/
 typedef struct 
 {
 	const ComTxMode_type ComTxMode;
@@ -208,7 +270,14 @@ typedef struct
 } ComTxModeFalse_type;
 
 
-/* This container contains additional transmission related configuration parameters of the AUTOSAR COM module's I-PDUs. */
+/********************************************************************************************
+Name: ComTxIPdu
+
+Type: Structure
+
+Description: This container contains additional transmission related configuration
+             parameters of the AUTOSAR COM module's I-PDUs.
+********************************************************************************************/
 typedef struct 
 {
 	/* Minimum delay time between successive transmissions of the IPdu in s*/
@@ -229,7 +298,14 @@ typedef struct
 } ComTxIPdu_type;
 
 
-/* This container contains the configuration parameters of the AUTOSAR COM module's IPDUs */
+/********************************************************************************************
+Name: ComIPdu
+
+Type: Structure
+
+Description: This container contains the configuration parameters of 
+             the AUTOSAR COM module's IPDUs 
+********************************************************************************************/
 typedef struct {
 	
 	/*
@@ -277,10 +353,26 @@ typedef struct {
 	 IDs in the COM-Stack.*/
 	 Pdu* ComPduIdRef;
 
+    ComTxIPdu_type ComTxIPdu;
+    
+	// Parameters does not exist at SWS
 
+	// Length of IPDU in bytes
+	uint8 ComIPduLength;
+    
+	// Pointer to IPDU data
+	void *const ComIPduDataPtr;  
    
 } ComIPdu_type;
 
+
+/********************************************************************************************
+Name: ComIPduGroup
+
+Type: Structure
+
+Description: 
+********************************************************************************************/
 typedef struct{
 
 	/* The numerical value used as the ID of this I-PDU Group */
@@ -291,6 +383,14 @@ typedef struct{
 
 }ComIPduGroup_type;
 
+
+/********************************************************************************************
+Name: ComSignal_type
+
+Type: Structure
+
+Description: 
+********************************************************************************************/
 typedef struct {
     
 	/* Starting position within the I-PDU */
@@ -341,7 +441,7 @@ typedef struct {
 
 	ComSignalType_type ComSignalType;
 
-
+   
 	/* The length of the deadline monitoring timeout period in seconds.  */
 	const float32 ComTimeout;
     
@@ -359,9 +459,19 @@ typedef struct {
 
 	const uint32 ComUpdateBitPosition;
 
+	void * const ComSignalDataPtr;
+
 }ComSignal_type;
 
 
+
+/********************************************************************************************
+Name: ComSignalGroup
+
+Type: Structure
+
+Description: 
+********************************************************************************************/
 typedef struct{
 
     /* Replace or Notify */
@@ -371,7 +481,7 @@ typedef struct{
 
 	const float32 ComFirstTimeout;
 
-	const uint16 ComHandleId;
+	const Com_SignalGroupIdType ComHandleId;
 
 	boolean ComInitialValueOnly;
 
@@ -389,9 +499,22 @@ typedef struct{
 
 	const uint32 ComUpdateBitPosition;
 	
+	void *const ComShadowBuffer;
 
+    const ComGroupSignal_type* const *ComGroupSignal;
+
+	const uint16 ComIPduHandleId; 
+	
 }ComSignalGroup_type;
 
+
+/********************************************************************************************
+Name: ComGroupSignal
+
+Type: Structure
+
+Description: 
+********************************************************************************************/
 typedef struct {
 
 	const uint32 ComBitPosition;
@@ -413,9 +536,20 @@ typedef struct {
 	void *const ComTimeoutSubstitutionValue;
 
 	ComTransferProperty_type ComTransferProperty;
+    
+    void * const ComSignalDataPtr;
 
+	const uint16 ComIPduHandleId; 
 
 }ComGroupSignal_type;
+
+/********************************************************************************************
+Name: ComIPduCounter
+
+Type: Structure
+
+Description: 
+********************************************************************************************/
 
 typedef struct{
 
@@ -433,7 +567,14 @@ typedef struct{
 
 }ComIPduCounter_type;
 
-/*This optional container contains the information needed for each I-PDU replicated.*/
+/********************************************************************************************
+Name: ComIPduReplication
+
+Type: Structure
+
+Description: This optional container contains the information needed for each I-PDU replicated.
+********************************************************************************************/
+
 typedef struct{
 
    /*The number of identical I-PDUs needed for successful voting.*/
@@ -444,7 +585,6 @@ typedef struct{
 
 }ComIPduReplication_type;
 
-/*This container contains the configuration parameters and sub containers of the COM module.*/
 
 
 
