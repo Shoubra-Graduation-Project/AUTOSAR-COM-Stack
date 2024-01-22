@@ -6,7 +6,7 @@
 
 
 /***************************************************************************************************
-Name: ComReturnValue
+Name: Com_ReturnType
 
 Type: EcucEnumerationParamDef
 
@@ -16,7 +16,7 @@ typedef enum {
 	E_OK,
 	COM_SERVICE_NOT_AVAILABLE,
 	COM_BUSY
-} ComReturnValue_type;
+} Com_ReturnType;
 
 /***************************************************************************************************
 Name: ComTxModeMode
