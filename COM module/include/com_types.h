@@ -5,6 +5,18 @@
 #include "libraries/Std_Types.h"
 
 
+/***************************************************************************************************
+Name: ComReturnValue
+
+Type: EcucEnumerationParamDef
+
+Description: Possible return values of com APIs
+****************************************************************************************************/
+typedef enum {
+	E_OK,
+	COM_SERVICE_NOT_AVAILABLE,
+	COM_BUSY
+} ComReturnValue_type;
 
 /***************************************************************************************************
 Name: ComTxModeMode
