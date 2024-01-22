@@ -417,6 +417,8 @@ typedef struct {
 
 	void * const ComSignalDataPtr;
 
+	const ComIPdu_type * containingIPDU;
+
 }ComSignal_type;
 
 
