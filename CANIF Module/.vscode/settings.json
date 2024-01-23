@@ -1,0 +1,9 @@
+{
+    "files.associations": {
+        "std_types.h": "c",
+        "platform_types.h": "c",
+        "canif.h": "c",
+        "common_macros.h": "c",
+        "canif_types.h": "c"
+    }
+}

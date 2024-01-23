@@ -17,8 +17,8 @@
 /* AUTOSAR Release: 4.3.1                                                      */
 /*****************************************************************************/
 
-#include "Platform_Types.h"
-#include "Compiler.h"
+#include "./Platform_Types.h"
+#include "./Compiler.h"
 
 /*****************************************************************************/
 /* TYPE DEFINITIONS                                                          */

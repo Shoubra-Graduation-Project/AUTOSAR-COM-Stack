@@ -3,6 +3,9 @@
 
 
 #include "Std_Types.h"
+#include "Canif_Types.h"
+#include "CanIf_Cfg.h"
+#include "Compiler.h"
 
 #define CANIF_VENDOR_ID          (VENDOR_ID_ARCCORE)
 #define CANIF_MODULE_ID          (MODULE_ID_CANIF)
@@ -20,9 +23,6 @@
 #include "Det.h"
 #endif
 
-#include "Canif_Types.h"
-#include "CanIf_Cfg.h"
-#include "Compiler.h"
 
 
 

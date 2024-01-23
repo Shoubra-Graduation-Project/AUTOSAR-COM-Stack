@@ -23,7 +23,7 @@
 /*****************************************************************************/
 /* TYPE DEFINITIONS                                                          */
 /*****************************************************************************/
-typedef uint8 Std_ReturnType;
+typedef uint8 STD_ReturnType;
 
 typedef struct
 {
@@ -43,6 +43,7 @@ typedef struct
 
   typedef unsigned char StatusType;
 #endif
+
 
 #define E_NOT_OK   0x01u
 

@@ -1,6 +1,7 @@
 
 #include "CANIF.h"
 #include "Std_Types.h"
+
 #include "Commonn_Macros.h"
 #include "Canif_Types.h"
 #include "CanIf_Cfg.h"
@@ -126,7 +127,23 @@ void CanIf_Init(const CanIf_ConfigType* ConfigPtr)
     }
 }
 
-Std_ReturnType CanIf_SetPduMode(uint8 ControllerId, CanIf_PduModeType PduModeRequest)
+/*********************************************************************************************************************************
+ Service name:                                         CanIf_SetPduMode
+ Service ID[hex]:                                               0x09
+ Sync/Async:                                                 Synchronous
+ Reentrancy:                                                 Non Reentrant
+ Parameters (in):                                           ControllerId      -->Abstracted CanIf ControllerId which is assigned to a
+ CAN controller, which is requested for mode transition.
+ PduModeRequest-->Requested PDU mode change
+ Parameters (inout):                                          None
+ Parameters (out):                                            None
+ Return value:                                              Std_ReturnType
+ Description:
+ This service sets the requested mode at the L-PDUs of a predefined logical PDU channel.
+ *******************************************************************************************************************************/
+
+Std_ReturnType CanIf_SetPduMode(uint8 ControllerId,
+                                CanIf_PduModeType PduModeRequest)
 {
     CanIf_ControllerModeType CanIfControllerModeLocal;
     /*
@@ -134,6 +151,9 @@ Std_ReturnType CanIf_SetPduMode(uint8 ControllerId, CanIf_PduModeType PduModeReq
      */
     if (CanIfState == CANIF_UNINIT)
     {
+#if(CanIfPublicDevErrorDetect == true)
+        Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, 0x09, CANIF_E_UNINIT);
+#endif
         return E_NOT_OK;
     }
     else
@@ -144,6 +164,9 @@ Std_ReturnType CanIf_SetPduMode(uint8 ControllerId, CanIf_PduModeType PduModeReq
          */
         if (ControllerId >= NUMBER_OF_CONTROLLERS)
         {
+#if(CanIfPublicDevErrorDetect == true)
+            Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, 0x09, CANIF_E_PARAM_CONTROLLERID);
+#endif
             return E_NOT_OK;
         }
         else
@@ -152,7 +175,7 @@ Std_ReturnType CanIf_SetPduMode(uint8 ControllerId, CanIf_PduModeType PduModeReq
              * [SWS_CANIF_00874] The service CanIf_SetPduMode() shall not accept any request and shall return E_NOT_OK,
              *  if the CCMSM referenced by ControllerId is notin state CANIF_CS_STARTED.
              */
-            Can_MainFunction_Mode();
+
             if (CanIf_GetControllerMode(ControllerId,
                                         &CanIfControllerModeLocal) == E_NOT_OK)
             {
@@ -175,6 +198,9 @@ Std_ReturnType CanIf_SetPduMode(uint8 ControllerId, CanIf_PduModeType PduModeReq
                             && PduModeRequest != CANIF_TX_OFFLINE_ACTIVE
                             && PduModeRequest != CANIF_ONLINE)
                     {
+#if(CanIfPublicDevErrorDetect == true)
+                        Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, 0x09, CANIF_E_PARAM_PDU_MODE);
+#endif
                         return E_NOT_OK;
 
                     }
@@ -189,8 +215,46 @@ Std_ReturnType CanIf_SetPduMode(uint8 ControllerId, CanIf_PduModeType PduModeReq
     }
 }
 
-  
-    
 
 
 
+Std_ReturnType CanIf_GetPduMode(uint8 ControllerId,
+                                CanIf_PduModeType* PduModePtr)
+{
+
+    /*  CanIf must be initialized after Power ON */
+    if (CanIfState == CANIF_UNINIT)
+    {
+        return E_NOT_OK;
+    }
+    else
+    {
+        /* [SWS_CANIF_00346] If CanIf_GetPduMode() is called with invalid ControllerId, CanIf shall report development error code CANIF_E_PARAM_CONTROLLERID
+         to the Det_ReportError service of the DET module.  */
+        if (ControllerId >= NUMBER_OF_CONTROLLERS)
+        {
+#if(CanIfPublicDevErrorDetect == true)
+            Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, 0x0A, CANIF_E_PARAM_CONTROLLERID);
+#endif
+            return E_NOT_OK;
+        }
+        else
+        {
+            /*[SWS_CANIF_00657] If CanIf_GetPduMode() is called with invalid PduModePtr,
+             CanIf shall report development error code CANIF_E_PARAM_POINTER to the Det_ReportError
+             service of the DET module.*/
+            if (PduModePtr == NULL)
+            {
+#if(CanIfPublicDevErrorDetect == true)
+                Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, 0x0A, CANIF_E_PARAM_POINTER);
+#endif
+                return E_NOT_OK;
+            }
+            else
+            {
+                *PduModePtr = CanIfPduMode[ControllerId];
+                return E_OK;
+            }
+        }
+    }
+}

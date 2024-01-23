@@ -1,9 +1,10 @@
-#include <Std_Types.h>
-#include <Det.h>
+#include "Std_Types.h"
+#include "Det.h"
+#include "Platform_Types.h"
 
 
 
-void Det_ReportError(uint16_t ModuleId ,uint8_t Instanceid ,uint8_t ApiId ,uint8_t ErrorId)
+void Det_ReportError(uint16 ModuleId ,uint8 Instanceid ,uint8 ApiId ,uint8 ErrorId)
 {
 
     UARTprintf("Module=%x,ApiId=%x,error=%x",ModuleId,ApiId,ErrorId);
