@@ -136,7 +136,15 @@ void Com_Init (const Com_ConfigType* config)
 
 
 
-
+/** 
+  /brief    Send Signal
+  /details  The service Com_SendSignal updates the signal object identified by SignalId with the signal referenced by the SignalDataPtr parameter.
+  /param    SignalId: Id of signal to be sent.
+	    SignalDataPtr: Reference to the signal data to be transmitted.
+  /return   uint8: E_OK: service has been accepted.
+		   COM_SERVICE_NOT_AVAILABLE: corresponding I-PDU group was stopped (or service failed due to development error).
+		   COM_BUSY: in case the TP-Buffer is locked for large data types handling.
+ */
 uint8 Com_SendSignal (Com_SignalIdType SignalId, const void* SignalDataPtr)
 {
 	Com_ReturnType return_value;
