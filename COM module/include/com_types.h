@@ -5,6 +5,18 @@
 #include "libraries/Std_Types.h"
 
 
+/***************************************************************************************************
+Name: Com_ReturnType
+
+Type: EcucEnumerationParamDef
+
+Description: Possible return values of com APIs
+****************************************************************************************************/
+typedef enum {
+	E_OK,
+	COM_SERVICE_NOT_AVAILABLE,
+	COM_BUSY
+} Com_ReturnType;
 
 /***************************************************************************************************
 Name: ComTxModeMode
@@ -205,9 +217,12 @@ typedef struct{
 
 
 
+<<<<<<< HEAD
 
 
 
+=======
+>>>>>>> 82bf221c767a36a25dcf491422dec3a6a6893edd
 /* This container contains the configuration parameters of the COM module's transmission modes. */
 typedef struct
 { 
@@ -419,6 +434,8 @@ typedef struct {
 	const uint32 ComUpdateBitPosition;
 
 	void * const ComSignalDataPtr;
+
+	const ComIPdu_type * containingIPDU;
 
 }ComSignal_type;
 
