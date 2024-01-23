@@ -241,112 +241,112 @@ void Com_CopyPduToShadowBuffer(const Com_SignalGroupIdType signalGroupId) {
     case BOOLEAN:
     if(foreGroundBuffer[SignalId]!=NULL)
     {
-        (boolean*) SignalDataPtr= (boolean*)foreGroundBuffer[SignalId];
+        *(boolean*) SignalDataPtr= *(boolean*)foreGroundBuffer[SignalId];
     }
     else
     {
-        (boolean*) SignalDataPtr= (boolean*)ShadowBuffer[SignalId];
+        *(boolean*) SignalDataPtr= *(boolean*)ShadowBuffer[SignalId];
     }
     break;
     case FLOAT32:
      if(foreGroundBuffer[SignalId]!=NULL)
     {
-        (float32*) SignalDataPtr= (float32*)foreGroundBuffer[SignalId];
+        *(float32*) SignalDataPtr= *(float32*)foreGroundBuffer[SignalId];
     }
     else
     {
-        (float32*) SignalDataPtr= (float32*)ShadowBuffer[SignalId];
+        *(float32*) SignalDataPtr= *(float32*)ShadowBuffer[SignalId];
     }
     break;
     case FLOAT64:
      if(foreGroundBuffer[SignalId]!=NULL)
     {
-        (float64*) SignalDataPtr= (float64*)foreGroundBuffer[SignalId];
+        *(float64*) SignalDataPtr= *(float64*)foreGroundBuffer[SignalId];
     }
     else
     {
-        (float64*) SignalDataPtr= (float64*)ShadowBuffer[SignalId];
+        *(float64*) SignalDataPtr= *(float64*)ShadowBuffer[SignalId];
     }
     break;
     case SINT16:
      if(foreGroundBuffer[SignalId]!=NULL)
     {
-        (sint16*) SignalDataPtr= (sint16*)foreGroundBuffer[SignalId];
+        *(sint16*) SignalDataPtr= *(sint16*)foreGroundBuffer[SignalId];
     }
     else
     {
-        (sint16*) SignalDataPtr= (sint16*)ShadowBuffer[SignalId];
+        *(sint16*) SignalDataPtr= *(sint16*)ShadowBuffer[SignalId];
     }
     break;
     case SINT32:
       if(foreGroundBuffer[SignalId]!=NULL)
     {
-        (sint32*) SignalDataPtr= (sint32*)foreGroundBuffer[SignalId];
+        *(sint32*) SignalDataPtr= *(sint32*)foreGroundBuffer[SignalId];
     }
     else
     {
-        (sint32*) SignalDataPtr= (sint32*)ShadowBuffer[SignalId];
+        *(sint32*) SignalDataPtr= *(sint32*)ShadowBuffer[SignalId];
     }
     break;
 
     case SINT64:
       if(foreGroundBuffer[SignalId]!=NULL)
     {
-        (sint64*) SignalDataPtr= (sint64*)foreGroundBuffer[SignalId];
+        *(sint64*) SignalDataPtr= *(sint64*)foreGroundBuffer[SignalId];
     }
     else
     {
-        (sint64*) SignalDataPtr= (sint64*)ShadowBuffer[SignalId];
+        *(sint64*) SignalDataPtr= *(sint64*)ShadowBuffer[SignalId];
     }
     break;
     case SINT8:
       if(foreGroundBuffer[SignalId]!=NULL)
     {
-        (sint8*) SignalDataPtr= (sint8*)foreGroundBuffer[SignalId];
+        *(sint8*) SignalDataPtr= *(sint8*)foreGroundBuffer[SignalId];
     }
     else
     {
-        (sint8*) SignalDataPtr= (sint8*)ShadowBuffer[SignalId];
+        *(sint8*) SignalDataPtr= *(sint8*)ShadowBuffer[SignalId];
     }
     break;
     case UINT16:
       if(foreGroundBuffer[SignalId]!=NULL)
     {
-        (uint16*) SignalDataPtr= (uint16*)foreGroundBuffer[SignalId];
+        *(uint16*) SignalDataPtr= *(uint16*)foreGroundBuffer[SignalId];
     }
     else
     {
-        (uint16*) SignalDataPtr= (uint16*)ShadowBuffer[SignalId];
+        *(uint16*) SignalDataPtr= *(uint16*)ShadowBuffer[SignalId];
     }
     break;
     case UINT32:
         if(foreGroundBuffer[SignalId]!=NULL)
     {
-        (uint32*) SignalDataPtr= (uint32*)foreGroundBuffer[SignalId];
+        *(uint32*) SignalDataPtr= *(uint32*)foreGroundBuffer[SignalId];
     }
     else
     {
-        (uint32*) SignalDataPtr= (uint32*)ShadowBuffer[SignalId];
+        *(uint32*) SignalDataPtr= *(uint32*)ShadowBuffer[SignalId];
     }
     break;
     case UINT64:
         if(foreGroundBuffer[SignalId]!=NULL)
     {
-        (uint64*) SignalDataPtr= (uint64*)foreGroundBuffer[SignalId];
+        *(uint64*) SignalDataPtr= *(uint64*)foreGroundBuffer[SignalId];
     }
     else
     {
-        (uint64*) SignalDataPtr= (uint64*)ShadowBuffer[SignalId];
+        *(uint64*) SignalDataPtr= *(uint64*)ShadowBuffer[SignalId];
     }
     break;
     case UINT8:
         if(foreGroundBuffer[SignalId]!=NULL)
     {
-        (uint8*) SignalDataPtr= (uint8*)foreGroundBuffer[SignalId];
+        *(uint8*) SignalDataPtr= *(uint8*)foreGroundBuffer[SignalId];
     }
     else
     {
-        (uint8*) SignalDataPtr= (uint8*)ShadowBuffer[SignalId];
+        *(uint8*) SignalDataPtr= *(uint8*)ShadowBuffer[SignalId];
     }
     break;
     default:
