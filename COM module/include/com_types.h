@@ -207,10 +207,6 @@ typedef struct{
 
 
 
-	/* signal group Definition*/
-	const ComSignalGroup_type *ComSignalGroup;
-
-}ComConfig_type;
 
 /* This container contains the configuration parameters of the COM module's transmission modes. */
 typedef struct
@@ -437,36 +433,60 @@ Type: Structure
 Description: 
 ********************************************************************************************/
 typedef struct{
+
     /* Replace or Notify */
     ComDataInvalidAction_type ComDataInvalidAction;
 
+    /* Only valid on sender side: Name of Com_CbkTxErr callback function to be called.*/
 	void (*ComErrorNotification) (void);
 
+    /*Defines the length of the first deadline monitoring timeout period in seconds*/
 	const float32 ComFirstTimeout;
-
+    
+	/*The numerical value used as the ID.*/
 	const Com_SignalGroupIdType ComHandleId;
 
+    /*
+	  This parameter defines that the respective signal's initial value shall be put
+      into the respective PDU but there will not be any update of the value through the RTE.
+	*/
 	boolean ComInitialValueOnly;
 
+    /*Only valid on receiver side: Name of Com_CbkInv callback function to be called.*/
 	void (*ComInvalidNotification) (void);
 
+   /*
+     On sender side: Name of Com_CbkTxAck callback function to be called.
+     On receiver side: Name of Com_CbkRxAck callback function to be called.
+	 */
 	void (*ComNotification) (void);
 
+    /*None - Replace - Substitute*/
 	ComRxDataTimeoutAction_type ComRxDataTimeoutAction;
 
+    /* Defines the length of the deadline monitoring timeout period in seconds. */
 	const float32 ComTimeout;
 
+    /*
+	  On sender side: Name of Com_CbkTxTOut callback function to be called.
+      On receiver side: Name of Com_CbkRxTOut callback function to be called.
+	*/
 	void (*ComTimeoutNotification) (void);
 
+    
 	ComTransferProperty_type ComTransferProperty;
-
+    
+	/*Bit position of update-bit inside I-PDU.*/
 	const uint32 ComUpdateBitPosition;
-	
+
+	/* Group signals included in this signal group  -------> Not in SWS*/
 	ComGroupSignal_type ComGroupSignal;
-
+    
+	/* Identify shadow buffer -------> Not in SWS*/    
 	void const * ComShadowBuffer;
-
-	 const uint8 ComIPduHandleId;
+    
+	/* I-PDU that contain this signal group ---------> Not in SWS*/
+	const uint8 ComIPduHandleId;
 
 
 }ComSignalGroup_type;
