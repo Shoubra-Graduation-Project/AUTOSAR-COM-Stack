@@ -33,7 +33,8 @@
  * 
  *********************************************************************************/
 const Com_ConfigType * ComConfig;
-
+void * foreGroundBuffer[65536];
+void * ShadowBuffer[65536];
 void Com_Init (const Com_ConfigType* config)
 {
 
@@ -822,3 +823,138 @@ void Com_CopyPduToShadowBuffer(const Com_SignalGroupIdType signalGroupId) {
         *buffer++ =  *pduDataPtr++;
     }
 }
+/***********************************************************************************
+ *                                                                                 *
+ *    Service Name:  Com_ReceiveSignal                                                            
+ * 
+ *    Parameters (in): SignalId Id of signal to be received
+ * 
+ *    Parameters (out): SignalDataPtrReference to the location where the received signal data shall be stored
+
+ * 
+ *    Return Value:  uint8
+ * 
+ *    Description:  Com_ReceiveSignal copies the data of the signal identified by SignalId to the location specified by SignalDataPtr.
+ * 
+ *********************************************************************************/
+ uint8 Com_ReceiveSignal (Com_SignalIdType SignalId, void* SignalDataPtr)
+ {
+   ComSignalType_type type = GET_SIGNAL(SignalId)->ComSignalType;
+    switch(type){
+    case BOOLEAN:
+    if(foreGroundBuffer[SignalId]!=NULL)
+    {
+        *(boolean*) SignalDataPtr= *(boolean*)foreGroundBuffer[SignalId];
+    }
+    else
+    {
+        *(boolean*) SignalDataPtr= *(boolean*)ShadowBuffer[SignalId];
+    }
+    break;
+    case FLOAT32:
+     if(foreGroundBuffer[SignalId]!=NULL)
+    {
+        *(float32*) SignalDataPtr= *(float32*)foreGroundBuffer[SignalId];
+    }
+    else
+    {
+        *(float32*) SignalDataPtr= *(float32*)ShadowBuffer[SignalId];
+    }
+    break;
+    case FLOAT64:
+     if(foreGroundBuffer[SignalId]!=NULL)
+    {
+        *(float64*) SignalDataPtr= *(float64*)foreGroundBuffer[SignalId];
+    }
+    else
+    {
+        *(float64*) SignalDataPtr= *(float64*)ShadowBuffer[SignalId];
+    }
+    break;
+    case SINT16:
+     if(foreGroundBuffer[SignalId]!=NULL)
+    {
+        *(sint16*) SignalDataPtr= *(sint16*)foreGroundBuffer[SignalId];
+    }
+    else
+    {
+        *(sint16*) SignalDataPtr= *(sint16*)ShadowBuffer[SignalId];
+    }
+    break;
+    case SINT32:
+      if(foreGroundBuffer[SignalId]!=NULL)
+    {
+        *(sint32*) SignalDataPtr= *(sint32*)foreGroundBuffer[SignalId];
+    }
+    else
+    {
+        *(sint32*) SignalDataPtr= *(sint32*)ShadowBuffer[SignalId];
+    }
+    break;
+
+    case SINT64:
+      if(foreGroundBuffer[SignalId]!=NULL)
+    {
+        *(sint64*) SignalDataPtr= *(sint64*)foreGroundBuffer[SignalId];
+    }
+    else
+    {
+        *(sint64*) SignalDataPtr= *(sint64*)ShadowBuffer[SignalId];
+    }
+    break;
+    case SINT8:
+      if(foreGroundBuffer[SignalId]!=NULL)
+    {
+        *(sint8*) SignalDataPtr= *(sint8*)foreGroundBuffer[SignalId];
+    }
+    else
+    {
+        *(sint8*) SignalDataPtr= *(sint8*)ShadowBuffer[SignalId];
+    }
+    break;
+    case UINT16:
+      if(foreGroundBuffer[SignalId]!=NULL)
+    {
+        *(uint16*) SignalDataPtr= *(uint16*)foreGroundBuffer[SignalId];
+    }
+    else
+    {
+        *(uint16*) SignalDataPtr= *(uint16*)ShadowBuffer[SignalId];
+    }
+    break;
+    case UINT32:
+        if(foreGroundBuffer[SignalId]!=NULL)
+    {
+        *(uint32*) SignalDataPtr= *(uint32*)foreGroundBuffer[SignalId];
+    }
+    else
+    {
+        *(uint32*) SignalDataPtr= *(uint32*)ShadowBuffer[SignalId];
+    }
+    break;
+    case UINT64:
+        if(foreGroundBuffer[SignalId]!=NULL)
+    {
+        *(uint64*) SignalDataPtr= *(uint64*)foreGroundBuffer[SignalId];
+    }
+    else
+    {
+        *(uint64*) SignalDataPtr= *(uint64*)ShadowBuffer[SignalId];
+    }
+    break;
+    case UINT8:
+        if(foreGroundBuffer[SignalId]!=NULL)
+    {
+        *(uint8*) SignalDataPtr= *(uint8*)foreGroundBuffer[SignalId];
+    }
+    else
+    {
+        *(uint8*) SignalDataPtr= *(uint8*)ShadowBuffer[SignalId];
+    }
+    break;
+    default:
+    break;
+    }
+    return E_OK;
+ }
+ 	
