@@ -1,4 +1,17 @@
+/*********************************************************************************
+ *                                    Includes                                   *
+ ********************************************************************************/
 
+
+#include "include/Com.h"
+#include "include/Com_Types.h"
+#include "include/Com_Cfg.h"
+#include "include/ComMacros.h"
+#include <cstddef>
+
+/**********************************************************************************
+ *                             Functions Definitions                              *
+ **********************************************************************************/
 uint8 Com_ProcessTxSignalFilter(ComSignal_type* signalStruct, uint64 oldData, uint64 newData)
 {
 	uint8 filterResult = 0;
