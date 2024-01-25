@@ -9,6 +9,81 @@
 
  /* Section : Function Declaration */
 
+static const CanIf_ConfigType* CanIf_ConfigPtr;
+
+
+
+
+Std_ReturnType CanIf_Transmit(PduIdType TxPduId, const PduInfoType* PduInfoPtr) {
+
+    Std_ReturnType RET = E_OK;
+    Can_PduType CanPdu;
+    CanIf_ControllerModeType ControllerMode = (CanIf_ControllerModeType)0;
+    CanIf_PduModeType PduMode = (CanIf_PduModeType)0;
+
+    //Check CAN is INITIATE or Not
+    if (CanIfState != CANIF_INIT) {
+        Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, CANIF_SET_CONTROLLER_MODE_ID, CANIF_E_UNINIT);
+        return E_NOT_OK;
+    }
+
+    //Check pointer != Null
+    if (PduInfoPtr == NULL) {
+        Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, CANIF_SET_CONTROLLER_MODE_ID, CANIF_E_PARAM_POINTER);
+        return E_NOT_OK;
+    }
+
+    //Check ID if it's Valid unexceed Range
+    if (TxPduId < CANIF_NUM_TX_PDU_ID) {
+        Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, CANIF_SET_CONTROLLER_MODE_ID, CANIF_E_INVALID_TXPDUID);
+        return E_NOT_OK;
+    }
+
+    //Check Controller Mode
+    if (CanIf_GetControllerMode(CanIf_ConfigPtr->TxPduCfg[TxPduId].controller, &ControllerMode) != E_OK) {
+        return E_NOT_OK;
+    }
+
+    //Check PDU Mode
+    if (CanIf_GetPduMode(CanIf_ConfigPtr->TxPduCfg[TxPduId].controller, &PduMode) != E_OK) {
+        return E_NOT_OK;
+    }
+
+    // channel not started, report to DEM and return
+    if (ControllerMode != CAN_CS_STARTED) {
+        return E_NOT_OK;
+    }
+
+    // TX is not online, report to DEM and return
+    if (PduMode != CANIF_ONLINE && PduMode != CANIF_TX_OFFLINE_ACTIVE) {
+        return E_NOT_OK;
+    }
+    Can_IdType canId;
+    canId = CanIf_ConfigPtr->TxPduCfg[TxPduId].id;
+
+    CanPdu.length = PduInfoPtr->SduLength;
+    CanPdu.id = canId;
+    CanPdu.swPduHandle = TxPduId;
+    CanPdu.sdu = PduInfoPtr->SduDataPtr;
+
+    Can_HwHandleType hth = CanIf_ConfigPtr->TxPduCfg[TxPduId].hth;
+
+
+    //RET = Can_Write(hth, &CanPdu);
+
+    return RET;
+}
+
+
+
+
+void CanIf_RxIndication(const Can_HwType* MailBox, const PduInfoType* PduInfoPtr) {
+
+
+
+}
+
+
 
 //void CanIf_Init(const CanIf_ConfigType* ConfigPtr){}
 

@@ -80,6 +80,102 @@ typedef enum {
 
 
 
+
+
+typedef uint32 Can_IdType;
+typedef uint16 PduIdType;
+typedef uint16 PduLengthType;
+
+
+typedef struct Can_PduType_s {
+    // the CAN ID, 29 or 11-bit
+    Can_IdType 	id;
+    // Length, max 8 bytes
+    uint8		length;
+    // data ptr
+    uint8*      sdu;
+    // private data for CanIf,just save and use for callback
+    PduIdType   swPduHandle;
+} Can_PduType;
+
+
+
+typedef struct
+{
+	uint8* SduDataPtr;
+	uint8* MetaDataPtr;
+	PduLengthType   SduLength;
+
+} PduInfoType;
+
+
+uint8 CANIF_NUM_TX_PDU_ID = 10;
+
+
+typedef uint8 Can_HwHandleType;
+
+typedef struct {
+    /// can id used for transmission, msb indicates extended id
+    Can_IdType id;
+
+    /// data length (DLC)
+    uint8 dlc;
+
+    /// can driver controller id to be used for transmission
+    uint8 controller;
+
+    /// can driver hth id to be used for transmission
+    Can_HwHandleType hth;
+
+    /// upper layer confirmation function, set to null if no confirmation
+    void(*user_TxConfirmation)(PduIdType txPduId);
+
+    /// upper layer pdu id passed to callout function
+    PduIdType ulPduId;
+} CanIf_TxPduConfig;
+
+
+typedef struct {
+    /// can id used for reception filtering
+    ///todo add support for range reception
+    Can_IdType id;
+
+    /// min dlc and dlc reported to upper layers. Set to -1 to disable dlc check
+    uint8 dlc;
+
+    /// can driver controller id from where to receive lpdu
+    uint8 controller;
+
+    /** SWS_CANIF_00012
+     upper layer indication function, set to null if no rx indication */
+    void(*user_RxIndication)(PduIdType RxPduId, const PduInfoType* PduInfoPtr);
+
+    /// upper layer pdu id passed to callout function
+    PduIdType ulPduId;
+} CanIf_RxPduConfig;
+
+
+typedef struct
+{
+    union {
+        PduIdType lpduId;
+        PduIdType* array;
+    }pduInfo;
+
+    PduIdType arrayLen; // 0 means no ptr no filtering = fullCan reception (one single CanId) else ->>> (Range of IDs of group of single IDs)
+}CanIf_HrHConfigType;
+
+typedef struct {
+    /* Everything in this structure is implementation specific */
+    const CanIf_TxPduConfig* TxPduCfg;
+    const CanIf_RxPduConfig* RxLpduCfg;
+    const CanIf_HrHConfigType** canIfHrhCfg;  // This is an array of Hrh objects, for each controller ID
+} CanIf_ConfigType;
+
+
+extern const CanIf_ConfigType CanIf_Config;
+
+
  /* Section : Function Declaration */
 
 #endif	/* CANIF_GENERAL_TYPES_H */
