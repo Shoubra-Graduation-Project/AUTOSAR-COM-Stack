@@ -7,6 +7,7 @@
 #include "include/Com_Types.h"
 #include "include/Com_Cfg.h"
 #include "include/ComMacros.h"
+#include "include/Com_HelpingFunctions.h"
 #include <cstddef>
 
 /**********************************************************************************
