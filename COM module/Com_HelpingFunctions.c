@@ -111,3 +111,54 @@ uint8 Com_ProcessTxSignalFilter(ComSignal_type* signalStruct, uint64 oldData, ui
 	
 	return filterResult;
 }
+
+uint8 Com_ProcessTxSignalFilter_float(ComSignal_type* signalStruct, float64 oldData, float64 newData)
+{
+	uint8 filterResult = 0;
+	ComSignalType_type signalType = signalStruct->ComSignalType;
+	if((signalStruct->comFilter)->ComFilterAlgorithm == ALWAYS)
+		{
+			filterResult = 1;
+		}
+		else if( ((signalStruct->comFilter)->ComFilterAlgorithm == MASKED_NEW_DIFFERS_MASKED_OLD) && newData != oldData)
+		{
+			filterResult = 1;
+		}
+		else if( ((signalStruct->comFilter)->ComFilterAlgorithm == MASKED_NEW_DIFFERS_MASKED_OLD) && (newData != (signalStruct->comFilter)->ComFilterX) )
+		{
+			filterResult = 1;
+		}
+		else if( ((signalStruct->comFilter)->ComFilterAlgorithm == MASKED_NEW_EQUALS_X) && (newData == (signalStruct->comFilter)->ComFilterX) )
+		{
+			filterResult = 1;
+		}
+		else if( (signalStruct->comFilter)->ComFilterAlgorithm == NEW_IS_WITHIN)
+		{
+			if(newData <= ComFilterMax && newData >= ComFilterMin)
+			{
+				filterResult = 1;
+			}
+		}
+		else if( (signalStruct->comFilter)->ComFilterAlgorithm == NEW_IS_OUTSIDE)
+		{
+			if(newData > ComFilterMax || newData < ComFilterMin)
+			{
+				filterResult = 1;
+			}
+		}
+		else if( ((signalStruct->comFilter)->ComFilterAlgorithm == ONE_EVERY_N) && ((signalStruct->comFilter)->ComFilterOffset == 0) )
+		{
+			filterResult = 1;
+			if((signalStruct->comFilter)->ComFilterOffset < (signalStruct->comFilter)->ComFilterPeriod-1)
+			{
+				(signalStruct->comFilter)->ComFilterOffset += 1;
+			}
+			else
+			{
+				(signalStruct->comFilter)->ComFilterOffset = 0;
+			}
+		}
+	}
+	
+	return filterResult;
+}	
