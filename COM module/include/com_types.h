@@ -6,19 +6,6 @@
 
 
 /***************************************************************************************************
-Name: Com_ReturnType
-
-Type: EcucEnumerationParamDef
-
-Description: Possible return values of com APIs
-****************************************************************************************************/
-typedef enum {
-	E_OK,
-	COM_SERVICE_NOT_AVAILABLE,
-	COM_BUSY
-} Com_ReturnType;
-
-/***************************************************************************************************
 Name: ComTxModeMode
 
 Type: EcucEnumerationParamDef
