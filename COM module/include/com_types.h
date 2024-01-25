@@ -424,6 +424,10 @@ typedef struct {
 
 	const ComIPdu_type * containingIPDU;
 
+	boolean ComIsSignalChanged;
+
+	boolean ComSignalFilterResult; 
+
 }ComSignal_type;
 
 
@@ -526,7 +530,12 @@ typedef struct {
 	void *const ComTimeoutSubstitutionValue;
 
 	ComTransferProperty_type ComTransferProperty;
+
 	void const * ComSignalDataPtr;
+
+	boolean ComIsSignalChanged;
+
+	boolean ComSignalFilterResult;
 
  
 }ComGroupSignal_type;
