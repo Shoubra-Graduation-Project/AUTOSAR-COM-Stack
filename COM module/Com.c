@@ -159,7 +159,7 @@ void Com_CopyShadowBufferToIPDU (const Com_SignalGroupIdType signalGroupId)
 	
     uint8 *pduDataPtr = 0;
 
-    if (IPdu->ComIPduDirection == RECEIVE)
+    if (IPdu->ComIPduDirection == SEND)
 	{
         pduDataPtr = IPdu->ComIPduDataPtr;
     }
@@ -202,7 +202,7 @@ void Com_CopyPduToShadowBuffer(const Com_SignalGroupIdType signalGroupId) {
  
     const uint8 *pduDataPtr = 0;
 
-    if (IPdu->ComIPduDirection == SEND)
+    if (IPdu->ComIPduDirection == RECEIVE)
     {
         pduDataPtr = IPdu->ComIPduDataPtr;
     }

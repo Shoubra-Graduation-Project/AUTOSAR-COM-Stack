@@ -215,14 +215,6 @@ typedef struct{
 
 }ComGeneral_type;
 
-
-
-<<<<<<< HEAD
-
-
-
-=======
->>>>>>> 82bf221c767a36a25dcf491422dec3a6a6893edd
 /* This container contains the configuration parameters of the COM module's transmission modes. */
 typedef struct
 { 
@@ -338,8 +330,12 @@ typedef struct {
 	 IDs in the COM-Stack.*/
 	 Pdu* ComPduIdRef;
 
+	 ComTxIPdu_type ComTxIPdu;
+    
+	/*Pointer to IPDU data ---->  Not in SWS*/
     void const * ComIPduDataPtr;
-	ComTxIPdu_type ComTxIPdu;
+
+	/*Size of IPDU ---->  Not in SWS*/
 	const uint8 ComIPduLength;
    
 } ComIPdu_type;
@@ -432,10 +428,13 @@ typedef struct {
 	ComTransferProperty_type ComTransferProperty;
 
 	const uint32 ComUpdateBitPosition;
-
+    
+	/*Pointer to signal data ----> Not in SWS*/
 	void * const ComSignalDataPtr;
 
-	const ComIPdu_type * containingIPDU;
+	/* I-PDU that contain this signal ---------> Not in SWS*/
+	const uint8 ComIPduHandleId;
+
 
 }ComSignal_type;
 
