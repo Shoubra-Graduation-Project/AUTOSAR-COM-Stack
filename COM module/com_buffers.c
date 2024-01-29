@@ -18,7 +18,7 @@
  * 
  *********************************************************************************/
 
-void Com_CopyShadowBufferToIPDU (const Com_SignalGroupIdType signalGroupId)
+void Com_CopyShadowBufferToIPDU (const Com_SignalGroupId signalGroupId)
 {
     // Get Signal Group
     const ComSignalGroup_type * SignalGroup = GET_SIGNALGROUP(signalGroupId);

@@ -8,7 +8,7 @@ typedef enum
 {
 	STOPPED,
 	STARTED
-}state_type
+}state_type;
 /***************************************************************************************************
 Name: Com_ReturnType
 
@@ -219,11 +219,7 @@ typedef struct{
 
 }ComGeneral_type;
 
-<<<<<<< HEAD
-=======
 
-
->>>>>>> 3c05b1fa994f905d61afd7cb61e57eeddaa8324c
 /* This container contains the configuration parameters of the COM module's transmission modes. */
 typedef struct
 { 
@@ -438,12 +434,12 @@ typedef struct {
 	ComTransferProperty_type ComTransferProperty;
 
 	const uint32 ComUpdateBitPosition;
-<<<<<<< HEAD
+
     
 	/*Pointer to signal data ----> Not in SWS*/
-=======
+
     const void * ComFGBuffer;  /*not in SWS*/
->>>>>>> 3c05b1fa994f905d61afd7cb61e57eeddaa8324c
+	
 	void * const ComSignalDataPtr;
 
 	/* I-PDU that contain this signal ---------> Not in SWS*/
