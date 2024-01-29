@@ -260,9 +260,7 @@ BufReq_ReturnType Com_CopyRxData (PduIdType id, const PduInfoType* info, PduLeng
  */
 BufReq_ReturnType Com_CopyTxData (PduIdType id, const PduInfoType* info, const RetryInfoType* retry, PduLengthType* availableDataPtr);
 
-void Com_CopyToShadowBuffer();
-void Com_CopyIpduToShadowBuffer();
-void Com_CopyFromShadowBuffer();
+
 
 
 /*------------------------------------------Software Interfaces Declarations End---------------------------------------------*/
