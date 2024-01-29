@@ -4,6 +4,7 @@
 
 
 #include "include/Com.h"
+#include "include/com_buffers.h"
 #include "include/Com_Types.h"
 #include "include/Com_Cfg.h"
 #include "include/ComMacros.h"
@@ -33,6 +34,7 @@
  * 
  *********************************************************************************/
 const Com_ConfigType * ComConfig;
+
 
 void Com_Init (const Com_ConfigType* config)
 {
@@ -134,17 +136,19 @@ void Com_Init (const Com_ConfigType* config)
 
 }
 
+
 /***********************************************************************************
  *                                                                                 *
- *    Service Name: Com_CopyShadowBufferToIPDU                                                             
+ *    Service Name:  Com_ReceiveSignal                                                            
  * 
- *    Parameters (in): signalGroupId
+ *    Parameters (in): SignalId Id of signal to be received
  * 
- *    Parameters (out): None 
+ *    Parameters (out): SignalDataPtrReference to the location where the received signal data shall be stored
+
  * 
- *    Return Value: None
+ *    Return Value:  uint8
  * 
- *    Description:  Copy signal group data from shadow buffer to I-PDU 
+ *    Description:  Com_ReceiveSignal copies the data of the signal identified by SignalId to the location specified by SignalDataPtr.
  * 
  *********************************************************************************/
 
@@ -159,7 +163,7 @@ void Com_CopyShadowBufferToIPDU (const Com_SignalGroupIdType signalGroupId)
 	
     uint8 *pduDataPtr = 0;
 
-    if (IPdu->ComIPduDirection == SEND)
+    if (IPdu->ComIPduDirection == RECEIVE)
 	{
         pduDataPtr = IPdu->ComIPduDataPtr;
     }
@@ -202,19 +206,15 @@ void Com_CopyPduToShadowBuffer(const Com_SignalGroupIdType signalGroupId) {
  
     const uint8 *pduDataPtr = 0;
 
-    if (IPdu->ComIPduDirection == RECEIVE)
+    if (IPdu->ComIPduDirection == SEND)
     {
-        pduDataPtr = IPdu->ComIPduDataPtr;
+        return COM_SERVICE_NOT_AVAILABLE;
     }
     else
     {
-
+         CopyGroupSignalFromSBtoAddress(GroupSignal->SignalGroupId,SignalDataPtr);
+        return E_OK;
     }
-
-    uint8 *buffer = (uint8 *)SignalGroup->ComShadowBuffer;
-
-    for(int i= 0; i < IPdu->ComIPduLength; i++)
-    {
-        *buffer++ =  *pduDataPtr++;
-    }
-}
+   }
+ }
+ 	
