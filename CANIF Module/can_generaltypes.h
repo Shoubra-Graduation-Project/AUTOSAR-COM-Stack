@@ -15,6 +15,10 @@
 
  /* Section : Macros Definition */
 
+#define NUM_OF_HRHS              10
+#define SDU_LENGHT               8
+#define CANID_EXPECTED           2
+
  /* Section : Macros Functions Declaration */
 
  /* Section : Data Types Declaration */
@@ -85,6 +89,8 @@ typedef enum {
 typedef uint32 Can_IdType;
 typedef uint16 PduIdType;
 typedef uint16 PduLengthType;
+
+
 
 
 typedef struct Can_PduType_s {
