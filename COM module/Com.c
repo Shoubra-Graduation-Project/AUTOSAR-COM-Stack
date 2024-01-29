@@ -4,10 +4,10 @@
 
 
 #include "include/Com.h"
+#include "include/com_buffers.h"
 #include "include/Com_Types.h"
 #include "include/Com_Cfg.h"
 #include "include/ComMacros.h"
-#include "include/Com_HelpingFunctions.h"
 #include <cstddef>
 
 /**********************************************************************************
@@ -34,8 +34,8 @@
  * 
  *********************************************************************************/
 const Com_ConfigType * ComConfig;
-void * foreGroundBuffer[65536];
-void * ShadowBuffer[65536];
+
+
 void Com_Init (const Com_ConfigType* config)
 {
 
@@ -137,103 +137,6 @@ void Com_Init (const Com_ConfigType* config)
 }
 
 
-
-/** 
-  /brief    Send Signal
-  /details  The service Com_SendSignal updates the signal object identified by SignalId with the signal referenced by the SignalDataPtr parameter.
-  /param    SignalId: Id of signal to be sent.
-	    SignalDataPtr: Reference to the signal data to be transmitted.
-  /return   uint8: E_OK: service has been accepted.
-		   COM_SERVICE_NOT_AVAILABLE: corresponding I-PDU group was stopped (or service failed due to development error).
-		   COM_BUSY: in case the TP-Buffer is locked for large data types handling.
- */
-
-
-
-/***********************************************************************************
- *                                                                                 *
- *    Service Name: Com_CopyShadowBufferToIPDU                                                             
- * 
- *    Parameters (in): signalGroupId
- * 
- *    Parameters (out): None 
- * 
- *    Return Value: None
- * 
- *    Description:  Copy signal group data from shadow buffer to I-PDU 
- * 
- *********************************************************************************/
-
-void Com_CopyShadowBufferToIPDU (const Com_SignalGroupIdType signalGroupId)
-{
-    // Get Signal Group
-    const ComSignalGroup_type * SignalGroup = GET_SIGNALGROUP(signalGroupId);
-
-    // Get I-PDU that contain this signal group
-    const ComIPdu_type *IPdu = GET_IPdu(SignalGroup->ComIPduHandleId);
-
-	
-    uint8 *pduDataPtr = 0;
-
-    if (IPdu->ComIPduDirection == RECEIVE)
-	{
-        pduDataPtr = IPdu->ComIPduDataPtr;
-    }
-    else
-    {
-
-    }
-    // straight copy
-    uint8 *buffer = (uint8 *)SignalGroup->ComShadowBuffer;
-
-        for(int i= 0; i < IPdu->ComIPduLength; i++){
-
-            *pduDataPtr = buffer++;
-             pduDataPtr++;
-        }
-
-}
-
-/***********************************************************************************
- *                                                                                 *
- *    Service Name: Com_CopyPduToShadowBuffer                                                             
- * 
- *    Parameters (in): signalGroupId
- * 
- *    Parameters (out): None 
- * 
- *    Return Value: None
- * 
- *    Description:  Copy signal group data from I-PDU to shadow buffer 
- * 
- *********************************************************************************/
-
-void Com_CopyPduToShadowBuffer(const Com_SignalGroupIdType signalGroupId) {
-
-    // Get Signal Group
-    const ComSignalGroup_type * SignalGroup = GET_SIGNALGROUP(signalGroupId);
-
-    // Get I-PDU that contain this signal group
-    const ComIPdu_type *IPdu = GET_IPdu(SignalGroup->ComIPduHandleId);
- 
-    const uint8 *pduDataPtr = 0;
-
-    if (IPdu->ComIPduDirection == SEND)
-    {
-        pduDataPtr = IPdu->ComIPduDataPtr;
-    }
-    else
-    {
-
-    }
-
-    uint8 *buffer = (uint8 *)SignalGroup->ComShadowBuffer;
-
-    for(int i= 0; i < IPdu->ComIPduLength; i++)
-    {
-        *buffer++ =  *pduDataPtr++;
-    }
-}
 /***********************************************************************************
  *                                                                                 *
  *    Service Name:  Com_ReceiveSignal                                                            
@@ -250,122 +153,33 @@ void Com_CopyPduToShadowBuffer(const Com_SignalGroupIdType signalGroupId) {
  *********************************************************************************/
  uint8 Com_ReceiveSignal (Com_SignalIdType SignalId, void* SignalDataPtr)
  {
-   ComSignalType_type type = GET_SIGNAL(SignalId)->ComSignalType;
-    switch(type){
-    case BOOLEAN:
-    if(foreGroundBuffer[SignalId]!=NULL)
+   if(SignalId>=0&&SignalId<=32767)
+   {
+    const ComSignal_Type * Signal=GET_SIGNAL(SignalId);
+    if(signal->containingIPDU->ComIPduGroupRef->IpduGroupFlag==STOPPED)
     {
-        *(boolean*) SignalDataPtr= *(boolean*)foreGroundBuffer[SignalId];
+        return COM_SERVICE_NOT_AVAILABLE;
     }
     else
     {
-        *(boolean*) SignalDataPtr= *(boolean*)ShadowBuffer[SignalId];
+         CopySignalFromFGtoAddress(SignalId,SignalDataPtr);
+        return E_OK;
     }
-    break;
-    case FLOAT32:
-     if(foreGroundBuffer[SignalId]!=NULL)
+   }
+   else
+   {
+    const ComGroupSignal_type * GroupSignal=GET_GROUPSIGNAL(SignalId);
+    const ComSignalGroup_Type * SignalGroup= GET_SIGNALGROUP(GroupSignal->SignalGroupId);
+    const ComIPdu_type *Ipdu=GET_IPDU(SignalGroup->ComIPduHandleId);
+      if(Ipdu->ComIPduGroupRef->IpduGroupFlag==STOPPED)
     {
-        *(float32*) SignalDataPtr= *(float32*)foreGroundBuffer[SignalId];
+        return COM_SERVICE_NOT_AVAILABLE;
     }
     else
     {
-        *(float32*) SignalDataPtr= *(float32*)ShadowBuffer[SignalId];
+         CopyGroupSignalFromSBtoAddress(GroupSignal->SignalGroupId,SignalDataPtr);
+        return E_OK;
     }
-    break;
-    case FLOAT64:
-     if(foreGroundBuffer[SignalId]!=NULL)
-    {
-        *(float64*) SignalDataPtr= *(float64*)foreGroundBuffer[SignalId];
-    }
-    else
-    {
-        *(float64*) SignalDataPtr= *(float64*)ShadowBuffer[SignalId];
-    }
-    break;
-    case SINT16:
-     if(foreGroundBuffer[SignalId]!=NULL)
-    {
-        *(sint16*) SignalDataPtr= *(sint16*)foreGroundBuffer[SignalId];
-    }
-    else
-    {
-        *(sint16*) SignalDataPtr= *(sint16*)ShadowBuffer[SignalId];
-    }
-    break;
-    case SINT32:
-      if(foreGroundBuffer[SignalId]!=NULL)
-    {
-        *(sint32*) SignalDataPtr= *(sint32*)foreGroundBuffer[SignalId];
-    }
-    else
-    {
-        *(sint32*) SignalDataPtr= *(sint32*)ShadowBuffer[SignalId];
-    }
-    break;
-
-    case SINT64:
-      if(foreGroundBuffer[SignalId]!=NULL)
-    {
-        *(sint64*) SignalDataPtr= *(sint64*)foreGroundBuffer[SignalId];
-    }
-    else
-    {
-        *(sint64*) SignalDataPtr= *(sint64*)ShadowBuffer[SignalId];
-    }
-    break;
-    case SINT8:
-      if(foreGroundBuffer[SignalId]!=NULL)
-    {
-        *(sint8*) SignalDataPtr= *(sint8*)foreGroundBuffer[SignalId];
-    }
-    else
-    {
-        *(sint8*) SignalDataPtr= *(sint8*)ShadowBuffer[SignalId];
-    }
-    break;
-    case UINT16:
-      if(foreGroundBuffer[SignalId]!=NULL)
-    {
-        *(uint16*) SignalDataPtr= *(uint16*)foreGroundBuffer[SignalId];
-    }
-    else
-    {
-        *(uint16*) SignalDataPtr= *(uint16*)ShadowBuffer[SignalId];
-    }
-    break;
-    case UINT32:
-        if(foreGroundBuffer[SignalId]!=NULL)
-    {
-        *(uint32*) SignalDataPtr= *(uint32*)foreGroundBuffer[SignalId];
-    }
-    else
-    {
-        *(uint32*) SignalDataPtr= *(uint32*)ShadowBuffer[SignalId];
-    }
-    break;
-    case UINT64:
-        if(foreGroundBuffer[SignalId]!=NULL)
-    {
-        *(uint64*) SignalDataPtr= *(uint64*)foreGroundBuffer[SignalId];
-    }
-    else
-    {
-        *(uint64*) SignalDataPtr= *(uint64*)ShadowBuffer[SignalId];
-    }
-    break;
-    case UINT8:
-        if(foreGroundBuffer[SignalId]!=NULL)
-    {
-        *(uint8*) SignalDataPtr= *(uint8*)foreGroundBuffer[SignalId];
-    }
-    else
-    {
-        *(uint8*) SignalDataPtr= *(uint8*)ShadowBuffer[SignalId];
-    }
-    break;
-    default:
-    break;
-    }
-    return E_OK;
+   }
  }
  	
