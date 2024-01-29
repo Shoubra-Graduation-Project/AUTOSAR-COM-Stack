@@ -97,5 +97,5 @@ void CopyGroupSignalFromSBtoAddress(const ComSignalGroup_type SignalGroup_id,voi
 void CopySignalFromFGtoAddress(const ComSignalGroup_type Signal_id,void *dataAddress)
 {
     const ComSignal_Type * Signal=GET_SIGNAL(signalGroupId);
-    memcpy(dataAddress,Signal->ComFGBuffer,Signal->ComSignalLength);
+    memcpy((uint8 *)dataAddress,(uint8 *)Signal->ComFGBuffer,Signal->ComSignalLength);
 }
