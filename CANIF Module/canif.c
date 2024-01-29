@@ -14,7 +14,8 @@ static const CanIf_ConfigType* CanIf_ConfigPtr;
 
 
 
-Std_ReturnType CanIf_Transmit(PduIdType TxPduId, const PduInfoType* PduInfoPtr) {
+Std_ReturnType CanIf_Transmit(PduIdType TxPduId, const PduInfoType* PduInfoPtr) 
+{
 
     Std_ReturnType RET = E_OK;
     Can_PduType CanPdu;
@@ -49,13 +50,15 @@ Std_ReturnType CanIf_Transmit(PduIdType TxPduId, const PduInfoType* PduInfoPtr) 
         return E_NOT_OK;
     }
 
-    // channel not started, report to DEM and return
+    // channel not started, report to Det and return
     if (ControllerMode != CAN_CS_STARTED) {
+        Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, CANIF_SET_CONTROLLER_MODE_ID, CANIF_E_PARAM_CTRLMODE);
         return E_NOT_OK;
     }
 
-    // TX is not online, report to DEM and return
+    // TX is not online, report to Det and return
     if (PduMode != CANIF_ONLINE && PduMode != CANIF_TX_OFFLINE_ACTIVE) {
+        Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, CANIF_SET_CONTROLLER_MODE_ID, CANIF_E_PARAM_PDU_MODE);
         return E_NOT_OK;
     }
     Can_IdType canId;
@@ -75,9 +78,38 @@ Std_ReturnType CanIf_Transmit(PduIdType TxPduId, const PduInfoType* PduInfoPtr) 
 }
 
 
+static void RxLPduReceived(PduIdType lpdu, Can_IdType canId, uint8 canDlc, const uint8* canSduPtr)
+{
+    CanIf_PduModeType PduMode = (CanIf_PduModeType)0;
+
+    //Check PDU Mode
+    if (CanIf_GetPduMode(CanIf_ConfigPtr->RxLpduCfg[lpdu].controller, &PduMode) != E_OK) {
+        return E_NOT_OK;
+    }
+
+    // RX is not online, report to Det and return
+    if (PduMode == CANIF_OFFLINE) {
+        Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, CANIF_SET_CONTROLLER_MODE_ID, CANIF_E_PARAM_PDU_MODE);
+        // Rx not online,discard message.
+        return E_NOT_OK;
+    }
+
+    // call eventual callback
+    if (CanIf_ConfigPtr->RxLpduCfg[lpdu].user_RxIndication) {
+        PduInfoType pduInfo = {
+          .SduLength = canDlc,
+          .SduDataPtr = (uint8*)canSduPtr,
+        };
+        (*CanIf_ConfigPtr->RxLpduCfg[lpdu].user_RxIndication)(CanIf_ConfigPtr->RxLpduCfg[lpdu].ulPduId, &pduInfo);
+    }
+}
 
 
-void CanIf_RxIndication(const Can_HwType* MailBox, const PduInfoType* PduInfoPtr) {
+
+void CanIf_RxIndication(const Can_HwType* MailBox, const PduInfoType* PduInfoPtr) 
+{
+
+
 
 
 

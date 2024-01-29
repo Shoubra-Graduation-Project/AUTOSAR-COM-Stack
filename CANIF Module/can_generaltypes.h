@@ -114,6 +114,18 @@ uint8 CANIF_NUM_TX_PDU_ID = 10;
 
 typedef uint8 Can_HwHandleType;
 
+
+/** SWS_CAN_00496 */
+typedef struct
+{
+    Can_IdType CanId;       /* CAN ID of the CAN L-PDU */
+    Can_HwHandleType Hoh;   /* ID of the corresponding hardware Object Range */
+    uint8 ControllerId;     /* Cntrollre provided by Canif clearly identify the corresponding controller */
+
+} Can_HwType;
+
+
+
 typedef struct {
     /// can id used for transmission, msb indicates extended id
     Can_IdType id;
