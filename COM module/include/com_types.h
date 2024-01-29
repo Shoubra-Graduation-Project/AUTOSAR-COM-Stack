@@ -1,9 +1,26 @@
- 
+
 #ifndef _COM_TYPES_H_
 #define _COM_TYPES_H_
 
 #include "libraries/Std_Types.h"
 
+typedef enum
+{
+	STOPPED,
+	STARTED
+}state_type
+/***************************************************************************************************
+Name: Com_ReturnType
+
+Type: EcucEnumerationParamDef
+
+Description: Possible return values of com APIs
+****************************************************************************************************/
+typedef enum {
+	E_OK,
+	COM_SERVICE_NOT_AVAILABLE,
+	COM_BUSY
+} Com_ReturnType;
 
 /***************************************************************************************************
 Name: ComTxModeMode
@@ -204,12 +221,6 @@ typedef struct{
 
 
 
-<<<<<<< HEAD
-
-
-
-=======
->>>>>>> 82bf221c767a36a25dcf491422dec3a6a6893edd
 /* This container contains the configuration parameters of the COM module's transmission modes. */
 typedef struct
 { 
@@ -342,6 +353,7 @@ Description:
 typedef struct{
 	/* The numerical value used as the ID of this I-PDU Group */
 	const uint16 ComIPduGroupHandleId;
+	state_type IpduGroupFlag;
     
 	/* References to all I-PDU groups that includes this I-PDU group. I */
 	ComIPduGroup_type const * ComIPduGroupGroupRef;
@@ -419,14 +431,10 @@ typedef struct {
 	ComTransferProperty_type ComTransferProperty;
 
 	const uint32 ComUpdateBitPosition;
-
+    const void * ComFGBuffer;  /*not in SWS*/
 	void * const ComSignalDataPtr;
 
 	const ComIPdu_type * containingIPDU;
-
-	boolean ComIsSignalChanged;
-
-	boolean ComSignalFilterResult; 
 
 }ComSignal_type;
 
@@ -481,17 +489,17 @@ typedef struct{
 	*/
 	void (*ComTimeoutNotification) (void);
 
-    
+    const uint32 signalGroupSize;
 	ComTransferProperty_type ComTransferProperty;
     
 	/*Bit position of update-bit inside I-PDU.*/
 	const uint32 ComUpdateBitPosition;
 
 	/* Group signals included in this signal group  -------> Not in SWS*/
-	ComGroupSignal_type ComGroupSignal;
+	ComGroupSignal_type *ComGroupSignal;
     
 	/* Identify shadow buffer -------> Not in SWS*/    
-	void const * ComShadowBuffer;
+	const void * ComShadowBuffer;
     
 	/* I-PDU that contain this signal group ---------> Not in SWS*/
 	const uint8 ComIPduHandleId;
@@ -530,12 +538,8 @@ typedef struct {
 	void *const ComTimeoutSubstitutionValue;
 
 	ComTransferProperty_type ComTransferProperty;
-
 	void const * ComSignalDataPtr;
-
-	boolean ComIsSignalChanged;
-
-	boolean ComSignalFilterResult;
+	const Com_SignalGroupIdType SignalGroupId;
 
  
 }ComGroupSignal_type;
@@ -573,4 +577,3 @@ typedef struct{
 
 
 #endif
-
