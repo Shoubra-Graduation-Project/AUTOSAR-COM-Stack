@@ -24,19 +24,19 @@ Std_ReturnType CanIf_Transmit(PduIdType TxPduId, const PduInfoType* PduInfoPtr)
 
     //Check CAN is INITIATE or Not
     if (CanIfState != CANIF_INIT) {
-        Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, CANIF_SET_CONTROLLER_MODE_ID, CANIF_E_UNINIT);
+        Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, CANIF_INIT_ID, CANIF_E_UNINIT);
         return E_NOT_OK;
     }
 
     //Check pointer != Null
     if (PduInfoPtr == NULL) {
-        Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, CANIF_SET_CONTROLLER_MODE_ID, CANIF_E_PARAM_POINTER);
+        Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, CANIF_CHECKVALIDATION_ID, CANIF_E_PARAM_POINTER);
         return E_NOT_OK;
     }
 
     //Check ID if it's Valid unexceed Range
     if (TxPduId < CANIF_NUM_TX_PDU_ID) {
-        Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, CANIF_SET_CONTROLLER_MODE_ID, CANIF_E_INVALID_TXPDUID);
+        Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, CANIF_SET_PDU_MODE_ID, CANIF_E_INVALID_TXPDUID);
         return E_NOT_OK;
     }
 
@@ -58,7 +58,7 @@ Std_ReturnType CanIf_Transmit(PduIdType TxPduId, const PduInfoType* PduInfoPtr)
 
     // TX is not online, report to Det and return
     if (PduMode != CANIF_ONLINE && PduMode != CANIF_TX_OFFLINE_ACTIVE) {
-        Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, CANIF_SET_CONTROLLER_MODE_ID, CANIF_E_PARAM_PDU_MODE);
+        Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, CANIF_SET_PDU_MODE_ID, CANIF_E_PARAM_PDU_MODE);
         return E_NOT_OK;
     }
     Can_IdType canId;
@@ -89,7 +89,7 @@ static void RxLPduReceived(PduIdType lpdu, Can_IdType canId, uint8 canDlc, const
 
     // RX is not online, report to Det and return
     if (PduMode == CANIF_OFFLINE) {
-        Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, CANIF_SET_CONTROLLER_MODE_ID, CANIF_E_PARAM_PDU_MODE);
+        Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, CANIF_SET_PDU_MODE_ID, CANIF_E_PARAM_PDU_MODE);
         // Rx not online,discard message.
         return E_NOT_OK;
     }
@@ -109,10 +109,45 @@ static void RxLPduReceived(PduIdType lpdu, Can_IdType canId, uint8 canDlc, const
 void CanIf_RxIndication(const Can_HwType* MailBox, const PduInfoType* PduInfoPtr) 
 {
 
+    //Check CAN is INITIATE or Not
+    if (CanIfState != CANIF_INIT) {
+        Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, CANIF_INIT_ID, CANIF_E_UNINIT);
+        return E_NOT_OK;
+    }
+
+    //Check CAN is INITIATE or Not & Check pointer != Null & MailBox
+    /* SWS_CANIF_00419 */
+    if (MailBox == NULL || PduInfoPtr == NULL || (PduInfoPtr->SduDataPtr) == NULL) {
+        Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, CANIF_CHECKVALIDATION_ID, CANIF_E_PARAM_POINTER);
+        return E_NOT_OK;
+    }
 
 
+    // Check if MailBox->Hoh has Invalid Value
+    /* SWS_CANIF_00416 */
+    if (MailBox->Hoh > NUM_OF_HRHS) {
+        Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, CANIF_RX_INDICATION_ID, CANIF_E_PARAM_HRH);
+        return E_NOT_OK;
+    }
 
 
+    // Check CanID_Expected
+    /* SWS_CANIF_00417 */
+    if (MailBox->CanId != CANID_EXPECTED) {
+        Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, CANIF_RX_INDICATION_ID, CANIF_E_PARAM_CANID);
+        return E_NOT_OK;
+    }
+
+    // Check if Data Lenght has invalid Value
+    /* SWS_CANIF_00417 */
+    if (PduInfoPtr->SduLength > SDU_LENGHT) {
+        Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, CANIF_RX_INDICATION_ID, CANIF_E_PARAM_DLC);
+        return E_NOT_OK;
+
+    }
+
+    // No Filtering - FullCan Reception
+    RxLPduReceived(CanIf_ConfigPtr->canIfHrhCfg[MailBox->ControllerId][MailBox->Hoh].pduInfo.lpduId, MailBox->CanId, PduInfoPtr->SduLength, PduInfoPtr->SduDataPtr);
 }
 
 
