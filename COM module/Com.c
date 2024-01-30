@@ -221,7 +221,9 @@ void Com_CopyPduToShadowBuffer(const Com_SignalGroupIdType signalGroupId) {
 
 /***********************************************************************************
  *                                                                                 *
- *    Service Name: Com_EnableReceptionDM                                                             
+ *    Service Name: Com_EnableReceptionDM   
+ *    
+ *    Service Id: 0x06                                                          
  * 
  *    Parameters (in): IpduGroupId
  * 
@@ -263,6 +265,73 @@ void Com_EnableReceptionDM (Com_IpduGroupIdType IpduGroupId)
                if(!ipduGroup->IPDU[ipduIndex].ReceptionDMEnabled)
                {
                   ipduGroup->IPDU[ipduIndex].ReceptionDMEnabled = TRUE;
+                
+               }
+               else
+               {
+
+               }
+
+            }
+            else
+            {
+
+            }
+
+          }
+      }
+      else
+      {
+
+      }
+
+}
+
+/***********************************************************************************
+ *                                                                                 *
+ *    Service Name: Com_DisableReceptionDM   
+ *    
+ *    Service Id: 0x05                                                          
+ * 
+ *    Parameters (in): IpduGroupId
+ * 
+ *    Parameters (out): None 
+ * 
+ *    Return Value: None
+ * 
+ *    Description:  Disables the reception deadline monitoring for the I-PDUs
+ *                  within the given IPDU group.
+ *********************************************************************************/
+void Com_DisableReceptionDM (Com_IpduGroupIdType IpduGroupId)
+{   
+     uint16 ipduIndex;
+     uint16  ComSignalIndex ;
+
+     ComIPduGroup_type *ipduGroup;
+     ComIPdu_type *IPdu;
+     ComSignal_type *Signal;
+
+    ipduGroup = GET_IpduGroup(IpduGroupId);
+
+      if (ipduGroup != NULL) 
+      {
+         for (ipduIndex = 0; ipduIndex < ipduGroup->numIPdus; ipduIndex++)
+          {
+            /*
+              [SWS_Com_00534] If Com_DisableReceptionDM is invoked on an I-PDU group
+              containing Tx-I-PDUs, then the AUTOSAR COM module shall silently ignore 
+              this request.
+            */
+            if(ipduGroup->IPDU[ipduIndex].ComIPduDirection != SEND)
+            {
+            /*
+              [SWS_Com_00486] The AUTOSAR COM module shall silently ignore setting the
+              reception deadline monitoring of an I-PDU to enabled by Com_EnableReceptionDM,
+              in case the reception deadline monitoring is already enabled for this I-PDU
+            */
+               if(!ipduGroup->IPDU[ipduIndex].ReceptionDMEnabled)
+               {
+                  ipduGroup->IPDU[ipduIndex].ReceptionDMEnabled = FALSE;
                 
                }
                else
