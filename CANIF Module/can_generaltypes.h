@@ -16,7 +16,7 @@
  /* Section : Macros Definition */
 
 #define NUM_OF_HRHS              10
-#define SDU_LENGHT               8
+#define SDU_LENGTH               8
 #define CANID_EXPECTED           2
 
  /* Section : Macros Functions Declaration */
