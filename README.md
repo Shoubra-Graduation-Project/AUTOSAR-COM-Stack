@@ -1,7 +1,7 @@
 # AUTOSAR-COM-Stack
 
 ## Description
-This repository contains an implementation of Communication (COM) and Controller Area Network Interface (CANIF) modules built in accordance with the AUTOSAR (AUTomotive Open System ARchitecture) standard. The modules are designed to facilitate seamless communication within an automotive system, adhering to the specifications outlined by the AUTOSAR consortium.
+This repository contains an implementation of Communication (COM) and Controller Area Network Interface (CANIF) modules built in accordance with the AUTOSAR (Automotive Open System Architecture) standard. The modules are designed to facilitate seamless communication within an automotive system, adhering to the specifications outlined by the AUTOSAR consortium.
 
 ## Features
 1. **COM Module**:
