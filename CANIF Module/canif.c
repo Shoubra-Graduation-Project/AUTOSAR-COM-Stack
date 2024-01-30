@@ -151,7 +151,7 @@ Std_ReturnType CanIf_RxIndication(const Can_HwType* MailBox, const PduInfoType* 
         };
         (*CanIf_ConfigPtr->RxLpduCfg[lpdu].user_RxIndication)(CanIf_ConfigPtr->RxLpduCfg[lpdu].ulPduId, &pduInfo);
     }
-    Return RET;
+    return RET;
 }
 
 
