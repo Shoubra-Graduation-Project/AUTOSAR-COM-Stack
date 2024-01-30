@@ -25,6 +25,17 @@
  *********************************************************************************/
 #define GET_IPDU(IPduId) (&(ComConfig->ComIPdu[IPduId]))
 
+/**********************************************************************************                                                                              
+ *    Macro Name: GET_IpduGroup   
+ *                                                                 
+ *    Parameters (in): IPduId
+ * 
+ *    Return Value: Pointer to the IPduId-th element
+ * 
+ *    Description:  Get I-PDU by it's Id from config container
+ *********************************************************************************/
+#define GET_IpduGroup(IpduGroupId) (&(ComConfig->ComIPduGroup[IpduGroupId]))
+
 /**********************************************************************************                                                                            
  *    Macro Name: GET_SIGNALGROUP    
  *                                                                 

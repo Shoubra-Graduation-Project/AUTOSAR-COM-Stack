@@ -342,6 +342,9 @@ typedef struct {
 
 	/*Size of IPDU ---->  Not in SWS*/
 	const uint8 ComIPduLength;
+    
+	/* ----> Not in SWS */
+	boolean ReceptionDMEnabled;
    
 } ComIPdu_type;
 
@@ -356,10 +359,27 @@ Description:
 typedef struct{
 	/* The numerical value used as the ID of this I-PDU Group */
 	const uint16 ComIPduGroupHandleId;
+
 	state_type IpduGroupFlag;
     
 	/* References to all I-PDU groups that includes this I-PDU group. I */
 	ComIPduGroup_type const * ComIPduGroupGroupRef;
+
+    /* 
+	 Check if Reception deadline monitoring for this IpduGruop is enabled or not
+     ---> Not in SWS
+	*/ 
+	boolean RxDeadlineMonitoringEnabled;
+
+    /*-------> not in SWS */
+	ComIPdu_type *IPDU;
+
+	/*
+	   Number of IPDUs within this group
+	   ----> Not in SWS
+	*/
+    uint16 numIPdus;
+	
 
 }ComIPduGroup_type;
 

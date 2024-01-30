@@ -9,6 +9,7 @@
 #include "include/Com_Cfg.h"
 #include "include/ComMacros.h"
 #include <cstddef>
+#include <minwindef.h>
 
 /**********************************************************************************
  *                             Functions Definitions                              *
@@ -212,9 +213,40 @@ void Com_CopyPduToShadowBuffer(const Com_SignalGroupIdType signalGroupId) {
     }
     else
     {
-         CopyGroupSignalFromSBtoAddress(GroupSignal->SignalGroupId,SignalDataPtr);
+         CopyGroupSignalFromSBtoAddress(GroupSignal->SignalGroupId.SignalDataPtr);
         return E_OK;
     }
    }
- }
- 	
+ 
+
+/***********************************************************************************
+ *                                                                                 *
+ *    Service Name: Com_EnableReceptionDM                                                             
+ * 
+ *    Parameters (in): IpduGroupId
+ * 
+ *    Parameters (out): None 
+ * 
+ *    Return Value: None
+ * 
+ *    Description:  Enables the reception deadline monitoring for the I-PDUs
+ *                  within the given IPDU group.
+ * 
+ *********************************************************************************/
+void Com_EnableReceptionDM (Com_IpduGroupIdType IpduGroupId)
+{   
+     uint16 ipduIndex;
+     ComIPduGroup_type *ipduGroup;
+
+    ipduGroup = GET_IpduGroup(IpduGroupId);
+
+      if (ipduGroup != NULL) 
+      {
+         for (ipduIndex = 0; ipduIndex < ipduGroup->numIPdus; ipduIndex++)
+          {
+            ipduGroup->IPDU[ipduIndex].ReceptionDMEnabled = TRUE;
+
+          }
+      }
+
+}

@@ -52,7 +52,7 @@ typedef struct{
 	const ComIPdu_type * ComIPdu;
 
     /* Contains the configuration parameters of the COM module's IPDU groups. */
-	const ComIPduGroup_type ComIPduGroup;
+	const ComIPduGroup_type *ComIPduGroup;
 
 	 /* Contains the configuration parameters of the COM module's signals. */
 	const ComSignal_type *ComSignal;
