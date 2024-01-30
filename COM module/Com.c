@@ -236,7 +236,11 @@ void Com_CopyPduToShadowBuffer(const Com_SignalGroupIdType signalGroupId) {
 void Com_EnableReceptionDM (Com_IpduGroupIdType IpduGroupId)
 {   
      uint16 ipduIndex;
+     uint16  ComSignalIndex ;
+
      ComIPduGroup_type *ipduGroup;
+     ComIPdu_type *IPdu;
+     ComSignal_type *Signal;
 
     ipduGroup = GET_IpduGroup(IpduGroupId);
 
@@ -244,9 +248,39 @@ void Com_EnableReceptionDM (Com_IpduGroupIdType IpduGroupId)
       {
          for (ipduIndex = 0; ipduIndex < ipduGroup->numIPdus; ipduIndex++)
           {
-            ipduGroup->IPDU[ipduIndex].ReceptionDMEnabled = TRUE;
+            /*
+              [SWS_Com_00534] If Com_EnableReceptionDM is invoked on an I-PDU group
+              containing Tx-I-PDUs, then the AUTOSAR COM module shall silently ignore 
+              this request.
+            */
+            if(ipduGroup->IPDU[ipduIndex].ComIPduDirection != SEND)
+            {
+            /*
+              [SWS_Com_00486] The AUTOSAR COM module shall silently ignore setting the
+              reception deadline monitoring of an I-PDU to enabled by Com_EnableReceptionDM,
+              in case the reception deadline monitoring is already enabled for this I-PDU
+            */
+               if(!ipduGroup->IPDU[ipduIndex].ReceptionDMEnabled)
+               {
+                  ipduGroup->IPDU[ipduIndex].ReceptionDMEnabled = TRUE;
+                
+               }
+               else
+               {
+
+               }
+
+            }
+            else
+            {
+
+            }
 
           }
+      }
+      else
+      {
+
       }
 
 }
