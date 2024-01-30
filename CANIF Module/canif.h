@@ -31,7 +31,7 @@ STD_ReturnType CanIf_GetControllerMode(uint8 ControllerId, CanIf_ControllerModeT
 
 STD_ReturnType CanIf_Transmit(PduIdType TxPduId, const PduInfoType* PduInfoPtr);
 
-void CanIf_RxIndication(const Can_HwType* MailBox, const PduInfoType* PduInfoPtr);
+STD_ReturnType CanIf_RxIndication(const Can_HwType* MailBox, const PduInfoType* PduInfoPtr);
 
 STD_ReturnType CanIf_SetPduMode(uint8 ControllerId, CanIf_PduSetModeType PduModeRequest);
 STD_ReturnType CanIf_GetPduMode(uint8 ControllerId, CanIf_PduGetModeType* PduModePtr);
