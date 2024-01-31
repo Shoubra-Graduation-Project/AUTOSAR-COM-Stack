@@ -464,6 +464,14 @@ typedef struct {
 
 	/* I-PDU that contain this signal ---------> Not in SWS*/
 	const uint8 ComIPduHandleId;
+    
+	/* -----> Not in SWS*/
+	float32 DeadlineMonitoringTimer;
+
+    // ---> Not is SWS
+	const boolean IsGroupSignal ;
+
+	const boolean ComSignalUpdated;
 
 
 }ComSignal_type;
@@ -568,8 +576,13 @@ typedef struct {
 	void *const ComTimeoutSubstitutionValue;
 
 	ComTransferProperty_type ComTransferProperty;
+
 	void const * ComSignalDataPtr;
+
 	const Com_SignalGroupIdType SignalGroupId;
+    
+	// ----> Not is SWS
+	const boolean IsGroupSignal ;
 
  
 }ComGroupSignal_type;
