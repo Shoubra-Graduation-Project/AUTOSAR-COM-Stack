@@ -155,6 +155,47 @@ Std_ReturnType CanIf_RxIndication(const Can_HwType* MailBox, const PduInfoType* 
 }
 
 
+Std_ReturnType CanIf_ReadRxPduData(PduIdType  CanIfRxSduId, PduInfoType* CanIfRxInfoPtr)
+{
+    Std_ReturnType RET = E_OK;
+
+    //Check CAN is INITIATE or Not
+    if (CanIfState != CANIF_INIT) {
+        Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, CANIF_INIT_ID, CANIF_E_UNINIT);
+        return E_NOT_OK;
+    }
+
+    //Check pointer != Null
+    /* SWS_CANIF_00326 */
+    if (CanIfRxInfoPtr == NULL) {
+        Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, CANIF_CHECKVALIDATION_ID, CANIF_E_PARAM_POINTER);
+        return E_NOT_OK;
+    }
+
+    //Check Validation of CanIfRxSduId
+    /* SWS_CANIF_00325 */
+    if (CanIfRxSduId > CANIF_NUM_RX_LPDU_ID) {
+        Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, CANIF_READRXNOTIFSTATUS_ID, CANIF_E_INVALID_RXPDUID);
+        return E_NOT_OK;
+    }
+
+    //Check Controller Mode
+    if (CanIf_GetControllerMode(CanIf_ConfigPtr->TxPduCfg[TxPduId].controller, &ControllerMode) != E_OK) {
+        return E_NOT_OK;
+    }
+
+    // channel not started, report to Det and return
+    /* SWS_CANIF_00324 */
+    if (ControllerMode != CAN_CS_STARTED) {
+        Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, CANIF_SET_CONTROLLER_MODE_ID, CANIF_E_PARAM_CTRLMODE);
+        return E_NOT_OK;
+    }
+
+
+    return RET;
+}
+
+
 
 //void CanIf_Init(const CanIf_ConfigType* ConfigPtr){}
 
