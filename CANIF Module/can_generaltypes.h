@@ -18,6 +18,7 @@
 #define NUM_OF_HRHS              10
 #define SDU_LENGTH               8
 #define CANID_EXPECTED           2
+#define CANIF_NUM_RX_LPDU_ID     1
 
  /* Section : Macros Functions Declaration */
 
