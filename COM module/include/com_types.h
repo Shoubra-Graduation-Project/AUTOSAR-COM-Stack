@@ -526,7 +526,7 @@ typedef struct{
       On receiver side: Name of Com_CbkRxTOut callback function to be called.
 	*/
 	void (*ComTimeoutNotification) (void);
-
+     /*SizeOfsignalGroup in bytes ------>not in SWS*/
     const uint32 signalGroupSize;
 	ComTransferProperty_type ComTransferProperty;
     
@@ -538,6 +538,8 @@ typedef struct{
     
 	/* Identify shadow buffer -------> Not in SWS*/    
 	const void * ComShadowBuffer;
+	/* Identify BackGround buffer -------> Not in SWS*/  
+	const void * ComBackGroundBuffer;
     
 	/* I-PDU that contain this signal group ---------> Not in SWS*/
 	const uint8 ComIPduHandleId;
