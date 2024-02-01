@@ -288,9 +288,13 @@ void Com_DisableReceptionDM (Com_IpduGroupIdType IpduGroupId)
     }
      else
     {
-         CopyGroupSignalFromSBtoAddress(GroupSignal->SignalGroupId,SignalDataPtr);
+        CopySignalGroupfromBGtoSB( SignalGroupId);
         return E_OK;
     }
+
+ }
+ void Com_RxIndication (PduIdType RxPduId, const PduInfoType* PduInfoPtr)
+ {
 
  }
  uint8 Com_ReceiveSignal (Com_SignalIdType SignalId, void* SignalDataPtr)
