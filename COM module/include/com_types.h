@@ -464,6 +464,14 @@ typedef struct {
 
 	/* I-PDU that contain this signal ---------> Not in SWS*/
 	const uint8 ComIPduHandleId;
+    
+	/* -----> Not in SWS*/
+	float32 DeadlineMonitoringTimer;
+
+    // ---> Not is SWS
+	const boolean IsGroupSignal ;
+
+	const boolean ComSignalUpdated;
 
 
 }ComSignal_type;
@@ -518,7 +526,7 @@ typedef struct{
       On receiver side: Name of Com_CbkRxTOut callback function to be called.
 	*/
 	void (*ComTimeoutNotification) (void);
-
+     /*SizeOfsignalGroup in bytes ------>not in SWS*/
     const uint32 signalGroupSize;
 	ComTransferProperty_type ComTransferProperty;
     
@@ -530,6 +538,8 @@ typedef struct{
     
 	/* Identify shadow buffer -------> Not in SWS*/    
 	const void * ComShadowBuffer;
+	/* Identify BackGround buffer -------> Not in SWS*/  
+	const void * ComBackGroundBuffer;
     
 	/* I-PDU that contain this signal group ---------> Not in SWS*/
 	const uint8 ComIPduHandleId;
@@ -568,8 +578,13 @@ typedef struct {
 	void *const ComTimeoutSubstitutionValue;
 
 	ComTransferProperty_type ComTransferProperty;
+
 	void const * ComSignalDataPtr;
+
 	const Com_SignalGroupIdType SignalGroupId;
+    
+	// ----> Not is SWS
+	const boolean IsGroupSignal ;
 
  
 }ComGroupSignal_type;
