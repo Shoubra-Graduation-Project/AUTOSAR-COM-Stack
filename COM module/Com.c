@@ -353,3 +353,53 @@ void Com_DisableReceptionDM (Com_IpduGroupIdType IpduGroupId)
       }
 
 }
+ uint8 Com_ReceiveSignalGroup (Com_SignalGroupIdType SignalGroupId)
+ {
+    const ComSignalGroup_Type * SignalGroup= GET_SIGNALGROUP(GroupSignal->SignalGroupId);
+    const ComIPdu_type *Ipdu=GET_IPDU(SignalGroup->ComIPduHandleId);
+      if(Ipdu->ComIPduGroupRef->IpduGroupFlag==STOPPED)
+    {
+        /*[SWS_Com_00461] ⌈The AUTOSAR COM module shall always copy the last known 
+         data, or the ComSignalInitValue(s) if not yet written, of the I-PDU to the shadow buffer by a call to Com_ReceiveSignalGroup even if the I-PDU is stopped and COM_-
+        SERVICE_NOT_AVAILABLE is returned*/
+        CopySignalGroupfromBGtoSB( SignalGroupId);
+        return COM_SERVICE_NOT_AVAILABLE;
+    }
+     else
+    {
+         CopyGroupSignalFromSBtoAddress(GroupSignal->SignalGroupId,SignalDataPtr);
+        return E_OK;
+    }
+
+ }
+ uint8 Com_ReceiveSignal (Com_SignalIdType SignalId, void* SignalDataPtr)
+ {
+   if(SignalId>=0&&SignalId<=32767)
+   {
+    const ComSignal_Type * Signal=GET_SIGNAL(SignalId);
+    if(signal->containingIPDU->ComIPduGroupRef->IpduGroupFlag==STOPPED)
+    {
+        return COM_SERVICE_NOT_AVAILABLE;
+    }
+    else
+    {
+         CopySignalFromFGtoAddress(SignalId,SignalDataPtr);
+        return E_OK;
+    }
+   }
+   else
+   {
+    const ComGroupSignal_type * GroupSignal=GET_GROUPSIGNAL(SignalId);
+    const ComSignalGroup_Type * SignalGroup= GET_SIGNALGROUP(GroupSignal->SignalGroupId);
+    const ComIPdu_type *Ipdu=GET_IPDU(SignalGroup->ComIPduHandleId);
+      if(Ipdu->ComIPduGroupRef->IpduGroupFlag==STOPPED)
+    {
+        return COM_SERVICE_NOT_AVAILABLE;
+    }
+    else
+    {
+         CopyGroupSignalFromSBtoAddress(GroupSignal->SignalGroupId,SignalDataPtr);
+        return E_OK;
+    }
+   }
+ }
