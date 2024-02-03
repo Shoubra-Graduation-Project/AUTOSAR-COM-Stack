@@ -146,16 +146,20 @@ void Com_Init (const Com_ConfigType* config)
  *    
  *    Service Id: 0x0a                                                             *
  * 
- *    Parameters (in): config->  Pointer to the COM module's configuration data.
+ *    Parameters (in): SignalId: Id of signal to be sent.
+ *		       SignalDataPtr: Reference to the signal data to be transmitted.
  * 
  *    Parameters (out): None 
  * 
- *    Return Value: None
+ *    Return Value: uint8: 	E_OK: service has been accepted.
+ *				COM_SERVICE_NOT_AVAILABLE: corresponding I-PDU group was 
+ *							   stopped (or service failed due
+ *							   to development error).
+ *				COM_BUSY: in case the TP-Buffer is locked for large data types 
+ *					   handling.
  * 
- *    Description:  This service initializes internal and external interfaces and 
- *                  variables of the COM module layer for the further
- *                  processing. After calling this function the inter-ECU 
- *                  communication is still disabled.  
+ *    Description:  The service Com_SendSignal updates the signal object identified by SignalId with 
+ *		    the signal referenced by the SignalDataPtr parameter.  
  * 
  *********************************************************************************/
 uint8 Com_SendSignal (Com_SignalIdType SignalId, const void* SignalDataPtr)
