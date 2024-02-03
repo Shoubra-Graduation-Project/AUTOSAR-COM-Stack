@@ -307,7 +307,7 @@ void Com_DisableReceptionDM (Com_IpduGroupIdType IpduGroupId)
         return COM_SERVICE_NOT_AVAILABLE;
     }
     else
-    {
+    {    CopySignalfromBGtoFG(SignalId);
          CopySignalFromFGtoAddress(SignalId,SignalDataPtr);
         return E_OK;
     }
