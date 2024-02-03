@@ -628,7 +628,16 @@ typedef struct{
 
 /*This container contains the configuration parameters and sub containers of the COM module.*/
 
-
+typedef struct{
+	ComFilterAlgorithm_type ComFilterAlgorithm;
+	sint64 ComFilterMask;
+	sint64 ComFilterMax;
+	sint64 ComFilterMin;
+	uint32 ComFilterOffset;
+	uint32 ComFilterPeriod;
+	uint32 ComFilterOccurrence;
+	sint64 ComFilterX;
+}ComFilter_type;
 
 
 #endif
