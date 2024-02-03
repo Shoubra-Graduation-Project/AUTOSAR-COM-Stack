@@ -138,86 +138,7 @@ void Com_Init (const Com_ConfigType* config)
 }
 
 
-/***********************************************************************************
- *                                                                                 *
- *    Service Name:  Com_ReceiveSignal                                                            
- * 
- *    Parameters (in): SignalId Id of signal to be received
- * 
- *    Parameters (out): SignalDataPtrReference to the location where the received signal data shall be stored
 
- * 
- *    Return Value:  uint8
- * 
- *    Description:  Com_ReceiveSignal copies the data of the signal identified by SignalId to the location specified by SignalDataPtr.
- * 
- *********************************************************************************/
-
-void Com_CopyShadowBufferToIPDU (const Com_SignalGroupIdType signalGroupId)
-{
-    // Get Signal Group
-    const ComSignalGroup_type * SignalGroup = GET_SIGNALGROUP(signalGroupId);
-
-    // Get I-PDU that contain this signal group
-    const ComIPdu_type *IPdu = GET_IPdu(SignalGroup->ComIPduHandleId);
-
-	
-    uint8 *pduDataPtr = 0;
-
-    if (IPdu->ComIPduDirection == RECEIVE)
-	{
-        pduDataPtr = IPdu->ComIPduDataPtr;
-    }
-    else
-    {
-
-    }
-    // straight copy
-    uint8 *buffer = (uint8 *)SignalGroup->ComShadowBuffer;
-
-        for(int i= 0; i < IPdu->ComIPduLength; i++){
-
-            *pduDataPtr = buffer++;
-             pduDataPtr++;
-        }
-
-}
-
-/***********************************************************************************
- *                                                                                 *
- *    Service Name: Com_CopyPduToShadowBuffer                                                             
- * 
- *    Parameters (in): signalGroupId
- * 
- *    Parameters (out): None 
- * 
- *    Return Value: None
- * 
- *    Description:  Copy signal group data from I-PDU to shadow buffer 
- * 
- *********************************************************************************/
-
-void Com_CopyPduToShadowBuffer(const Com_SignalGroupIdType signalGroupId) {
-
-    // Get Signal Group
-    const ComSignalGroup_type * SignalGroup = GET_SIGNALGROUP(signalGroupId);
-
-    // Get I-PDU that contain this signal group
-    const ComIPdu_type *IPdu = GET_IPdu(SignalGroup->ComIPduHandleId);
- 
-    const uint8 *pduDataPtr = 0;
-
-    if (IPdu->ComIPduDirection == SEND)
-    {
-        return COM_SERVICE_NOT_AVAILABLE;
-    }
-    else
-    {
-         CopyGroupSignalFromSBtoAddress(GroupSignal->SignalGroupId.SignalDataPtr);
-        return E_OK;
-    }
-   }
- 
 
 /***********************************************************************************
  *                                                                                 *
@@ -353,3 +274,57 @@ void Com_DisableReceptionDM (Com_IpduGroupIdType IpduGroupId)
       }
 
 }
+ uint8 Com_ReceiveSignalGroup (Com_SignalGroupIdType SignalGroupId)
+ {
+    const ComSignalGroup_Type * SignalGroup= GET_SIGNALGROUP(GroupSignal->SignalGroupId);
+    const ComIPdu_type *Ipdu=GET_IPDU(SignalGroup->ComIPduHandleId);
+      if(Ipdu->ComIPduGroupRef->IpduGroupFlag==STOPPED)
+    {
+        /*[SWS_Com_00461] ⌈The AUTOSAR COM module shall always copy the last known 
+         data, or the ComSignalInitValue(s) if not yet written, of the I-PDU to the shadow buffer by a call to Com_ReceiveSignalGroup even if the I-PDU is stopped and COM_-
+        SERVICE_NOT_AVAILABLE is returned*/
+        CopySignalGroupfromBGtoSB( SignalGroupId);
+        return COM_SERVICE_NOT_AVAILABLE;
+    }
+     else
+    {
+        CopySignalGroupfromBGtoSB( SignalGroupId);
+        return E_OK;
+    }
+
+ }
+ void Com_RxIndication (PduIdType RxPduId, const PduInfoType* PduInfoPtr)
+ {
+
+ }
+ uint8 Com_ReceiveSignal (Com_SignalIdType SignalId, void* SignalDataPtr)
+ {
+   if(SignalId>=0&&SignalId<=32767)
+   {
+    const ComSignal_Type * Signal=GET_SIGNAL(SignalId);
+    if(signal->containingIPDU->ComIPduGroupRef->IpduGroupFlag==STOPPED)
+    {
+        return COM_SERVICE_NOT_AVAILABLE;
+    }
+    else
+    {
+         CopySignalFromFGtoAddress(SignalId,SignalDataPtr);
+        return E_OK;
+    }
+   }
+   else
+   {
+    const ComGroupSignal_type * GroupSignal=GET_GROUPSIGNAL(SignalId);
+    const ComSignalGroup_Type * SignalGroup= GET_SIGNALGROUP(GroupSignal->SignalGroupId);
+    const ComIPdu_type *Ipdu=GET_IPDU(SignalGroup->ComIPduHandleId);
+      if(Ipdu->ComIPduGroupRef->IpduGroupFlag==STOPPED)
+    {
+        return COM_SERVICE_NOT_AVAILABLE;
+    }
+    else
+    {
+         CopyGroupSignalFromSBtoAddress(GroupSignal->SignalGroupId,SignalDataPtr);
+        return E_OK;
+    }
+   }
+ }

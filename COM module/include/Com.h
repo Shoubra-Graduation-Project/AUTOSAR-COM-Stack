@@ -68,7 +68,7 @@ typedef struct{
 
 /** 
   /brief    Com Stack Initialization Function
-  /details  This service initializes internal and external interfaces and variables of the AUTOSAR COM module layer for the further 
+  /details  This service initializes internal and external interfaces and variables of the AUTOSAR COM module layer for the further 
 	    processing. After calling this function the inter-ECU communication is still disabled.
   /param    config: Pointer to the AUTOSAR COM module's configuration data.
   /return   None
@@ -78,7 +78,7 @@ void Com_Init (const Com_ConfigType* config);
 
 /** 
   /brief    Com Stack De-Initialization Function
-  /details  This service stops the inter-ECU communication. All started I-PDU groups are stopped and have to be started again, if needed, 
+  /details  This service stops the inter-ECU communication. All started I-PDU groups are stopped and have to be started again, if needed, 
 	    after Com_Init is called. By a call to Com_DeInit the AUTOSAR COM module is put into an not initialized state.
   /param    None
   /return   None
@@ -88,7 +88,7 @@ void Com_DeInit (void);
 
 /** 
   /brief    Enable Reception Deadline Monitor
-  /details  Enables the reception deadline monitoring for the I-PDUs within the given IPDU group.
+  /details  Enables the reception deadline monitoring for the I-PDUs within the given IPDU group.
   /param    IpduGroupId: Id of I-PDU group where reception DM shall be enabled.
   /return   None
  */
@@ -97,7 +97,7 @@ void Com_EnableReceptionDM (Com_IpduGroupIdType IpduGroupId);
 
 /** 
   /brief    Disable Reception Deadline Monitor
-  /details  Disables the reception deadline monitoring for the I-PDUs within the given IPDU group.
+  /details  Disables the reception deadline monitoring for the I-PDUs within the given IPDU group.
   /param    IpduGroupId: Id of I-PDU group where reception DM shall be disabled.
   /return   None
  */
@@ -154,7 +154,7 @@ uint8 Com_ReceiveSignalGroup (Com_SignalGroupIdType SignalGroupId);
   /details  The service Com_InvalidateSignal invalidates the signal with the given SignalId by setting its value to its configured ComSignalDataInvalidValue.
   /param    SignalId: Id of signal to be invalidated.
   /return   uint8: E_OK: service has been accepted.
-		   COM_SERVICE_NOT_AVAILABLE: corresponding I-PDU group is stopped, no ComSignalDataInvalidValue is configured for the given signalId or
+		   COM_SERVICE_NOT_AVAILABLE: corresponding I-PDU group is stopped, no ComSignalDataInvalidValue is configured for the given signalId or
 		   service fails due to development error.
 		   COM_BUSY: in case the TP-Buffer is locked.
  */
@@ -166,7 +166,7 @@ uint8 Com_InvalidateSignal (Com_SignalIdType SignalId);
 	    to their configured Com SignalDataInvalidValues.
   /param    SignalGroupId: Id of signal group to be invalidated.
   /return   uint8: E_OK: service has been accepted.
-		   COM_SERVICE_NOT_AVAILABLE: corresponding I-PDU group is stopped, no ComSignalDataInvalidValue is configured for the given signalId or
+		   COM_SERVICE_NOT_AVAILABLE: corresponding I-PDU group is stopped, no ComSignalDataInvalidValue is configured for the given signalId or
 		   service fails due to development error.
 		   COM_BUSY: in case the TP-Buffer is locked.
  */
@@ -197,7 +197,7 @@ void Com_TxConfirmation (PduIdType TxPduId, Std_ReturnType result);
 
 /** 
   /brief      Start of Reception
-  /details    This function is called at the start of receiving an N-SDU. The N-SDU might be fragmented into multiple N-PDUs (FF with one or more following CFs) 
+  /details    This function is called at the start of receiving an N-SDU. The N-SDU might be fragmented into multiple N-PDUs (FF with one or more following CFs) 
 	      or might consist of a single N-PDU (SF). The service shall provide the currently available maximum buffer size when invoked with TpSduLength equal to 0.
   /param-in   id: Identification of the I-PDU.
 	      info: Pointer to a PduInfoType structure containing the payload data (without protocol information) and payload length of the first frame or single frame
@@ -206,7 +206,7 @@ void Com_TxConfirmation (PduIdType TxPduId, Std_ReturnType result);
 	      TpSdu: Length Total length of the N-SDU to be received.
   /param-out  bufferSizePtr: Available receive buffer in the receiving module. This parameter will be used to compute the Block Size (BS) in the transport 
 			     protocol module.
-  /return     BufReqReturnType:  BUFREQ_OK: Connection has been accepted. bufferSizePtr indicates the available receive buffer; reception is continued. 
+  /return     BufReqReturnType:  BUFREQ_OK: Connection has been accepted. bufferSizePtr indicates the available receive buffer; reception is continued. 
 					     If no buffer of the requested size is available, a receive buffer size of 0 shall be indicated by bufferSizePtr.
 				  BUFREQ_E_NOT_OK: Connection has been rejected; reception is aborted. bufferSizePtr remains unchanged.
 			 	  BUFREQ_E_OVFL: No buffer of the required length can be provided; reception is aborted. bufferSizePtr remains unchanged.
@@ -222,8 +222,8 @@ BufReq_ReturnType Com_StartOfReception (PduIdType id, const PduInfoType* info, P
 	      info: Provides the source buffer (SduDataPtr) and the number of bytes to be copied (SduLength). An SduLength of 0 can be used to query the 
 		    current amount of available buffer in the upper layer module. In this case, the SduDataPtr may be a NULL_PTR.
   /param-out  bufferSizePtr: Available receive buffer after data has been copied.
-  /return     BufReqReturnType:  BUFREQ_OK: Data copied successfully.
-				  BUFREQ_E_NOT_OK: Data was not copied because an error occurred.
+  /return     BufReqReturnType:  BUFREQ_OK: Data copied successfully.
+				  BUFREQ_E_NOT_OK: Data was not copied because an error occurred.
  */
 BufReq_ReturnType Com_CopyRxData (PduIdType id, const PduInfoType* info, PduLengthType* bufferSizePtr);
 
@@ -237,7 +237,7 @@ BufReq_ReturnType Com_CopyRxData (PduIdType id, const PduInfoType* info, PduLeng
 		    current amount of available buffer in the upper layer module. In this case, the SduDataPtr may be a NULL_PTR.
   /param-out  bufferSizePtr: Available receive buffer after data has been copied.
   /return     BufReqReturnType:  BUFREQ_OK: Data copied successfully.
-				  BUFREQ_E_NOT_OK: Data was not copied because an error occurred.
+				  BUFREQ_E_NOT_OK: Data was not copied because an error occurred.
 
  */
 BufReq_ReturnType Com_CopyRxData (PduIdType id, const PduInfoType* info, PduLengthType* bufferSizePtr);
