@@ -543,7 +543,8 @@ typedef struct{
 	const void * ComShadowBuffer;
 	/* Identify BackGround buffer -------> Not in SWS*/  
 	const void * ComBackGroundBuffer;
-    
+	/* Identify BackGround buffer -------> Not in SWS*/
+    	const void * ComBGBuffer; 
 	/* I-PDU that contain this signal group ---------> Not in SWS*/
 	const uint8 ComIPduHandleId;
 
