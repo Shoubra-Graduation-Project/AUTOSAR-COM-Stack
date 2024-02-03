@@ -473,6 +473,9 @@ typedef struct {
 
 	const boolean ComSignalUpdated;
 
+	boolean ComIsSignalChanged;
+
+	boolean ComSignalFilterResult;
 
 }ComSignal_type;
 
@@ -586,6 +589,9 @@ typedef struct {
 	// ----> Not is SWS
 	const boolean IsGroupSignal ;
 
+	boolean ComIsSignalChanged;
+
+	boolean ComSignalFilterResult;
  
 }ComGroupSignal_type;
 
