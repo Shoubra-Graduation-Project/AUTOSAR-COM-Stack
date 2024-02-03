@@ -142,6 +142,208 @@ void Com_Init (const Com_ConfigType* config)
 
 /***********************************************************************************
  *                                                                                 *
+ *    Service Name: Com_SendSignal    
+ *    
+ *    Service Id: 0x0a                                                             *
+ * 
+ *    Parameters (in): config->  Pointer to the COM module's configuration data.
+ * 
+ *    Parameters (out): None 
+ * 
+ *    Return Value: None
+ * 
+ *    Description:  This service initializes internal and external interfaces and 
+ *                  variables of the COM module layer for the further
+ *                  processing. After calling this function the inter-ECU 
+ *                  communication is still disabled.  
+ * 
+ *********************************************************************************/
+uint8 Com_SendSignal (Com_SignalIdType SignalId, const void* SignalDataPtr)
+{
+	uint8 returnValue;
+	if(SignalDataPtr == NULL)
+	{
+		returnValue = E_NOT_OK;
+	}
+	
+	ComSignal_type* signalStruct =  GET_SIGNAL(SignalId);
+	if(signalStruct == NULL)
+	{
+		returnValue = E_NOT_OK;
+	}
+	
+	if(signalStruct->IsGroupSignal)
+	{
+		/*--------------------------------------------------------------------------------------------------------------------------------------------------------------
+		If Com_SendSignal or Com_InvalidateSignal is called for a signal that belongs to a signal group, then the AUTOSAR COM will only update the shadow buffer of this
+		signal group. There is no need for any further I-PDU processing like TMS evaluation, unless the I-PDU contents changed.
+		[SWS_Com_00050] ⌈If Com_SendSignalGroup is called for the signal group, the AUTOSAR COM module shall copy the shadow buffer atomically to the 
+		I-PDU buffer.⌋ (SRS_Com_02041)
+		--------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+		Com_WriteSignalDataToShadowBuffer(signalStruct->SignalGroupId, signalStruct->ComHandleId, SignalDataPtr);
+		returnValue = E_OK;
+	}
+	else
+	{
+		uint8 signalFilterResult = 0;
+		boolean isSignalChanged = 0;
+		/*---------------------------------------------------------------------------------------------------------------------------------------------------
+		[SWS_Com_00602] ⌈The AUTOSAR COM module shall use filtering mechanisms on sender side for Transmission Mode Conditions 
+		(TMC) but it shall not filter out signals on sender side.⌋ (SRS_Com_02083)
+		---------------------------------------------------------------------------------------------------------------------------------------------------*/
+		if(signalStruct->ComSignalType == BOOLEAN)
+		{
+			boolean new_signalData_boolean = *((boolean*)SignalDataPtr);
+			boolean old_signalData_boolean = *((boolean*)(com_foregroundBuffer[SignalId]->f_bufferDataPtr));
+			signalFilterResult = Com_ProcessTxSignalFilter(signalStruct, old_signalData_boolean, new_signalData_boolean);
+			if(new_signalData_boolean != old_signalData_boolean)
+			{
+				isSignalChanged = 1;
+			}	
+			*(boolean*)(signalStruct->ComFGBuffer) = new_signalData_boolean;		
+		}
+		else if(signalStruct->ComSignalType == FLOAT32)
+		{
+			float32 new_signalData_float32 = *((float32*)SignalDataPtr);
+			float32 old_signalData_float32 = *((float32*)(com_foregroundBuffer[SignalId]->f_bufferDataPtr));
+			signalFilterResult = Com_ProcessTxSignalFilter_float(signalStruct, old_signalData_float32, new_signalData_float32);
+			if(new_signalData_boolean != old_signalData_boolean)
+			{
+				isSignalChanged = 1;
+			}
+			*(float32*)(signalStruct->ComFGBuffer) = new_signalData_boolean;
+		}
+		else if(signalStruct->ComSignalType == FLOAT64)
+		{
+			float64 new_signalData_float64 = *((float64*)SignalDataPtr);
+			float64 old_signalData_float64 = *((float64*)(com_foregroundBuffer[SignalId]->f_bufferDataPtr));
+			signalFilterResult = Com_ProcessTxSignalFilter_float(signalStruct, old_signalData_float64, new_signalData_float64);
+			if(new_signalData_boolean != old_signalData_boolean)
+			{
+				isSignalChanged = 1;
+			}
+			*(float64*)(signalStruct->ComFGBuffer) = new_signalData_boolean;
+		}
+		else if(signalStruct->ComSignalType == SINT16)
+		{
+			sint16 new_signalData_sint16 = *((sint16*)SignalDataPtr);
+			sint16 old_signalData_sint16 = *((sint16*)(com_foregroundBuffer[SignalId]->f_bufferDataPtr));
+			signalFilterResult = Com_ProcessTxSignalFilter(signalStruct, old_signalData_sint16, new_signalData_sint16);
+			if(new_signalData_boolean != old_signalData_boolean)
+			{
+				isSignalChanged = 1;
+			}
+			*(sint16*)(signalStruct->ComFGBuffer) = new_signalData_boolean;
+		}
+		else if(signalStruct->ComSignalType == SINT32)
+		{
+			sint32 new_signalData_sint32 = *((sint32*)SignalDataPtr);
+			sint32 old_signalData_sint32 = *((sint32*)(com_foregroundBuffer[SignalId]->f_bufferDataPtr));
+			signalFilterResult = Com_ProcessTxSignalFilter(signalStruct, old_signalData_sint32, new_signalData_sint32);
+			if(new_signalData_boolean != old_signalData_boolean)
+			{
+				isSignalChanged = 1;
+			}
+			*(sint32*)(signalStruct->ComFGBuffer) = new_signalData_boolean;
+		}
+		else if(signalStruct->ComSignalType == SINT64)
+		{
+			sint64 new_signalData_sint64 = *((sint64*)SignalDataPtr);
+			sint64 old_signalData_sint64 = *((sint64*)(com_foregroundBuffer[SignalId]->f_bufferDataPtr));
+			signalFilterResult = Com_ProcessTxSignalFilter(signalStruct, old_signalData_sint64, new_signalData_sint64);
+			if(new_signalData_boolean != old_signalData_boolean)
+			{
+				isSignalChanged = 1;
+			}
+			*(sint64*)(signalStruct->ComFGBuffer) = new_signalData_boolean;
+		}	
+		else if(signalStruct->ComSignalType == SINT8)
+		{
+			sint8 new_signalData_sint8 = *((sint8*)SignalDataPtr);
+			sint8 old_signalData_sint8 = *((sint8*)(com_foregroundBuffer[SignalId]->f_bufferDataPtr));
+			signalFilterResult = Com_ProcessTxSignalFilter(signalStruct, old_signalData_sint8, new_signalData_sint8);
+			if(new_signalData_boolean != old_signalData_boolean)
+			{
+				isSignalChanged = 1;
+			}
+			*(sint8*)(signalStruct->ComFGBuffer) = new_signalData_boolean;
+		}
+		else if(signalStruct->ComSignalType == UINT16)
+		{
+			uint16 new_signalData_uint16 = *((uint16*)SignalDataPtr);
+			uint16 old_signalData_uint16 = *((uint16*)(com_foregroundBuffer[SignalId]->f_bufferDataPtr));
+			signalFilterResult = Com_ProcessTxSignalFilter(signalStruct, old_signalData_uint16, new_signalData_uint16);
+			if(new_signalData_boolean != old_signalData_boolean)
+			{
+				isSignalChanged = 1;
+			}
+			*(uint16*)(signalStruct->ComFGBuffer) = new_signalData_boolean;
+		}
+		else if(signalStruct->ComSignalType == UINT32)
+		{
+			uint32 new_signalData_uint32 = *((uint32*)SignalDataPtr);
+			uint32 old_signalData_uint32 = *((uint32*)(com_foregroundBuffer[SignalId]->f_bufferDataPtr));
+			signalFilterResult = Com_ProcessTxSignalFilter(signalStruct, old_signalData_uint32, new_signalData_uint32);
+			if(new_signalData_boolean != old_signalData_boolean)
+			{
+				isSignalChanged = 1;
+			}
+			*(uint32*)(signalStruct->ComFGBuffer) = new_signalData_boolean;
+		}
+		else if(signalStruct->ComSignalType == UINT64)
+		{
+			uint64 new_signalData_uint64 = *((uint64*)SignalDataPtr);
+			uint64 old_signalData_uint64 = *((uint64*)(com_foregroundBuffer[SignalId]->f_bufferDataPtr));
+			signalFilterResult = Com_ProcessTxSignalFilter(signalStruct, old_signalData_uint64, new_signalData_uint64);
+			if(new_signalData_boolean != old_signalData_boolean)
+			{
+				isSignalChanged = 1;
+			}
+			*(uint64*)(signalStruct->ComFGBuffer) = new_signalData_boolean;
+		}
+		else if(signalStruct->ComSignalType == UINT8)
+		{
+			uint8 new_signalData_uint8 = *((uint8*)SignalDataPtr);
+			uint8 old_signalData_uint8 = *((uint8*)(com_foregroundBuffer[SignalId]->f_bufferDataPtr));
+			signalFilterResult = Com_ProcessTxSignalFilter(signalStruct, old_signalData_uint8, new_signalData_uint8);
+			if(new_signalData_boolean != old_signalData_boolean)
+			{
+				isSignalChanged = 1;
+			}
+			*(uint8*)(signalStruct->ComFGBuffer) = new_signalData_boolean;
+		}
+	
+		/*---------------------------------------------------Pack signal processed info in signal struct----------------------------------------------------*/		
+		signalStruct->ComSignalFilterResult = signalFilterResult;
+	
+		/*---------------------------------------------------------------------------------------------------------------------------------------------------
+		[SWS_Com_00734] ⌈At a send request of a signal with ComTransferProperty TRIGGERED_ON_CHANGE assigned to an I-PDU with ComTxModeMode DIRECT or MIXED, 
+		the AUTOSAR COM module shall immediately (within the next main function at the latest) initiate ComTxModeNumberOfRepetitions plus one transmissions of 
+		the assigned I-PDU, if the new sent signal differs to the locally stored (last sent or init) in length or value.⌋ (SRS_Com_02083)
+		---------------------------------------------------------------------------------------------------------------------------------------------------*/
+		signalStruct->ComIsSignalChanged = isSignalChanged;
+		
+		/*--------------------------------------------------------------------------------------------------------------------------------------------------------------
+		[SWS_Com_00061] ⌈If the RTE updates the value of a signal by calling Com_SendSignal, the AUTOSAR COM module shall set the update-bit of this signal.⌋ 
+		(SRS_Com_02030)
+		---------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+		ComIPdu_type* Ipdu = GET_IPDU(signalStruct->ComIPduHandleId);
+		uint64 updatebitMask = 1u << (signalStruct->ComUpdateBitPosition);
+		*(uint64*)(Ipdu->ComIPduDataPtr) = *(uint64*)(Ipdu->ComIPduDataPtr) | updatebitMask;
+		
+		returnValue = E_OK;
+	}
+	
+	
+	
+	return returnValue;
+			 
+}
+
+
+
+/***********************************************************************************
+ *                                                                                 *
  *    Service Name: Com_EnableReceptionDM   
  *    
  *    Service Id: 0x06                                                          
