@@ -458,8 +458,8 @@ typedef struct {
     
 	/*Pointer to signal data ----> Not in SWS*/
 
-    const void * ComFGBuffer;  /*not in SWS*/
-	
+        const void * ComFGBuffer;  /*not in SWS*/
+	const void * ComBGBuffer; /*not in SWS*/
 	void * const ComSignalDataPtr;
 
 	/* I-PDU that contain this signal ---------> Not in SWS*/
