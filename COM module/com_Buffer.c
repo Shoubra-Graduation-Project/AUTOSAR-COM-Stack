@@ -96,10 +96,10 @@ void CopyGroupSignalFromSBtoAddress(const ComSignalGroup_type SignalGroup_id,voi
     /*copy group signal from shadowBuffer to address*/
     
 }
-void CopySignalFromFGtoAddress(const ComSignalGroup_type Signal_id,void *dataAddress)
+void CopySignalFromFGtoAddress(const Com_SignalIdType Signal_id,void *dataAddress)
 {
     const ComSignal_Type * Signal=GET_SIGNAL(Signal_id);
-    memcpy(dataAddress,Signal->ComFGBuffer,Signal->ComSignalLength);
+    memcpy((uint8)dataAddress,(uint8)Signal->ComFGBuffer,Signal->ComSignalLength);
 }
 void CopySignalGroupfromBGtoSB(Com_SignalGroupIdType SignalGroupId)
 {
@@ -107,7 +107,11 @@ void CopySignalGroupfromBGtoSB(Com_SignalGroupIdType SignalGroupId)
     memcpy((uint8*)SignalGroup->ComShadowBuffer,(uint8)SignalGroup->ComBackGroundBuffer,SignalGroup->signalGroupSize);
 
 }
-
+void CopySignalfromBGtoFG(Com_SignalIdType Signal_id)
+{
+    const ComSignal_Type * Signal=GET_SIGNAL(Signal_id);
+    memcpy((uint8*)Signal->ComFGBuffer,(uint8)Signal->ComBGBuffer,Signal->ComSignalLength);
+}
 
 
 
