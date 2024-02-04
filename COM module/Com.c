@@ -484,7 +484,13 @@ void Com_DisableReceptionDM (Com_IpduGroupIdType IpduGroupId)
  {
     const ComSignalGroup_Type * SignalGroup= GET_SIGNALGROUP(GroupSignal->SignalGroupId);
     const ComIPdu_type *Ipdu=GET_IPDU(SignalGroup->ComIPduHandleId);
-      if(Ipdu->ComIPduGroupRef->IpduGroupFlag==STOPPED)
+	if(Ipdu->ComIPduDirection!=RECEIVE)
+	{
+		return E_NOT_OK;
+	}
+	else
+	{
+       if(Ipdu->ComIPduGroupRef->IpduGroupFlag==STOPPED)
     {
         /*[SWS_Com_00461] ⌈The AUTOSAR COM module shall always copy the last known 
          data, or the ComSignalInitValue(s) if not yet written, of the I-PDU to the shadow buffer by a call to Com_ReceiveSignalGroup even if the I-PDU is stopped and COM_-
@@ -498,6 +504,8 @@ void Com_DisableReceptionDM (Com_IpduGroupIdType IpduGroupId)
         return E_OK;
     }
 
+	}
+    
  }
  void Com_RxIndication (PduIdType RxPduId, const PduInfoType* PduInfoPtr)
  {
@@ -505,25 +513,41 @@ void Com_DisableReceptionDM (Com_IpduGroupIdType IpduGroupId)
  }
  uint8 Com_ReceiveSignal (Com_SignalIdType SignalId, void* SignalDataPtr)
  {
+	
+	
    if(SignalId>=0&&SignalId<=32767)
    {
     const ComSignal_Type * Signal=GET_SIGNAL(SignalId);
-    if(signal->containingIPDU->ComIPduGroupRef->IpduGroupFlag==STOPPED)
+	if(signal->containingIPDU->ComIPduDirection!=RECEIVE)
+	{
+		return E_NOT_OK;
+	}
+	else
+	{
+		if(signal->containingIPDU->ComIPduGroupRef->IpduGroupFlag==STOPPED)
     {
         return COM_SERVICE_NOT_AVAILABLE;
     }
     else
-    {    CopySignalfromBGtoFG(SignalId);
+    {    //CopySignalfromBGtoFG(SignalId);
          CopySignalFromFGtoAddress(SignalId,SignalDataPtr);
         return E_OK;
     }
    }
-   else
+	}
+    
+   else if(SignalId>32767&&SignalId<=65535)
    {
     const ComGroupSignal_type * GroupSignal=GET_GROUPSIGNAL(SignalId);
     const ComSignalGroup_Type * SignalGroup= GET_SIGNALGROUP(GroupSignal->SignalGroupId);
     const ComIPdu_type *Ipdu=GET_IPDU(SignalGroup->ComIPduHandleId);
-      if(Ipdu->ComIPduGroupRef->IpduGroupFlag==STOPPED)
+	if(Ipdu->ComIPduDirection!=RECEIVE)
+	{
+		return E_NOT_OK;
+	}
+	else
+	{
+        if(Ipdu->ComIPduGroupRef->IpduGroupFlag==STOPPED)
     {
         return COM_SERVICE_NOT_AVAILABLE;
     }
@@ -532,5 +556,12 @@ void Com_DisableReceptionDM (Com_IpduGroupIdType IpduGroupId)
          CopyGroupSignalFromSBtoAddress(GroupSignal->SignalGroupId,SignalDataPtr);
         return E_OK;
     }
+	}
+     
+   }
+   else
+   {
+	return E_NOT_OK;
    }
  }
+

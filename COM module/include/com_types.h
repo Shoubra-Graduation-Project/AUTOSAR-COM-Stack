@@ -476,7 +476,7 @@ typedef struct {
 	boolean ComIsSignalChanged;
 
 	boolean ComSignalFilterResult;
-
+    ComIPdu_type *containingIPDU;
 }ComSignal_type;
 
 
