@@ -7,12 +7,11 @@
 
  /* Section : Data Types Declaration */
 
- /* Section : Function Declaration */
-
 static const CanIf_ConfigType* CanIf_ConfigPtr;
 static CanIf_LPduDataType lPduData;
 
 
+ /* Section : Function Declaration */
 
 
 Std_ReturnType CanIf_Transmit(PduIdType TxPduId, const PduInfoType* PduInfoPtr) 
