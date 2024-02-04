@@ -458,14 +458,25 @@ typedef struct {
     
 	/*Pointer to signal data ----> Not in SWS*/
 
-    const void * ComFGBuffer;  /*not in SWS*/
-	
+        const void * ComFGBuffer;  /*not in SWS*/
+	const void * ComBGBuffer; /*not in SWS*/
 	void * const ComSignalDataPtr;
 
 	/* I-PDU that contain this signal ---------> Not in SWS*/
-	const uint8 ComIPduHandleId;
+	const uint16 ComIPduHandleId;
+    
+	/* -----> Not in SWS*/
+	float32 DeadlineMonitoringTimer;
 
+    // ---> Not is SWS
+	const boolean IsGroupSignal ;
 
+	const boolean ComSignalUpdated;
+
+	boolean ComIsSignalChanged;
+
+	boolean ComSignalFilterResult;
+    ComIPdu_type *containingIPDU;
 }ComSignal_type;
 
 
@@ -518,7 +529,7 @@ typedef struct{
       On receiver side: Name of Com_CbkRxTOut callback function to be called.
 	*/
 	void (*ComTimeoutNotification) (void);
-
+     /*SizeOfsignalGroup in bytes ------>not in SWS*/
     const uint32 signalGroupSize;
 	ComTransferProperty_type ComTransferProperty;
     
@@ -530,10 +541,16 @@ typedef struct{
     
 	/* Identify shadow buffer -------> Not in SWS*/    
 	const void * ComShadowBuffer;
-    
+	/* Identify BackGround buffer -------> Not in SWS*/  
+	const void * ComBackGroundBuffer;
+	/* Identify BackGround buffer -------> Not in SWS*/
+    	const void * ComBGBuffer; 
 	/* I-PDU that contain this signal group ---------> Not in SWS*/
-	const uint8 ComIPduHandleId;
+	const uint16 ComIPduHandleId;
+	
+	boolean ComIsSignalGroupChanged;
 
+	boolean ComSignalGroupFilterResult;
 
 }ComSignalGroup_type;
 
@@ -568,8 +585,16 @@ typedef struct {
 	void *const ComTimeoutSubstitutionValue;
 
 	ComTransferProperty_type ComTransferProperty;
+
+/* I-PDU that contain this signal ---------> Not in SWS*/
+	const uint16 ComIPduHandleId;
+    
 	void const * ComSignalDataPtr;
+
 	const Com_SignalGroupIdType SignalGroupId;
+    
+	// ----> Not is SWS
+	const boolean IsGroupSignal ;
 
  
 }ComGroupSignal_type;
@@ -603,7 +628,16 @@ typedef struct{
 
 /*This container contains the configuration parameters and sub containers of the COM module.*/
 
-
+typedef struct{
+	ComFilterAlgorithm_type ComFilterAlgorithm;
+	sint64 ComFilterMask;
+	sint64 ComFilterMax;
+	sint64 ComFilterMin;
+	uint32 ComFilterOffset;
+	uint32 ComFilterPeriod;
+	uint32 ComFilterOccurrence;
+	sint64 ComFilterX;
+}ComFilter_type;
 
 
 #endif
