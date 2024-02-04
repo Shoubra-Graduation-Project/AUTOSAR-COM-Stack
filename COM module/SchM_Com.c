@@ -140,4 +140,50 @@ void Com_MainFunctionRx(void)
 }
 
 
+/***************************************************************************************
+ Service name:               Com_MainFunctionTx
+ Service Id:                    0x19
+ Parameters (in):               None
+ Parameters (inout):            None
+ Parameters (out):              None
+ Return value:                  None
+ Description:        This function performs the processing of the AUTOSAR COM module's
+                     transmission activities that are not directly handled within the 
+                     COM's function invoked by the RTE, for example Com_SendSignal
+ ***************************************************************************************/
 
+
+
+void Com_MainFunctionTx(void)
+{
+    const ComIPdu_type *IPdu;
+
+
+    uint8 ComMainTxPduId;
+	uint8 ComMainTxSignalId;
+    uint8 ComMainTxGroupSignalId;
+    uint8 ComMainTxSignalGroupId;
+
+
+    for ( pduId = 0; pduId<COM_NUM_OF_IPDU; pduId++)
+    {
+        IPdu = GET_IPdu(pduId);
+
+        if(IPdu->ComIPduDirection == SEND)
+        {
+            switch(IPdu->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeMode)
+            {
+                case DIRECT:
+                
+
+                break;
+            }
+
+        }
+        else
+        {
+           
+        }
+    }
+
+}

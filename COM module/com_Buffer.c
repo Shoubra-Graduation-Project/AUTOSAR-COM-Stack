@@ -105,7 +105,19 @@ void CopySignalFromFGtoAddress(const ComSignalGroup_type Signal_id,void *dataAdd
 
 
 
-
+/***********************************************************************************
+ *                                                                                 *
+ *    Service Name: Com_WriteSignalDataToPduBuffer                                                             
+ * 
+ *    Parameters (in): signalId, signalData
+ * 
+ *    Parameters (out): None 
+ * 
+ *    Return Value: None
+ * 
+ *    Description:  Write signal data to Ipdu buffer
+ * 
+ *********************************************************************************/
 
 void Com_WriteSignalDataToPduBuffer(const uint16 signalId, const void *signalData)
 {
@@ -198,7 +210,19 @@ void Com_WriteSignalDataToPduBuffer(const uint16 signalId, const void *signalDat
 }
 
 
-
+/***********************************************************************************
+ *                                                                                 *
+ *    Service Name: Com_WriteSignalDataToPdu                                                             
+ * 
+ *    Parameters (in): signalId, signalData
+ * 
+ *    Parameters (out): None 
+ * 
+ *    Return Value: None
+ * 
+ *    Description:  Write signal data to Ipdu 
+ * 
+ *********************************************************************************/
 void Com_WriteSignalDataToPdu(const Com_SignalIdType signalId, const void *signalData) 
 {
 	// Get Signal
