@@ -18,6 +18,8 @@
 #define NUM_OF_HRHS              10
 #define SDU_LENGTH               8
 #define CANID_EXPECTED           2
+#define CANIF_NUM_RX_LPDU_ID     1
+#define CANIF_NUM_TX_PDU_ID      1
 
  /* Section : Macros Functions Declaration */
 
@@ -83,14 +85,28 @@ typedef enum {
 
 
 
-
-
-
 typedef uint32 Can_IdType;
 typedef uint16 PduIdType;
 typedef uint16 PduLengthType;
 
 
+
+typedef struct {
+    //TxLPdu
+    struct {
+        uint8 data[8];
+        // if DLC is -1 -> indicates empty buffer
+        uint8 dlc;
+    } txLpdu[CANIF_NUM_TX_PDU_ID];
+
+    //RxLPdu
+    struct {
+        uint8 data[8];
+        // if DLC is -1 -> indicates empty buffer
+        uint8 dlc;
+    } rxLpdu[CANIF_NUM_RX_LPDU_ID];
+
+} CanIf_LPduDataType;
 
 
 typedef struct Can_PduType_s {

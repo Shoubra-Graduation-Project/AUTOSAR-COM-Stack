@@ -7,11 +7,11 @@
 
  /* Section : Data Types Declaration */
 
- /* Section : Function Declaration */
-
 static const CanIf_ConfigType* CanIf_ConfigPtr;
+static CanIf_LPduDataType lPduData;
 
 
+ /* Section : Function Declaration */
 
 
 Std_ReturnType CanIf_Transmit(PduIdType TxPduId, const PduInfoType* PduInfoPtr) 
@@ -155,43 +155,82 @@ Std_ReturnType CanIf_RxIndication(const Can_HwType* MailBox, const PduInfoType* 
 }
 
 
+Std_ReturnType CanIf_ReadRxPduData(PduIdType  CanIfRxSduId, PduInfoType* CanIfRxInfoPtr)
+{
+    Std_ReturnType RET = E_OK;
 
-//void CanIf_Init(const CanIf_ConfigType* ConfigPtr){}
+    //Check CAN is INITIATE or Not
+    if (CanIfState != CANIF_INIT) {
+        Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, CANIF_INIT_ID, CANIF_E_UNINIT);
+        return E_NOT_OK;
+    }
 
-STD_ReturnType CanIf_SetControllerMode(uint8 ControllerId, CanIf_ControllerModeType ControllerMode){
+    //Check pointer != Null
+    /* SWS_CANIF_00326 */
+    if (CanIfRxInfoPtr == NULL) {
+        Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, CANIF_CHECKVALIDATION_ID, CANIF_E_PARAM_POINTER);
+        return E_NOT_OK;
+    }
+
+    //Check Validation of CanIfRxSduId
+    /* SWS_CANIF_00325 */
+    if (CanIfRxSduId > CANIF_NUM_RX_LPDU_ID) {
+        Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, CANIF_READRXNOTIFSTATUS_ID, CANIF_E_INVALID_RXPDUID);
+        return E_NOT_OK;
+    }
+
+    //Check Controller Mode
+    if (CanIf_GetControllerMode(CanIf_ConfigPtr->TxPduCfg[TxPduId].controller, &ControllerMode) != E_OK) {
+        return E_NOT_OK;
+    }
+
+    // channel not started, report to Det and return
+    /* SWS_CANIF_00324 */
+    if (ControllerMode != CAN_CS_STARTED) {
+        Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, CANIF_SET_CONTROLLER_MODE_ID, CANIF_E_PARAM_CTRLMODE);
+        return E_NOT_OK;
+    }
+
+    // Copy Data
+    uint8 dlc = lPduData.rxLpdu[CanIfRxSduId].dlc;
+    CanIfRxInfoPtr->SduLength = dlc;
+    memcpy(CanIfRxInfoPtr->SduDataPtr, lPduData.rxLpdu[CanIfRxSduId].data, dlc);
+
+    return RET;
+}
+
+
+Std_ReturnType CanIf_SetControllerMode(uint8 ControllerId, CanIf_ControllerModeType ControllerMode){
     STD_ReturnType RET = E_OK;
     
     return RET;
 }
 
-STD_ReturnType CanIf_GetControllerMode(uint8 ControllerId, CanIf_ControllerModeType *ControllerModePtr){
+Std_ReturnType CanIf_GetControllerMode(uint8 ControllerId, CanIf_ControllerModeType *ControllerModePtr){
     STD_ReturnType RET = E_OK;
     
     return RET;
 }
 
-//STD_ReturnType CanIf_Transmit(PduIdType CanTxPduId, const PduInfoType *PduInfoPtr){}
 
-//void CanIf_RxIndication(Can_HwHandleType hrh, Can_IdType canId, uint8 canDlc, const uint8* canSduPtr, uint8 driverUnit){}
-
-STD_ReturnType CanIf_SetPduMode(uint8 ControllerId, CanIf_PduSetModeType PduModeRequest){
+Std_ReturnType CanIf_SetPduMode(uint8 ControllerId, CanIf_PduSetModeType PduModeRequest){
     STD_ReturnType RET = E_OK;
     
     return RET;
 }
-STD_ReturnType CanIf_GetPduMode(uint8 ControllerId, CanIf_PduGetModeType* PduModePtr){
-    STD_ReturnType RET = E_OK;
-    
-    return RET;
-}
-
-STD_ReturnType CanIf_SetTrcvMode( uint8 TransceiverId, CanTrcv_TrcvModeType TransceiverMode ){
+Std_ReturnType CanIf_GetPduMode(uint8 ControllerId, CanIf_PduGetModeType* PduModePtr){
     STD_ReturnType RET = E_OK;
     
     return RET;
 }
 
-STD_ReturnType CanIf_GetTrcvMode( uint8 TransceiverId, CanTrcv_TrcvModeType* TransceiverModePtr ){
+Std_ReturnType CanIf_SetTrcvMode( uint8 TransceiverId, CanTrcv_TrcvModeType TransceiverMode ){
+    STD_ReturnType RET = E_OK;
+    
+    return RET;
+}
+
+Std_ReturnType CanIf_GetTrcvMode( uint8 TransceiverId, CanTrcv_TrcvModeType* TransceiverModePtr ){
     STD_ReturnType RET = E_OK;
     
     return RET;
