@@ -15,7 +15,9 @@
 
  /* Section : Macros Definition */
 
-#define NUM_OF_HRHS              10
+#define NUM_OF_HRHS              1
+#define NUM_OF_HOHS              1
+#define NUM_OF_HTHS              1
 #define SDU_LENGTH               8
 #define CANID_EXPECTED           2
 #define CANIF_NUM_RX_LPDU_ID     1
@@ -25,8 +27,11 @@
 
  /* Section : Data Types Declaration */
 
+typedef uint8 Can_HwHandleType;
+
 /* CanIf_PduModeType */
-typedef enum {
+typedef enum 
+{
 	CANIF_OFFLINE,
 	CANIF_TX_OFFLINE,
 	CANIF_TX_OFFLINE_ACTIVE,
@@ -34,14 +39,17 @@ typedef enum {
 } CanIf_PduModeType;
 
 
-typedef enum {
+typedef enum 
+{
 	CAN_T_STOP = 1, // cannot request mode CAN_UNINIT
 	CAN_T_START,
 	CAN_T_SLEEP,
 	CAN_T_WAKEUP
 } Can_StateTransitionType;
 
-typedef enum {
+
+typedef enum 
+{
   /** UNINIT mode. Default mode of the CAN driver and all
    *  CAN controllers connected to one CAN network after
    *  power on. */
@@ -67,14 +75,16 @@ typedef enum {
 
 
 
-typedef enum {
+typedef enum 
+{
 	CAN_OK,
 	CAN_NOT_OK,
 	CAN_BUSY,
  	CAN_WAKEUP,
 } Can_ReturnType;
 
-typedef enum {
+typedef enum 
+{
 	/** Transceiver mode NORMAL */
   CANTRCV_TRCVMODE_NORMAL = 0,
   /** Transceiver mode STANDBY */
@@ -91,16 +101,19 @@ typedef uint16 PduLengthType;
 
 
 
-typedef struct {
+typedef struct 
+{
     //TxLPdu
-    struct {
+    struct 
+    {
         uint8 data[8];
         // if DLC is -1 -> indicates empty buffer
         uint8 dlc;
     } txLpdu[CANIF_NUM_TX_PDU_ID];
 
     //RxLPdu
-    struct {
+    struct 
+    {
         uint8 data[8];
         // if DLC is -1 -> indicates empty buffer
         uint8 dlc;
@@ -109,32 +122,18 @@ typedef struct {
 } CanIf_LPduDataType;
 
 
-typedef struct Can_PduType_s {
+typedef struct 
+{
     // the CAN ID, 29 or 11-bit
     Can_IdType 	id;
     // Length, max 8 bytes
-    uint8		length;
+    uint8       length;
     // data ptr
     uint8*      sdu;
-    // private data for CanIf,just save and use for callback
-    PduIdType   swPduHandle;
+    // Controller Id
+    uint8 controllerId;
 } Can_PduType;
 
-
-
-typedef struct
-{
-	uint8* SduDataPtr;
-	uint8* MetaDataPtr;
-	PduLengthType   SduLength;
-
-} PduInfoType;
-
-
-uint8 CANIF_NUM_TX_PDU_ID = 10;
-
-
-typedef uint8 Can_HwHandleType;
 
 
 /** SWS_CAN_00496 */
@@ -147,51 +146,64 @@ typedef struct
 } Can_HwType;
 
 
-
-typedef struct {
-    /// can id used for transmission, msb indicates extended id
+typedef struct 
+{
+    // can id used for transmission
     Can_IdType id;
 
-    /// data length (DLC)
+    // data length (DLC)
     uint8 dlc;
 
-    /// can driver controller id to be used for transmission
+    // can driver controller id to be used for transmission
     uint8 controller;
 
-    /// can driver hth id to be used for transmission
+    // can driver hth id to be used for transmission
     Can_HwHandleType hth;
 
-    /// upper layer confirmation function, set to null if no confirmation
+    // upper layer confirmation function, set to null if no confirmation
     void(*user_TxConfirmation)(PduIdType txPduId);
 
-    /// upper layer pdu id passed to callout function
+    // upper layer pdu id passed to callout function
     PduIdType ulPduId;
+
 } CanIf_TxPduConfig;
 
 
-typedef struct {
-    /// can id used for reception filtering
-    ///todo add support for range reception
+
+typedef struct 
+{
+    // can id used for reception filtering
     Can_IdType id;
 
-    /// min dlc and dlc reported to upper layers. Set to -1 to disable dlc check
+    // data length (DLC)
     uint8 dlc;
 
-    /// can driver controller id from where to receive lpdu
+    // can driver controller id from where to receive lpdu
     uint8 controller;
 
     /** SWS_CANIF_00012
      upper layer indication function, set to null if no rx indication */
     void(*user_RxIndication)(PduIdType RxPduId, const PduInfoType* PduInfoPtr);
 
-    /// upper layer pdu id passed to callout function
+    // upper layer pdu id passed to callout function
     PduIdType ulPduId;
+
 } CanIf_RxPduConfig;
 
 
 typedef struct
 {
-    union {
+    uint8* SduDataPtr;
+    uint8* MetaDataPtr;
+    PduLengthType   SduLength;
+
+} PduInfoType;
+
+
+typedef struct
+{
+    union 
+    {
         PduIdType lpduId;
         PduIdType* array;
     }pduInfo;
@@ -199,11 +211,14 @@ typedef struct
     PduIdType arrayLen; // 0 means no ptr no filtering = fullCan reception (one single CanId) else ->>> (Range of IDs of group of single IDs)
 }CanIf_HrHConfigType;
 
-typedef struct {
-    /* Everything in this structure is implementation specific */
+
+
+typedef struct 
+{
     const CanIf_TxPduConfig* TxPduCfg;
     const CanIf_RxPduConfig* RxLpduCfg;
     const CanIf_HrHConfigType** canIfHrhCfg;  // This is an array of Hrh objects, for each controller ID
+
 } CanIf_ConfigType;
 
 
