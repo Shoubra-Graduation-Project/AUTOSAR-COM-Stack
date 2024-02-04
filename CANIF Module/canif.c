@@ -116,7 +116,7 @@ Std_ReturnType CanIf_RxIndication(const Can_HwType* MailBox, const PduInfoType* 
     }
 
 
-    // Check CanID_Expected
+    // Check CanID_Expected (FULL CAN)
     /* SWS_CANIF_00417 */
     if ((MailBox->CanId) != CANID_EXPECTED) {
         Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, CANIF_RX_INDICATION_ID, CANIF_E_PARAM_CANID);
