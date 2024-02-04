@@ -90,16 +90,57 @@ void Com_CopyPduToShadowBuffer(const Com_SignalGroupIdType signalGroupId) {
         *buffer++ =  *pduDataPtr++;
     }
 }
-void CopyGroupSignalFromSBtoAddress(const ComSignalGroup_type SignalGroup_id,void *dataAddress)
+void CopyGroupSignalFromSBtoAddress(const ComSignalGroup_type SignalGroup_id, const ComGroupSignal_type GroupSignal_id, void *dataAddress)
 {
     const ComSignalGroup_Type * SignalGroup=GET_SIGNALGROUP(signalGroupId);
-    /*copy group signal from shadowBuffer to address*/
-    
+    const ComGroupSignal_type * GroupSignal=GET_SIGNAL(GroupSignal_id);
+    uint8* shadowBuffer = (uint8*)signalGroup->ComShadowBuffer;
+    uint32 byteSteps = (GroupSignal->ComBitPosition)/8;
+    shadowBuffer += byteSteps;
+    uint32 signalLength = (GroupSignal->ComBitSize)/8
+    uint32 BitOffsetInByte = (GroupSignal->ComBitPosition)%8;
+    uint8 buffermask;
+    for(i = 0; i<=signalLength; i++)
+    {
+	    buffermask = 255;
+	        if(i == 0)
+	        {
+	            buffermask = buffermask << BitOffsetInByte;
+	            *(uin8*)dataAddress = (*shadowBuffer) & buffermask;
+	            *(uin8*)dataAddress = *(uin8*)dataAddress >> BitOffsetInByte;
+	            shadowBuffer++;
+	        }
+	        else if(i==signalLength)
+	        {
+	            buffermask = buffermask << BitOffsetInByte;
+	            data = (*shadowBuffer) & buffermask;
+	            *(uin8*)dataAddress = (*(uin8*)dataAddress) | data;
+	            shadowBuffer++;
+	        }
+	        else
+	        {
+	            buffermask = buffermask >> (8-BitOffsetInByte);
+		    uint8 data = (*shadowBuffer) & buffermask;
+		    data = data << (8-BitOffsetInByte);
+	            *(uin8*)dataAddress = (*(uin8*)dataAddress) | data;
+	
+	            dataBytes++;
+	
+	            pduMask = 255;
+	            buffermask = buffermask << BitOffsetInByte;
+	            data = (*shadowBuffer) & buffermask;
+	            *(uin8*)dataAddress = (*(uin8*)dataAddress) | data;
+	            shadowBuffer++;
+	
+	        }
+	
+    }
+
 }
 void CopySignalFromFGtoAddress(const Com_SignalIdType Signal_id,void *dataAddress)
 {
     const ComSignal_Type * Signal=GET_SIGNAL(Signal_id);
-    memcpy((uint8)dataAddress,(uint8)Signal->ComFGBuffer,Signal->ComSignalLength);
+    memcpy((uint8)dataAddress,(uint8)Signal->ComFGBuffer,(Signal->ComBitSize)/8);
 }
 void CopySignalGroupfromBGtoSB(Com_SignalGroupIdType SignalGroupId)
 {
