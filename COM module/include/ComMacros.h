@@ -2,6 +2,7 @@
 #ifndef COM_MACROS_H_
 #define COM_MACROS_H_
 
+#include "Com.h"
 
 /**********************************************************************************                                                              
  *    Macro Name: GET_SIGNAL    

@@ -182,7 +182,7 @@ uint8 Com_SendSignal (Com_SignalIdType SignalId, const void* SignalDataPtr)
 		If Com_SendSignal or Com_InvalidateSignal is called for a signal that belongs to a signal group, then the AUTOSAR COM will only update the shadow buffer of this
 		signal group. There is no need for any further I-PDU processing like TMS evaluation, unless the I-PDU contents changed.
 		[SWS_Com_00050] ⌈If Com_SendSignalGroup is called for the signal group, the AUTOSAR COM module shall copy the shadow buffer atomically to the 
-		I-PDU buffer.⌋ (SRS_Com_02041)
+		I-PDU buffer.⌋ (SRS_Com_02041)
 		--------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 		Com_WriteSignalDataToShadowBuffer(signalStruct->SignalGroupId, signalStruct->ComHandleId, SignalDataPtr);
 		returnValue = E_OK;
@@ -322,7 +322,7 @@ uint8 Com_SendSignal (Com_SignalIdType SignalId, const void* SignalDataPtr)
 	
 		/*---------------------------------------------------------------------------------------------------------------------------------------------------
 		[SWS_Com_00734] ⌈At a send request of a signal with ComTransferProperty TRIGGERED_ON_CHANGE assigned to an I-PDU with ComTxModeMode DIRECT or MIXED, 
-		the AUTOSAR COM module shall immediately (within the next main function at the latest) initiate ComTxModeNumberOfRepetitions plus one transmissions of 
+		the AUTOSAR COM module shall immediately (within the next main function at the latest) initiate ComTxModeNumberOfRepetitions plus one transmissions of 
 		the assigned I-PDU, if the new sent signal differs to the locally stored (last sent or init) in length or value.⌋ (SRS_Com_02083)
 		---------------------------------------------------------------------------------------------------------------------------------------------------*/
 		signalStruct->ComIsSignalChanged = isSignalChanged;
