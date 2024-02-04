@@ -546,8 +546,11 @@ typedef struct{
 	/* Identify BackGround buffer -------> Not in SWS*/
     	const void * ComBGBuffer; 
 	/* I-PDU that contain this signal group ---------> Not in SWS*/
-	const uint8 ComIPduHandleId;
+	const uint16 ComIPduHandleId;
+	
+	boolean ComIsSignalGroupChanged;
 
+	boolean ComSignalGroupFilterResult;
 
 }ComSignalGroup_type;
 
@@ -593,9 +596,6 @@ typedef struct {
 	// ----> Not is SWS
 	const boolean IsGroupSignal ;
 
-	boolean ComIsSignalChanged;
-
-	boolean ComSignalFilterResult;
  
 }ComGroupSignal_type;
 
