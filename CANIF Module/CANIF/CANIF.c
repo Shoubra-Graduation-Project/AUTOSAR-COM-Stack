@@ -1,4 +1,3 @@
-
 #include "CANIF.h"
 #include "Std_Types.h"
 #include "Commonn_Macros.h"
@@ -102,6 +101,120 @@ FUNC(Std_ReturnType,CANIF_CODE) CanIf_SetControllerMode(VAR(uint8_t,AUTOMATIC) C
   
 }
 
+
+/******************************************* CanIf_getControllerMode ***********************************************/
+
+
+FUNC(Std_ReturnType,CANIF_CODE) CanIf_GetControllerMode(VAR(uint8_t ,AUTOMATIC) ControllerId, P2VAR(Can_ControllerStateType,CANIF_CODE,AUTOMATIC) ControllerModePtr){
+
+
+ VAR(Std_ReturnType,AUTOMATIC) ErrorStatus  = E_NOT_OK ;
+ VAR(CanIf_Channel_t,AUTOMATIC) channel_CanIf_GetControllerMode = (CanIf_Channel_t) ControllerId;
+ 
+ /*check if INIT function is run */
+    
+      if (CanIfState == CANIF_UNINIT)
+    {
+	Det_ReportError(CANIF_MODULE_ID,CANIF_INSTANCE_ID,CANIF_SET_CONTROLLER_MODE_ID,CANIF_E_PARAM_CTRLMODE);    
+        return E_NOT_OK;
+	   
+    }
+    else
+    {
+        /*MISRA*/
+    }
+    
+    
+     if(channel_CanIf_GetControllerMode >= MAX_NUM_CHANNELS)
+    {
+        /*[SWS_CANIF_00313] If parameter ControllerId of CanIf_GetControllerMode() has an invalid, the CanIf shall report
+		development error code CANIF_E_PARAM_CONTROLLERID to the Det_ReportError service of the DET, when 
+		CanIf_GetControllerMode() is called.*/
+        ErrorStatus = E_OK;
+        
+#if CAN_GENERAL_CAN_DEV_ERROR_DETECT == STD_ON
+        Det_ReportError(CANIF_MODULE_ID,CANIF_INSTANCE_ID,CANIF_GET_CONTROLLER_MODE_ID,CANIF_E_PARAM_CONTROLLERID);
+#endif
+    }
+    else
+    {
+        /*MISRA*/
+    }
+    
+    
+    if(ControllerModePtr == NULL_PTR)
+    {
+        /* [SWS_CANIF_00656] If parameter ControllerModePtr of CanIf_GetControllerMode() has an invalid value,
+		the CanIf shall report development error code CANIF_E_PARAM_POINTER to the Det_ReportError service of
+		the DET, when CanIf_GetControllerMode() is called.*/
+        ErrorStatus = E_OK;
+#if CAN_GENERAL_CAN_DEV_ERROR_DETECT == STD_ON
+        Det_ReportError(CANIF_MODULE_ID,CANIF_INSTANCE_ID,CANIF_GET_CONTROLLER_MODE_ID,CANIF_E_PARAM_POINTER);
+#endif
+    }	else
+    {
+        /*MISRA*/
+    }
+    if ( ErrorStatus == E_NOT_OK )
+    {
+        ErrorStatus = Can_GetControllerMode(ControllerId, ControllerModePtr);
+
+    }	else
+    {
+        /*MISRA*/
+    }
+    return ErrorStatus ;
+    
+  }
+    
+   
+
+/******************************************* CanIf_ControllerBusOff ***********************************************/
+
+FUNC(Std_ReturnType,CANIF_CODE) CanIf_ControllerBusOff(VAR(uint8_t ,AUTOMATIC) ControllerId) {
+
+VAR(Std_ReturnType,AUTOMATIC) ErrorStatus  = E_NOT_OK ;
+VAR(CanIf_Channel_t,AUTOMATIC) channel_CanIf_ControllerBusOff = (CanIf_Channel_t) ControllerId;
+
+
+/*[SWS_CANIF_00431] If CanIf was not initialized before calling CanIf_ControllerBusOff(),
+CanIf shall not execute BusOff notification, when CanIf_ControllerBusOff(),
+is called() */
+
+  if (CanIfState == CANIF_UNINIT)
+    {
+	Det_ReportError(CANIF_MODULE_ID,CANIF_INSTANCE_ID,CANIF_SET_CONTROLLER_MODE_ID,CANIF_E_PARAM_CTRLMODE);    
+        return E_NOT_OK;
+	   
+    }
+    else
+    {
+        /*MISRA*/
+    }
+  
+  
+  /*[SWS_CANIF_00429] dIf parameter ControllerId of CanIf_ControllerBusOff() 
+  has an invalid value, CanIf shall report development error code CANIF_E_-
+  PARAM_CONTROLLERID to the Det_ReportError service of the DET module, when
+  CanIf_ControllerBusOff() is called.*/
+  
+  if(channel_CanIf_ControllerBusOff >= MAX_NUM_CHANNELS)
+ {
+       ErrorStatus = E_OK;
+
+#if CAN_GENERAL_CAN_DEV_ERROR_DETECT == STD_ON
+        Det_ReportError(CANIF_MODULE_ID,CANIF_INSTANCE_ID,CANIF_GET_CONTROLLER_MODE_ID,CANIF_E_PARAM_POINTER);
+#endif
+    }	
+  
+    else
+    {
+        /*MISRA*/
+    }
+   
+}
+
+
 void CanIf_Init(const CanIf_ConfigType* ConfigPtr)
 {
 
@@ -127,6 +240,28 @@ void CanIf_Init(const CanIf_ConfigType* ConfigPtr)
         /* MISRA */
     }
 }
+
+
+/******************************************* CanIf_DeInit ***********************************************/
+
+
+FUNC(void,CANIF_CODE) CanIf_DeInit(void) {
+
+
+     CanIfState = CANIF_UNINIT ;
+
+}
+
+
+
+
+
+
+
+
+
+
+
 
 Std_ReturnType CanIf_SetPduMode(uint8 ControllerId, CanIf_PduModeType PduModeRequest)
 {
@@ -190,6 +325,7 @@ Std_ReturnType CanIf_SetPduMode(uint8 ControllerId, CanIf_PduModeType PduModeReq
         }
     }
 }
+
 
   
     
