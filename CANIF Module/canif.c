@@ -136,8 +136,8 @@ Std_ReturnType CanIf_RxIndication(const Can_HwType* MailBox, const PduInfoType* 
         return E_NOT_OK;
     }
 
-    // RX is not online, report to Det and return
-    if (PduMode != CANIF_ONLINE) {
+    // RX is not online and tx offline active not, report to Det and return
+    if (PduMode != CANIF_ONLINE && PduMode != CANIF_TX_OFFLINE_ACTIVE) {
         Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, CANIF_SET_PDU_MODE_ID, CANIF_E_PARAM_PDU_MODE);
         // Rx not online,discard message.
         return E_NOT_OK;
