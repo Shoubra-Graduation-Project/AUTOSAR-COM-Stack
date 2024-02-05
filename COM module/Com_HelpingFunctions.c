@@ -14,7 +14,7 @@
  **********************************************************************************/
  boolean is_com_initiated(const Com_ConfigType* config)
  {
-    return config->com_initiated=1;
+    return config->com_initiated;
  }
 
 boolean Com_ProcessTxSignalFilter(ComSignal_type* signalStruct, uint64 oldData, uint64 newData)
