@@ -1,7 +1,8 @@
 
 #ifndef _COM_HELPINGFUNCTIONS_H_
 #define _COM_HELPINGFUNCTIONS_H_
-
+ boolean is_com_initiated(const Com_ConfigType* config);
+ 
 
 uint8 Com_ProcessTxSignalFilter(ComSignal_type* signalStruct, uint64 oldData, uint64 newData);
 

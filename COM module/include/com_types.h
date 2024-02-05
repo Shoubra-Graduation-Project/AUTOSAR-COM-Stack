@@ -540,13 +540,14 @@ typedef struct{
 	ComGroupSignal_type *ComGroupSignal;
     
 	/* Identify shadow buffer -------> Not in SWS*/    
-	const void * ComShadowBuffer;
+	 void * ComShadowBuffer;
 	/* Identify BackGround buffer -------> Not in SWS*/  
-	const void * ComBackGroundBuffer;
+	 void * ComBackGroundBuffer;
 	/* Identify BackGround buffer -------> Not in SWS*/
-    	const void * ComBGBuffer; 
+    	 void * ComBGBuffer; 
 	/* I-PDU that contain this signal group ---------> Not in SWS*/
-	const uint16 ComIPduHandleId;
+	 uint16 ComIPduHandleId;
+	 void * SignalGroupDataPtr;
 	
 	boolean ComIsSignalGroupChanged;
 

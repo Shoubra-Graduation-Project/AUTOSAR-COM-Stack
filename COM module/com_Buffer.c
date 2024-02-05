@@ -231,7 +231,7 @@ void CopySignalfromBGtoFG(Com_SignalIdType Signal_id)
     const ComSignal_type * Signal = GET_SIGNAL(Signal_id);
     
     // memcpy(dest, src, size)
-    memcpy((uint8*)Signal->ComFGBuffer, (uint8)Signal->ComBGBuffer, Signal->ComSignalLength);
+    memcpy((uint8*)Signal->ComFGBuffer, (uint8)Signal->ComBGBuffer,(Signal->ComBitSize)/8);
 }
 
 

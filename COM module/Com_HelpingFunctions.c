@@ -12,7 +12,10 @@
 /**********************************************************************************
  *                             Functions Definitions                              *
  **********************************************************************************/
-
+ boolean is_com_initiated(const Com_ConfigType* config)
+ {
+    return config->com_initiated=1;
+ }
 uint8 Com_ProcessTxSignalFilter(ComSignal_type* signalStruct, uint64 oldData, uint64 newData)
 {
 	uint8 filterResult = 0;
