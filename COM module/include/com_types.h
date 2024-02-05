@@ -458,8 +458,8 @@ typedef struct {
     
 	/*Pointer to signal data ----> Not in SWS*/
 
-        const void * ComFGBuffer;  /*not in SWS*/
-	const void * ComBGBuffer; /*not in SWS*/
+         void * ComFGBuffer;  /*not in SWS*/
+	void * ComBGBuffer; /*not in SWS*/
 	void * const ComSignalDataPtr;
 
 	/* I-PDU that contain this signal ---------> Not in SWS*/
@@ -542,7 +542,7 @@ typedef struct{
 	/* Identify shadow buffer -------> Not in SWS*/    
 	 void * ComShadowBuffer;
 	/* Identify BackGround buffer -------> Not in SWS*/  
-	 void * ComBackGroundBuffer;
+	 void *ComFGBuffer;
 	/* Identify BackGround buffer -------> Not in SWS*/
     	 void * ComBGBuffer; 
 	/* I-PDU that contain this signal group ---------> Not in SWS*/

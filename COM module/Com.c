@@ -496,12 +496,12 @@ void Com_DisableReceptionDM (Com_IpduGroupIdType IpduGroupId)
         /*[SWS_Com_00461] ⌈The AUTOSAR COM module shall always copy the last known 
          data, or the ComSignalInitValue(s) if not yet written, of the I-PDU to the shadow buffer by a call to Com_ReceiveSignalGroup even if the I-PDU is stopped and COM_-
         SERVICE_NOT_AVAILABLE is returned*/
-        CopySignalGroupfromBGtoSB( SignalGroupId);
+        CopySignalGroupfromSBtoFG( SignalGroupId);
         return COM_SERVICE_NOT_AVAILABLE;
     }
      else
     {
-        CopySignalGroupfromBGtoSB( SignalGroupId);
+        CopySignalGroupfromSBtoFG( SignalGroupId);
         return E_OK;
     }
 
@@ -607,7 +607,7 @@ void Com_DisableReceptionDM (Com_IpduGroupIdType IpduGroupId)
     }
     else
     {
-         CopyGroupSignalFromSBtoAddress(GroupSignal->SignalGroupId,SignalId,SignalDataPtr);
+         CopyGroupSignalFromFGtoAddress(GroupSignal->SignalGroupId,SignalId,SignalDataPtr);
         return E_OK;
     }
 	}
