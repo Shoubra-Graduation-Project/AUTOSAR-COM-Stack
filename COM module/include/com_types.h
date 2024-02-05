@@ -284,6 +284,11 @@ typedef struct
 	/* ComFilter evaluates to ComTxModeFalse */
 	const ComTxModeFalse_type ComTxModeFalse ;
 
+	/*Not in SWS*/
+	uint32 ComNumberOfTransmissions;
+
+	boolean ComCurrentTransmissionSelection;
+
 } ComTxIPdu_type;
 
 
