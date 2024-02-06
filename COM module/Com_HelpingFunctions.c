@@ -12,10 +12,14 @@
 /**********************************************************************************
  *                             Functions Definitions                              *
  **********************************************************************************/
+ boolean is_com_initiated(const Com_ConfigType* config)
+ {
+    return config->com_initiated;
+ }
 
-uint8 Com_ProcessTxSignalFilter(ComSignal_type* signalStruct, uint64 oldData, uint64 newData)
+boolean Com_ProcessTxSignalFilter(ComSignal_type* signalStruct, uint64 oldData, uint64 newData)
 {
-	uint8 filterResult = 0;
+	boolean filterResult = 0;
 	ComSignalType_type signalType = signalStruct->ComSignalType;
 	uint64 mask = (signalStruct->comFilter)->ComFilterMask;
 	if(signalType == SINT8 || signalType == SINT16 || signalType == SINT32 || signalType == SINT64)
@@ -112,9 +116,9 @@ uint8 Com_ProcessTxSignalFilter(ComSignal_type* signalStruct, uint64 oldData, ui
 	return filterResult;
 }
 
-uint8 Com_ProcessTxSignalFilter_float(ComSignal_type* signalStruct, float64 oldData, float64 newData)
+boolean Com_ProcessTxSignalFilter_float(ComSignal_type* signalStruct, float64 oldData, float64 newData)
 {
-	uint8 filterResult = 0;
+	boolean filterResult = 0;
 	ComSignalType_type signalType = signalStruct->ComSignalType;
 	if((signalStruct->comFilter)->ComFilterAlgorithm == ALWAYS)
 	{

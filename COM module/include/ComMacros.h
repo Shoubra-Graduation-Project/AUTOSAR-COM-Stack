@@ -3,7 +3,9 @@
 #define COM_MACROS_H_
 
 #include "Com.h"
-
+#define COM_MAX_GROUPSIGNAL 65535
+#define COM_MIN_GROUPSIGNAL 32768
+#define COM_MAX_SIGNAL 32767
 /**********************************************************************************                                                              
  *    Macro Name: GET_SIGNAL    
  *                                                                 

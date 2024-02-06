@@ -57,13 +57,25 @@ typedef struct{
 
 	/* Contains the configuration parameters of the COM module's signal groups. */
 	const ComSignalGroup_type *ComSignalGroup;
+  boolean com_initiated;
 
 }Com_ConfigType;
 /*------------------------------------------Data Type Declarations End-------------------------------------------------------*/
 
 
 /*------------------------------------------Software Interfaces Declarations Start-------------------------------------------*/
+<<<<<<< HEAD
 
+=======
+ 
+/** 
+  /brief    Com Stack Initialization Function
+  /details  This service initializes internal and external interfaces and variables of the AUTOSAR COM module layer for the further 
+	    processing. After calling this function the inter-ECU communication is still disabled.
+  /param    config: Pointer to the AUTOSAR COM module's configuration data.
+  /return   None
+ */
+>>>>>>> 3a7ff5f1a09d8fe976ab09676323eed6525b6de1
 void Com_Init (const Com_ConfigType* config);
 
 

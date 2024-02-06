@@ -8,6 +8,7 @@
 #include "include/Com_Types.h"
 #include "include/Com_Cfg.h"
 #include "include/ComMacros.h"
+#include <string.h>
 #include <cstddef>
 #include <minwindef.h>
 
@@ -42,7 +43,7 @@ void Com_Init (const Com_ConfigType* config)
 
         // Initialize global and static variables
         ComConfig = config;
-
+        config->com_initiated=1;
 	    ComIPdu_type *IPdu;
     	ComSignal_type *Signal;
 		ComSignalGroup_type *SignalGroup;
@@ -495,12 +496,12 @@ void Com_DisableReceptionDM (Com_IpduGroupIdType IpduGroupId)
         /*[SWS_Com_00461] ⌈The AUTOSAR COM module shall always copy the last known 
          data, or the ComSignalInitValue(s) if not yet written, of the I-PDU to the shadow buffer by a call to Com_ReceiveSignalGroup even if the I-PDU is stopped and COM_-
         SERVICE_NOT_AVAILABLE is returned*/
-        CopySignalGroupfromBGtoSB( SignalGroupId);
+        CopySignalGroupfromSBtoFG( SignalGroupId);
         return COM_SERVICE_NOT_AVAILABLE;
     }
      else
     {
-        CopySignalGroupfromBGtoSB( SignalGroupId);
+        CopySignalGroupfromSBtoFG( SignalGroupId);
         return E_OK;
     }
 
@@ -509,13 +510,66 @@ void Com_DisableReceptionDM (Com_IpduGroupIdType IpduGroupId)
  }
  void Com_RxIndication (PduIdType RxPduId, const PduInfoType* PduInfoPtr)
  {
+	if(!is_com_initiated())
+	{
+		return;
+	}
+	else
+	{
+      const ComIPdu_type *Ipdu=GET_IPDU(RxPduId);
+	  const ComIPdu_type *Ipdu_Rx=(ComIPdu_type *)PduInfoPtr->SduDataPtr;
+	if(Ipdu->ComIPduGroupRef->IpduGroupFlag==STOPPED)
+	{
+		return;
+	}
+	else
+	{
+		if (Ipdu->ComIPduCallout!=NULL)
+		{
+			Ipdu->ComIPduCallout();
+		}
+		else
+		{
+
+		}
+		/*data sequence check*/
+		//if()
+	}
+	for(int signalid=0;signalid<=COM_MAX_SIGNAL;signalid++)
+	{
+		if(Ipdu_Rx->ComIPduSignalRef[signalid]!=NULL)
+		{
+			memcpy(Ipdu->ComIPduSignalRef[signalid]->ComBGBuffer,Ipdu_Rx->ComIPduSignalRef[signalid]->ComSignalDataPtr,(Ipdu_Rx->ComIPduSignalRef[signalid]->ComBitSize)/8);
+		}
+		else
+		{
+
+		}
+
+	}
+	for(int signalgroupid=0;signalid<=COM_MAX_GROUPSIGNAL;signalgroupid++)
+	{
+		if(Ipdu_Rx->ComIPduSignalGroupRef[signalgroupid]!=NULL)
+		{
+			memcpy(Ipdu->ComIPduSignalGroupRef[signalgroupid]->ComBGBuffer,Ipdu_Rx->ComIPduSignalGroupRef[signalgroupid]->SignalGroupDataPtr,Ipdu_Rx->ComIPduSignalGroupRef[signalgroupid]->signalGroupSize);
+
+		}
+		else
+		{
+
+		}
+		
+	}
+	return;
+		
+	}
 
  }
  uint8 Com_ReceiveSignal (Com_SignalIdType SignalId, void* SignalDataPtr)
  {
 	
 	
-   if(SignalId>=0&&SignalId<=32767)
+   if(SignalId>=0&&SignalId<=COM_MAX_SIGNAL)
    {
     const ComSignal_Type * Signal=GET_SIGNAL(SignalId);
 	if(signal->containingIPDU->ComIPduDirection!=RECEIVE)
@@ -536,7 +590,7 @@ void Com_DisableReceptionDM (Com_IpduGroupIdType IpduGroupId)
    }
 	}
     
-   else if(SignalId>32767&&SignalId<=65535)
+   else if(SignalId>=COM_MIN_GROUPSIGNAL&&SignalId<=COM_MAX_GROUPSIGNAL)
    {
     const ComGroupSignal_type * GroupSignal=GET_GROUPSIGNAL(SignalId);
     const ComSignalGroup_Type * SignalGroup= GET_SIGNALGROUP(GroupSignal->SignalGroupId);
@@ -553,7 +607,7 @@ void Com_DisableReceptionDM (Com_IpduGroupIdType IpduGroupId)
     }
     else
     {
-         CopyGroupSignalFromSBtoAddress(GroupSignal->SignalGroupId,SignalDataPtr);
+         CopyGroupSignalFromFGtoAddress(GroupSignal->SignalGroupId,SignalId,SignalDataPtr);
         return E_OK;
     }
 	}
