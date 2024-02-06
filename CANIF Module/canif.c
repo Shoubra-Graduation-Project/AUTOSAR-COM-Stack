@@ -143,11 +143,11 @@ Std_ReturnType CanIf_RxIndication(const Can_HwType* MailBox, const PduInfoType* 
         return E_NOT_OK;
     }
 
-    /* ------------------ Filteraing ------------------ */
+    /* ------------------------------------ Filteraing ------------------------------------ */
     int numberofPdus = CanIf_ConfigPtr->canIfHrhCfg[MailBox->ControllerId][MailBox->Hoh].arrayLen;
 
-    if (numberofPdus == 0)
-    {
+    // There's 1 Pdu only so go on
+    if (numberofPdus == 0) {
         PduIdType *PduId = CanIf_ConfigPtr->canIfHrhCfg[MailBox->ControllerId][MailBox->Hoh].pduInfo.lpduId;
         // no filtering, lpdu id found
         lPduData.rxLpdu[PduId].dlc = PduInfoPtr->SduLength;
@@ -156,34 +156,25 @@ Std_ReturnType CanIf_RxIndication(const Can_HwType* MailBox, const PduInfoType* 
         // call eventual callback
         (*CanIf_ConfigPtr->RxLpduCfg[PduId].user_RxIndication)(CanIf_ConfigPtr->RxLpduCfg[PduId].ulPduId, &PduInfoPtr);
     }
-    else
-    {
+    else {
+        // Get first pduid to go on if there's multiple pduid
         PduIdType *PduId = CanIf_ConfigPtr->canIfHrhCfg[MailBox->ControllerId][MailBox->Hoh].pduInfo.array;
-
-        while (numberofPdus > 1)
-        {
-            if (CanIf_ConfigPtr->RxLpduCfg[PduId[numberofPdus / 2]].id >= MailBox->CanId)
-            {
+        while (numberofPdus > 1) {
+            if (CanIf_ConfigPtr->RxLpduCfg[PduId[numberofPdus / 2]].id >= MailBox->CanId) {
                 PduId += numberofPdus / 2;
                 numberofPdus = numberofPdus / 2 + numberofPdus % 2;
             }
-            else
-            {
-                numberofPdus = numberofPdus / 2;
-            }
+            else  numberofPdus = numberofPdus / 2;
         }
-        if (CanIf_ConfigPtr->RxLpduCfg[*PduId].id == MailBox->CanId)
-        {
+        if (CanIf_ConfigPtr->RxLpduCfg[*PduId].id == MailBox->CanId) {
             // lpdu id found
             lPduData.rxLpdu[*PduId].dlc = PduInfoPtr->SduLength;
             memcpy(lPduData.rxLpdu[*PduId].data, PduInfoPtr->SduDataPtr, PduInfoPtr->SduLength);
 
             // call eventual callback
-            (*CanIf_ConfigPtr->RxLpduCfg[*PduId].user_RxIndication)(CanIf_ConfigPtr->RxLpduCfg[*PduId].ulPduId, &PduInfoPtr);
-            
+            (*CanIf_ConfigPtr->RxLpduCfg[*PduId].user_RxIndication)(CanIf_ConfigPtr->RxLpduCfg[*PduId].ulPduId, &PduInfoPtr); 
         }
     }
-
     return RET;
 }
 
