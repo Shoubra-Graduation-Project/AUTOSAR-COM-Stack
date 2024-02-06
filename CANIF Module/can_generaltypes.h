@@ -12,6 +12,7 @@
 
 ///todo should this file be included here?
 #include "canif_cfg.h"
+#include "Platform_Types.h"
 
  /* Section : Macros Definition */
 
@@ -19,7 +20,8 @@
 #define NUM_OF_HOHS              1
 #define NUM_OF_HTHS              1
 #define SDU_LENGTH               8
-#define CANID_EXPECTED           2
+#define CANID_EXPECTED_MAX       10
+#define CANID_EXPECTED_MIN       1
 #define CANIF_NUM_RX_LPDU_ID     1
 #define CANIF_NUM_TX_PDU_ID      1
 
