@@ -412,7 +412,7 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 		{
 			boolean isSignalGroupChanged = 0;
 			boolean SignalGroupFilterResult = 0;
-			for(int i=0; (signalGroup->ComGroupSignal)[i] != NULL; i++)
+			for(uint16 i=0; (signalGroup->ComGroupSignal)[i] != NULL; i++)
 			{
 				ComGroupSignal_type* groupSignal = (signalGroup->ComGroupSignal)[i];
 		
