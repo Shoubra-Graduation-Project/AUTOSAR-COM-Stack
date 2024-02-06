@@ -116,11 +116,10 @@ Std_ReturnType CanIf_RxIndication(const Can_HwType* MailBox, const PduInfoType* 
         Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, CANIF_RX_INDICATION_ID, CANIF_E_PARAM_HRH);
         return E_NOT_OK;
     }
-
-    // We should make a filteration but I suppose that we will work as a Full CAN (1 CanID)
-    // Check CanID_Expected
+  
+    // Check Range of IDs
     /* SWS_CANIF_00417 */
-    if ((MailBox->CanId) != CANID_EXPECTED) {
+    if (((MailBox->CanId) < CANID_EXPECTED_MIN) && ((MailBox->CanId) < CANID_EXPECTED_MAX)) {
         Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, CANIF_RX_INDICATION_ID, CANIF_E_PARAM_CANID);
         return E_NOT_OK;
     }
@@ -132,7 +131,6 @@ Std_ReturnType CanIf_RxIndication(const Can_HwType* MailBox, const PduInfoType* 
         return E_NOT_OK;
     }
 
-    // No Filtering - FullCan Reception
     //Check PDU Mode
     if (CanIf_GetPduMode(CanIf_ConfigPtr->RxLpduCfg[lpdu].controller, &PduMode) != E_OK) {
         return E_NOT_OK;
@@ -144,10 +142,39 @@ Std_ReturnType CanIf_RxIndication(const Can_HwType* MailBox, const PduInfoType* 
         // Rx not online,discard message.
         return E_NOT_OK;
     }
-    
-    // call eventual callback
-    (*CanIf_ConfigPtr->RxLpduCfg[lpdu].user_RxIndication)(CanIf_ConfigPtr->RxLpduCfg[lpdu].ulPduId, &PduInfoPtr);
 
+    /* ------------------------------------ Filteraing ------------------------------------ */
+    int numberofPdus = CanIf_ConfigPtr->canIfHrhCfg[MailBox->ControllerId][MailBox->Hoh].arrayLen;
+
+    // There's 1 Pdu only so go on
+    if (numberofPdus == 0) {
+        PduIdType *PduId = CanIf_ConfigPtr->canIfHrhCfg[MailBox->ControllerId][MailBox->Hoh].pduInfo.lpduId;
+        // no filtering, lpdu id found
+        lPduData.rxLpdu[PduId].dlc = PduInfoPtr->SduLength;
+        memcpy(lPduData.rxLpdu[PduId].data, PduInfoPtr->SduDataPtr, PduInfoPtr->SduLength);
+
+        // call eventual callback
+        (*CanIf_ConfigPtr->RxLpduCfg[PduId].user_RxIndication)(CanIf_ConfigPtr->RxLpduCfg[PduId].ulPduId, &PduInfoPtr);
+    }
+    else {
+        // Get first pduid to go on if there's multiple pduid
+        PduIdType *PduId = CanIf_ConfigPtr->canIfHrhCfg[MailBox->ControllerId][MailBox->Hoh].pduInfo.array;
+        while (numberofPdus > 1) {
+            if (CanIf_ConfigPtr->RxLpduCfg[PduId[numberofPdus / 2]].id >= MailBox->CanId) {
+                PduId += numberofPdus / 2;
+                numberofPdus = numberofPdus / 2 + numberofPdus % 2;
+            }
+            else  numberofPdus = numberofPdus / 2;
+        }
+        if (CanIf_ConfigPtr->RxLpduCfg[*PduId].id == MailBox->CanId) {
+            // lpdu id found
+            lPduData.rxLpdu[*PduId].dlc = PduInfoPtr->SduLength;
+            memcpy(lPduData.rxLpdu[*PduId].data, PduInfoPtr->SduDataPtr, PduInfoPtr->SduLength);
+
+            // call eventual callback
+            (*CanIf_ConfigPtr->RxLpduCfg[*PduId].user_RxIndication)(CanIf_ConfigPtr->RxLpduCfg[*PduId].ulPduId, &PduInfoPtr); 
+        }
+    }
     return RET;
 }
 
