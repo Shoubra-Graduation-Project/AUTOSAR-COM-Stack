@@ -70,6 +70,8 @@ Std_ReturnType CanIf_Transmit(PduIdType TxPduId, const PduInfoType* PduInfoPtr)
         Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, CANIF_SET_PDU_MODE_ID, CANIF_E_PARAM_PDU_MODE);
         return E_NOT_OK;
     }
+
+    //Copy data to CanPdu
     Can_IdType canId;
     canId = CanIf_ConfigPtr->TxPduCfg[TxPduId].id;
 
@@ -115,8 +117,8 @@ Std_ReturnType CanIf_RxIndication(const Can_HwType* MailBox, const PduInfoType* 
         return E_NOT_OK;
     }
 
-
-    // Check CanID_Expected (FULL CAN)
+    // We should make a filteration but I suppose that we will work as a Full CAN (1 CanID)
+    // Check CanID_Expected
     /* SWS_CANIF_00417 */
     if ((MailBox->CanId) != CANID_EXPECTED) {
         Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, CANIF_RX_INDICATION_ID, CANIF_E_PARAM_CANID);
@@ -142,7 +144,7 @@ Std_ReturnType CanIf_RxIndication(const Can_HwType* MailBox, const PduInfoType* 
         // Rx not online,discard message.
         return E_NOT_OK;
     }
-
+    
     // call eventual callback
     (*CanIf_ConfigPtr->RxLpduCfg[lpdu].user_RxIndication)(CanIf_ConfigPtr->RxLpduCfg[lpdu].ulPduId, &PduInfoPtr);
 
