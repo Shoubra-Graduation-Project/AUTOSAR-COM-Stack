@@ -70,6 +70,8 @@ Std_ReturnType CanIf_Transmit(PduIdType TxPduId, const PduInfoType* PduInfoPtr)
         Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, CANIF_SET_PDU_MODE_ID, CANIF_E_PARAM_PDU_MODE);
         return E_NOT_OK;
     }
+
+    //Copy data to CanPdu
     Can_IdType canId;
     canId = CanIf_ConfigPtr->TxPduCfg[TxPduId].id;
 
@@ -114,8 +116,7 @@ Std_ReturnType CanIf_RxIndication(const Can_HwType* MailBox, const PduInfoType* 
         Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, CANIF_RX_INDICATION_ID, CANIF_E_PARAM_HRH);
         return E_NOT_OK;
     }
-
-
+  
     // Check Range of IDs
     /* SWS_CANIF_00417 */
     if (((MailBox->CanId) < CANID_EXPECTED_MIN) && ((MailBox->CanId) < CANID_EXPECTED_MAX)) {
@@ -135,7 +136,7 @@ Std_ReturnType CanIf_RxIndication(const Can_HwType* MailBox, const PduInfoType* 
         return E_NOT_OK;
     }
 
-    // RX is not online, report to Det and return
+    // RX is not online and tx offline active not, report to Det and return
     if (PduMode != CANIF_ONLINE && PduMode != CANIF_TX_OFFLINE_ACTIVE) {
         Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, CANIF_SET_PDU_MODE_ID, CANIF_E_PARAM_PDU_MODE);
         // Rx not online,discard message.

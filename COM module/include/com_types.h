@@ -284,6 +284,11 @@ typedef struct
 	/* ComFilter evaluates to ComTxModeFalse */
 	const ComTxModeFalse_type ComTxModeFalse ;
 
+	/*Not in SWS*/
+	uint32 ComNumberOfTransmissions;
+
+	boolean ComCurrentTransmissionSelection;
+
 } ComTxIPdu_type;
 
 
@@ -458,8 +463,8 @@ typedef struct {
     
 	/*Pointer to signal data ----> Not in SWS*/
 
-        const void * ComFGBuffer;  /*not in SWS*/
-	const void * ComBGBuffer; /*not in SWS*/
+         void * ComFGBuffer;  /*not in SWS*/
+	void * ComBGBuffer; /*not in SWS*/
 	void * const ComSignalDataPtr;
 
 	/* I-PDU that contain this signal ---------> Not in SWS*/
@@ -540,13 +545,14 @@ typedef struct{
 	ComGroupSignal_type *ComGroupSignal;
     
 	/* Identify shadow buffer -------> Not in SWS*/    
-	const void * ComShadowBuffer;
+	 void * ComShadowBuffer;
 	/* Identify BackGround buffer -------> Not in SWS*/  
-	const void * ComBackGroundBuffer;
+	 void *ComFGBuffer;
 	/* Identify BackGround buffer -------> Not in SWS*/
-    	const void * ComBGBuffer; 
+    	 void * ComBGBuffer; 
 	/* I-PDU that contain this signal group ---------> Not in SWS*/
-	const uint16 ComIPduHandleId;
+	 uint16 ComIPduHandleId;
+	 void * SignalGroupDataPtr;
 	
 	boolean ComIsSignalGroupChanged;
 
