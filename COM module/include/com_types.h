@@ -462,10 +462,13 @@ typedef struct {
 
     
 	/*Pointer to signal data ----> Not in SWS*/
-
-         void * ComFGBuffer;  /*not in SWS*/
-	void * ComBGBuffer; /*not in SWS*/
 	void * const ComSignalDataPtr;
+
+    /* Pointer to foreground buffer       -->not in SWS */
+    void * ComFGBuffer; 
+
+	/* Pointer to background buffer       -->not in SWS */ 
+	void * ComBGBuffer; 
 
 	/* I-PDU that contain this signal ---------> Not in SWS*/
 	const uint16 ComIPduHandleId;
@@ -474,14 +477,14 @@ typedef struct {
 	float32 DeadlineMonitoringTimer;
 
     // ---> Not is SWS
-	const boolean IsGroupSignal ;
+	const boolean IsGroupSignal;
 
 	const boolean ComSignalUpdated;
 
-	boolean ComIsSignalChanged;
-
 	boolean ComSignalFilterResult;
+
     ComIPdu_type *containingIPDU;
+
 }ComSignal_type;
 
 
@@ -647,3 +650,5 @@ typedef struct{
 
 
 #endif
+
+

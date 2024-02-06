@@ -64,21 +64,9 @@ typedef struct{
 
 
 /*------------------------------------------Software Interfaces Declarations Start-------------------------------------------*/
-<<<<<<< HEAD
-
-=======
  
-/** 
-  /brief    Com Stack Initialization Function
-  /details  This service initializes internal and external interfaces and variables of the AUTOSAR COM module layer for the further 
-	    processing. After calling this function the inter-ECU communication is still disabled.
-  /param    config: Pointer to the AUTOSAR COM module's configuration data.
-  /return   None
- */
->>>>>>> 3a7ff5f1a09d8fe976ab09676323eed6525b6de1
+
 void Com_Init (const Com_ConfigType* config);
-
-
 
 void Com_DeInit (void);
 
@@ -103,8 +91,6 @@ void Com_RxIndication (PduIdType RxPduId, const PduInfoType* PduInfoPtr);
 void Com_TxConfirmation (PduIdType TxPduId, Std_ReturnType result);
 
 BufReq_ReturnType Com_StartOfReception (PduIdType id, const PduInfoType* info, PduLengthType TpSduLength, PduLengthType* bufferSizePtr);
-
-BufReq_ReturnType Com_CopyRxData (PduIdType id, const PduInfoType* info, PduLengthType* bufferSizePtr);
 
 BufReq_ReturnType Com_CopyRxData (PduIdType id, const PduInfoType* info, PduLengthType* bufferSizePtr);
 

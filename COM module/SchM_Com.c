@@ -8,6 +8,7 @@
 #include "include/Com_Types.h"
 #include "include/Com_Cfg.h"
 #include "include/ComMacros.h"
+#include "include/com_buffers.h"
 #include <cstddef>
 
 
@@ -37,6 +38,7 @@ void Com_MainFunctionRx(void)
 {
     	const ComIPdu_type *IPdu = NULL;
 	    const ComSignal_type *signal = NULL;
+        const ComSignalGroup_type *SignalGroup =NULL;
 
 
         uint8 ComMainRxPduId;
@@ -58,75 +60,21 @@ void Com_MainFunctionRx(void)
             {
                 //Get signal
                 Signal = IPdu->ComIPduSignalRef[ComMainRxSignalId];
-
-
-                				
-                if (Signal->ComSignalUpdated)
-				{
-                    /*[SWS_Com_00301] If ComIPduSignalProcessing for an I-PDU is configured to DEFERRED, 
-                      the AUTOSAR COM module shall first copy the I-PDU’s data within the
-                      Com_RxIndication function or the related TP reception functions respectively from 
-                      the PduR into COM. Then the AUTOSAR COM module shall invoke the configured
-                      ComNotifications for the included signals and signal groups asynchronously during
-                      the next call to Com_MainFunctionRx*/
-					if (signal->ComNotification != NULL)
-					{
-						signal->ComNotification();
-					}
-					Signal->ComSignalUpdated = FALSE;
-
-                }
-
-                if (Signal->ComTimeoutFactor > 0)
-                {
-                    timerDec(Signal->DeadlineMonitoringTimer);
-
-                    if(Signal->DeadlineMonitoringTimer == 0)
-                    {
-                       switch(Signal->ComRxDataTimeoutAction )
-                       { 
-                             /* [SWS_Com_00470] If ComRxDataTimeoutAction is set to REPLACE, 
-                             the AUTOSAR COM module shall replace the signal’s value by
-                             its ComSignalInitValue when the reception deadline monitoring
-                             timer of a signal expires*/
-                            case REPLACE:
-                            Com_WriteSignalDataToPdu(signal->ComHandleId, signal->ComSignalInitValue);
-                            break;
-
-                            /*[SWS_Com_00875] If ComRxDataTimeoutAction is set to SUBSTITUTE,
-                            the AUTOSAR COM module shall replace the signal's value by 
-                            its ComTimeoutSubstitutionValue when the reception deadline monitoring
-                            timer of a signal expires*/
-                            case SUBSTITUTE:
-                            Com_WriteSignalDataToPdu(signal->ComHandleId, signal->ComTimeoutSubstitutionValue);
-                            break;
-
-                       }
-
-                       if (Signal->ComTimeoutNotification != NULL)
-                       {
-						   Signal->ComTimeoutNotification();
-					   }
-                       
-                       else
-                       {
-
-                       }
-                       // Restart the timer
-                       Signal->DeadlineMonitoringTimer = signal->ComTimeoutFactor;
-                    }
-                    else
-                    {
-
-                    }
-
-
-                }
-                else
-                {
-
-                }
+		
+                Com_MainFunctionRxSignal(Signal);
+                CopySignalfromBGtoFG(ComMainRxSignalId);
+               
             }
+
+            for (ComMainRxSignalGroupId = 0; IPdu[ComMainRxSignalGroupId].ComIPduSignalGroupRef[ComMainRxSignalGroupId] != NULL; ComMainRxSignalGroupId++)
+            {
+                SignalGroup = IPdu->ComIPduSignalGroupRef[ComMainRxSignalGroupId];
+
+                Com_MainFunctionRxSignalGroup(SignalGroup);
+
+                CopySignalGroupfromBGtoSB(ComMainRxSignalGroupId);
+
+            }         
 
         }
         else
@@ -187,3 +135,120 @@ void Com_MainFunctionTx(void)
     }
 
 }
+
+
+
+void Com_MainFunctionRxSignal(Signal)
+{
+    if (Signal->ComSignalUpdated)
+	{
+        /*[SWS_Com_00301] If ComIPduSignalProcessing for an I-PDU is configured to DEFERRED, 
+        the AUTOSAR COM module shall first copy the I-PDU’s data within the
+        Com_RxIndication function or the related TP reception functions respectively from 
+        the PduR into COM. Then the AUTOSAR COM module shall invoke the configured
+        ComNotifications for the included signals and signal groups asynchronously during
+        the next call to Com_MainFunctionRx*/
+		if (signal->ComNotification != NULL)
+		{
+			signal->ComNotification();
+		}
+		Signal->ComSignalUpdated = FALSE;
+
+    }
+
+    if (Signal->ComTimeoutFactor > 0)
+    {
+        timerDec(Signal->DeadlineMonitoringTimer);
+
+        if(Signal->DeadlineMonitoringTimer == 0)
+        {
+             switch(Signal->ComRxDataTimeoutAction )
+            { 
+                /* [SWS_Com_00470] If ComRxDataTimeoutAction is set to REPLACE, 
+                the AUTOSAR COM module shall replace the signal’s value by
+                its ComSignalInitValue when the reception deadline monitoring
+                timer of a signal expires*/
+                case REPLACE:
+                memcpy((uint8*)Signal->ComFGBuffer, (uint8*)Signal->ComSignalInitValue,(Signal->ComBitSize)/8);
+                break;
+
+                /*[SWS_Com_00875] If ComRxDataTimeoutAction is set to SUBSTITUTE,
+                the AUTOSAR COM module shall replace the signal's value by 
+                its ComTimeoutSubstitutionValue when the reception deadline monitoring
+                timer of a signal expires*/
+                case SUBSTITUTE:
+                memcpy((uint8*)Signal->ComFGBuffer, (uint8*)Signal->ComTimeoutSubstitutionValue,(Signal->ComBitSize)/8);
+                break;
+
+            }
+
+            if (Signal->ComTimeoutNotification != NULL)
+            {
+				Signal->ComTimeoutNotification();
+		    }
+                       
+            else
+            {
+            }
+            // Restart the timer
+            Signal->DeadlineMonitoringTimer = signal->ComTimeoutFactor;
+        }
+        else
+        {
+        }
+
+    }
+    else
+    {
+    }
+}
+
+void Com_MainFunctionRxSignalGroup(SignalGroup)
+{
+    if (SignalGroup->ComTimeoutFactor > 0)
+    {
+        timerDec(SignalGroup->DeadlineMonitoringTimer);
+
+        if(SignalGroup->DeadlineMonitoringTimer == 0)
+        {
+            for(ComMainRxGroupSignalId=0 ;(SignalGroup->ComGroupSignal != NULL && SignalGroup->ComGroupSignal[ComMainRxGroupSignalId] != NULL) ; ComMainRxGroupSignalId++)
+            {
+                GroupSignal = SignalGroup->ComGroupSignal[ComMainRxGroupSignalId];
+
+                switch(GroupSignal->ComRxDataTimeoutAction )
+                { 
+                    /* [SWS_Com_00470] If ComRxDataTimeoutAction is set to REPLACE, 
+                    the AUTOSAR COM module shall replace the signal’s value by
+                    its ComSignalInitValue when the reception deadline monitoring
+                    timer of a signal expires*/
+                    case REPLACE:
+                    memcpy((uint8*)SignalGroup->ComShadowBuffer, (uint8*)GroupSignal->ComSignalInitValue,(GroupSignal->ComBitSize)/8);
+
+                    //Com_WriteSignalDataToPdu(GroupSignal->ComHandleId, GroupSignal->ComSignalInitValue);
+                    break;
+
+                    /*[SWS_Com_00875] If ComRxDataTimeoutAction is set to SUBSTITUTE,
+                    the AUTOSAR COM module shall replace the signal's value by 
+                    its ComTimeoutSubstitutionValue when the reception deadline monitoring
+                    timer of a signal expires*/
+                    case SUBSTITUTE:
+                    memcpy((uint8*)SignalGroup->ComShadowBuffer, (uint8*)GroupSignal->ComTimeoutSubstitutionValue,(GroupSignal->ComBitSize)/8);
+
+                    //Com_WriteSignalDataToPdu(GroupSignal->ComHandleId, GroupSignal->ComTimeoutSubstitutionValue);
+                    break;
+
+                }
+
+
+            }
+
+        }
+
+    }
+
+
+}
+
+
+
+

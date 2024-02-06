@@ -76,4 +76,18 @@
     (*( (uint8 *)dest + (bit / 8) ) &= (uint8)~(uint8)(1u << (bit % 8)))
 
 
+/***********************************************************************************                                                                               
+ *    Macro Name: GET_SIGNAL_TYPE    
+ *                                                                 
+ *    Parameters (in): SignalID
+ * 
+ *    Return Value: 0 or 1
+ * 
+ *    Description: check signal type returns 1 if it's ordinary signal
+ *                 and 0 if it's group signal
+ *********************************************************************************/ 
+#define GET_SIGNAL_TYPE(SignalID) (if(SignalID<COM_NUM_OF_SIGNAL))
+
+
+
 #endif

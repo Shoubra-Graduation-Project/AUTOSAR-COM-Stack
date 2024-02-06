@@ -567,55 +567,55 @@ void Com_DisableReceptionDM (Com_IpduGroupIdType IpduGroupId)
  }
  uint8 Com_ReceiveSignal (Com_SignalIdType SignalId, void* SignalDataPtr)
  {
-	
-	
-   if(SignalId>=0&&SignalId<=COM_MAX_SIGNAL)
+		
+   if( SignalId>=0 && SignalId<=COM_MAX_SIGNAL)
    {
-    const ComSignal_Type * Signal=GET_SIGNAL(SignalId);
-	if(signal->containingIPDU->ComIPduDirection!=RECEIVE)
-	{
-		return E_NOT_OK;
-	}
-	else
-	{
-		if(signal->containingIPDU->ComIPduGroupRef->IpduGroupFlag==STOPPED)
-    {
-        return COM_SERVICE_NOT_AVAILABLE;
-    }
-    else
-    {    //CopySignalfromBGtoFG(SignalId);
-         CopySignalFromFGtoAddress(SignalId,SignalDataPtr);
-        return E_OK;
-    }
-   }
+       const ComSignal_type * Signal = GET_SIGNAL(SignalId);
+	   if(Signal->containingIPDU->ComIPduDirection!=RECEIVE)
+	   {
+		  return E_NOT_OK;
+	   }
+	   else
+	   {
+		  if(Signal->containingIPDU->ComIPduGroupRef->IpduGroupFlag==STOPPED)
+         {  
+           return COM_SERVICE_NOT_AVAILABLE;
+         }
+        else
+        {    //CopySignalfromBGtoFG(SignalId);
+            CopySignalFromFGtoAddress(SignalId,SignalDataPtr);
+            return E_OK;
+        }
+       }
 	}
     
-   else if(SignalId>=COM_MIN_GROUPSIGNAL&&SignalId<=COM_MAX_GROUPSIGNAL)
-   {
-    const ComGroupSignal_type * GroupSignal=GET_GROUPSIGNAL(SignalId);
-    const ComSignalGroup_Type * SignalGroup= GET_SIGNALGROUP(GroupSignal->SignalGroupId);
-    const ComIPdu_type *Ipdu=GET_IPDU(SignalGroup->ComIPduHandleId);
-	if(Ipdu->ComIPduDirection!=RECEIVE)
-	{
-		return E_NOT_OK;
-	}
-	else
-	{
-        if(Ipdu->ComIPduGroupRef->IpduGroupFlag==STOPPED)
-    {
-        return COM_SERVICE_NOT_AVAILABLE;
-    }
-    else
-    {
-         CopyGroupSignalFromFGtoAddress(GroupSignal->SignalGroupId,SignalId,SignalDataPtr);
-        return E_OK;
-    }
-	}
+     else if(SignalId >= COM_MIN_GROUPSIGNAL && SignalId <= COM_MAX_GROUPSIGNAL)
+     {
+        const ComGroupSignal_type * GroupSignal = GET_GROUPSIGNAL(SignalId);
+        const ComSignalGroup_type * SignalGroup = GET_SIGNALGROUP(GroupSignal->SignalGroupId);
+        const ComIPdu_type *Ipdu=GET_IPDU(SignalGroup->ComIPduHandleId);
+
+	     if(Ipdu->ComIPduDirection!=RECEIVE)
+	     {
+		    return E_NOT_OK;
+	     }
+	     else
+	     {
+            if(Ipdu->ComIPduGroupRef->IpduGroupFlag==STOPPED)
+            {
+               return COM_SERVICE_NOT_AVAILABLE;
+            }
+            else
+            {
+                CopyGroupSignalFromFGtoAddress(GroupSignal->SignalGroupId,SignalId,SignalDataPtr);
+                return E_OK;
+            } 
+	     }
      
-   }
-   else
-   {
-	return E_NOT_OK;
-   }
+     }
+     else
+     {
+	    return E_NOT_OK;
+     }
  }
 
