@@ -335,10 +335,6 @@ void Com_WriteSignalDataToPduBuffer(const uint16 signalId, const void *signalDat
 
 	}
 
-
-
-
-
 }
 
 

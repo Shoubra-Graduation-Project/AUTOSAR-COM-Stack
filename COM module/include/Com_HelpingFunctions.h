@@ -2,6 +2,8 @@
 #ifndef _COM_HELPINGFUNCTIONS_H_
 #define _COM_HELPINGFUNCTIONS_H_
 
+#include "Std_Types.h"
+#include "Com_types.h"
 
 uint8 Com_ProcessTxSignalFilter(ComSignal_type* signalStruct, uint64 oldData, uint64 newData);
 
