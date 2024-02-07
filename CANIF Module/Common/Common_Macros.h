@@ -27,11 +27,7 @@
    
    
 /**Macros Canif_types.h*/   
-   
-#define EXTENDED_CAN                              0
-#define EXTENDED_FD_CAN                           1
-#define STANDARD_CAN                              2
-#define STANDARD_FD_CAN                           3
+
 
 
 /** Channel is in the offline mode ==> no transmission or reception */

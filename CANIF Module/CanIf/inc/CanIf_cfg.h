@@ -48,7 +48,51 @@
 #define CANIF_CTRL_WAKEUP_SUPPORT                 STD_OFF // not supported
 /// Defines if a can tranceiver has wakeup support
 #define CANIF_TRCV_WAKEUP_SUPPORT                 STD_OFF // not supported
+/**************************************************************************************************
+**
+Name:                                     CanIfMaxRxPduCfg
 
+Type:                                   EcucIntegerParamDef
+
+Description:  			Maximum number of Pdus. This parameter is needed only in case of
+						post-build loadable implementation using static memory allocation.		**
+**************************************************************************************************/
+#define CanIfMaxRxPduCfg	(uint32)1
+
+/**************************************************************************************************
+**
+Name:                                    CanIfMaxTxPduCfg
+
+Type:                                   EcucIntegerParamDef
+
+Description:  			Maximum number of Pdus. This parameter is needed only in case of
+						post-build loadable implementation using static memory allocation.		**
+**************************************************************************************************/
+#define CanIfMaxTxPduCfg	(uint32)1
+
+/**************************************************************************************************
+**
+Name:                              CanIfPublicReadRxPduNotifyStatusApi
+
+Type:                                    EcucBooleanParamDef
+
+Description: 				Enables and disables the API for reading the notification status of
+											receive L-PDUs.
+									True: Enabled False: Disabled								**
+**************************************************************************************************/
+#define CanIfPublicReadRxPduNotifyStatusApi	false
+
+/**************************************************************************************************
+**
+Name:                              CanIfPublicReadTxPduNotifyStatusApi
+
+Type:                                    EcucBooleanParamDef
+
+Description: 				Enables and disables the API for reading the notification status of
+											transmit L-PDUs.
+									True: Enabled False: Disabled								**
+**************************************************************************************************/
+#define CanIfPublicReadTxPduNotifyStatusApi	false
 
 #endif	/* CANIF_CFG_H */
 

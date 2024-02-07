@@ -44,6 +44,7 @@ typedef struct
   typedef unsigned char StatusType;
 #endif
 
+#define NULL ((void *)0)
 
 #define E_NOT_OK   0x01u
 
@@ -55,5 +56,8 @@ typedef struct
 
 #define STD_ON     0x01u
 #define STD_OFF    0x00u
+
+#define true	1
+#define false	0
 
 #endif /*__STD_TYPES_H_ */

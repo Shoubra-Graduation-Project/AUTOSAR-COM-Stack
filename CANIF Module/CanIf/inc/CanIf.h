@@ -15,7 +15,7 @@
 
  /* Section : Macros Definition */
 #define CANIF_VENDOR_ID          (VENDOR_ID_ARCCORE)
-#define CANIF_MODULE_ID          (MODULE_ID_CANIF)
+#define CANIF_MODULE_ID          (1)
 #define CANIF_AR_MAJOR_VERSION   3
 #define CANIF_AR_MINOR_VERSION   1
 #define CANIF_AR_PATCH_VERSION   5
@@ -48,6 +48,7 @@ STD_ReturnType CanIf_GetControllerMode(uint8 ControllerId, CanIf_ControllerModeT
 STD_ReturnType CanIf_SetPduMode(uint8 ControllerId, CanIf_PduModeType PduModeRequest);
 STD_ReturnType CanIf_GetPduMode(uint8 ControllerId, CanIf_PduModeType* PduModePtr);
 void CanIf_Init(const CanIf_ConfigType* ConfigPtr);
+void CanIf_TxConfirmation (PduIdType CanTxPduId);
 STD_ReturnType CanIf_SetTrcvMode( uint8 TransceiverId, CanTrcv_TrcvModeType TransceiverMode );
 STD_ReturnType CanIf_GetTrcvMode( uint8 TransceiverId, CanTrcv_TrcvModeType* TransceiverModePtr );
 #endif	/* CANIF_H */

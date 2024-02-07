@@ -1,9 +1,7 @@
-
 #include "CANIF.h"
 #include "Std_Types.h"
 
-#include "Commonn_Macros.h"
-#include "Canif_Types.h"
+#include "Common_Macros.h"
 #include "CanIf_Cfg.h"
 #include "Det.h"
 

@@ -4,6 +4,7 @@
         "platform_types.h": "c",
         "canif.h": "c",
         "common_macros.h": "c",
-        "canif_types.h": "c"
+        "canif_types.h": "c",
+        "compiler.h": "c"
     }
 }
