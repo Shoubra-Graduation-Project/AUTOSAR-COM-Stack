@@ -1,4 +1,3 @@
-
 /*********************************************************************************
  *                                    Includes                                   *
  ********************************************************************************/
@@ -40,10 +39,8 @@ void Com_MainFunctionRx(void)
 	    const ComSignal_type *signal = NULL;
         const ComSignalGroup_type *SignalGroup =NULL;
 
-
         uint8 ComMainRxPduId;
 		uint8 ComMainRxSignalId;
-        uint8 ComMainRxGroupSignalId;
         uint8 ComMainRxSignalGroupId;
 
     
@@ -136,9 +133,17 @@ void Com_MainFunctionTx(void)
 
 }
 
+/***************************************************************************************
+ Service name:               Com_MainFunctionRxSignal
+ Parameters (in):               Signal
+ Parameters (inout):            None
+ Parameters (out):              None
+ Return value:                  None
+ Description:        This function performs the processing of the AUTOSAR COM module's
+                     checks for recieved signals in Com_MainFunctionRx API
+ ***************************************************************************************/
 
-
-void Com_MainFunctionRxSignal(Signal)
+void Com_MainFunctionRxSignal(ComSignal_type Signal)
 {
     if (Signal->ComSignalUpdated)
 	{
@@ -156,7 +161,7 @@ void Com_MainFunctionRxSignal(Signal)
 
     }
 
-    if (Signal->ComTimeoutFactor > 0)
+    if (Signal->ComTimeout > 0)
     {
         timerDec(Signal->DeadlineMonitoringTimer);
 
@@ -191,7 +196,7 @@ void Com_MainFunctionRxSignal(Signal)
             {
             }
             // Restart the timer
-            Signal->DeadlineMonitoringTimer = signal->ComTimeoutFactor;
+            Signal->DeadlineMonitoringTimer = signal->ComTimeout;
         }
         else
         {
@@ -203,9 +208,20 @@ void Com_MainFunctionRxSignal(Signal)
     }
 }
 
-void Com_MainFunctionRxSignalGroup(SignalGroup)
+/***************************************************************************************
+ Service name:               Com_MainFunctionRxSignalGroup
+ Parameters (in):               SignalGroup
+ Parameters (inout):            None
+ Parameters (out):              None
+ Return value:                  None
+ Description:        This function performs the processing of the AUTOSAR COM module's
+                     checks for recieved signal groups in Com_MainFunctionRx API
+ ***************************************************************************************/
+void Com_MainFunctionRxSignalGroup(ComSignalGroup_type SignalGroup)
 {
-    if (SignalGroup->ComTimeoutFactor > 0)
+    uint8 ComMainRxGroupSignalId;
+    
+    if (SignalGroup->ComTimeout > 0)
     {
         timerDec(SignalGroup->DeadlineMonitoringTimer);
 
@@ -233,19 +249,32 @@ void Com_MainFunctionRxSignalGroup(SignalGroup)
                     timer of a signal expires*/
                     case SUBSTITUTE:
                     memcpy((uint8*)SignalGroup->ComShadowBuffer, (uint8*)GroupSignal->ComTimeoutSubstitutionValue,(GroupSignal->ComBitSize)/8);
-
                     //Com_WriteSignalDataToPdu(GroupSignal->ComHandleId, GroupSignal->ComTimeoutSubstitutionValue);
                     break;
 
                 }
 
+            }
+
+            if (SignalGroup->ComTimeoutNotification != NULL)
+            {
+				SignalGroup->ComTimeoutNotification();
+		    }
+            else
+            {
 
             }
+
+            // Restart the timer
+            SignalGroup->DeadlineMonitoringTimer = SignalGroup->ComTimeout;
 
         }
 
     }
+    else
+    {
 
+    }
 
 }
 
