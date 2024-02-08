@@ -155,7 +155,7 @@ uint8 com_pdu_transmissions_handle_signal(ComIPdu_type* IPdu, ComSignal_type* si
 		if(IPdu->ComTxIPdu.ComCurrentTransmissionSelection == 1 && (IPdu->ComTxIPdu.ComTxModeTrue.ComTxMode.ComTxModeMode == DIRECT || IPdu->ComTxIPdu.ComTxModeTrue.ComTxMode.ComTxModeMode == MIXED))
 		{
 			uint8 N = IPdu->ComTxIPdu.ComTxModeTrue.ComTxMode.ComTxModeNumberOfRepetitions;
-			if(signal->ComTransferProperty == TRIGGERED)
+			if(signal->ComTransferProperty == TRIGGERED && N>0)
 			{
 				IPdu->ComTxIPdu.ComNumberOfTransmissions += N;
 			}
@@ -163,7 +163,7 @@ uint8 com_pdu_transmissions_handle_signal(ComIPdu_type* IPdu, ComSignal_type* si
 			{
 				IPdu->ComTxIPdu.ComNumberOfTransmissions += 1;
 			}
-			else if(signal->ComTransferProperty == TRIGGERED_ON_CHANGE && signal->ComIsSignalChanged == 1)
+			else if(signal->ComTransferProperty == TRIGGERED_ON_CHANGE && signal->ComIsSignalChanged == 1 && N>0)
 			{
 				IPdu->ComTxIPdu.ComNumberOfTransmissions += N;
 			}
@@ -175,7 +175,7 @@ uint8 com_pdu_transmissions_handle_signal(ComIPdu_type* IPdu, ComSignal_type* si
 		else if(IPdu->ComTxIPdu.ComCurrentTransmissionSelection == 0 && (IPdu->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeMode == DIRECT || IPdu->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeMode == MIXED))
 		{
 			uint8 N = IPdu->ComTxIPdu.ComTxModeTrue.ComTxMode.ComTxModeNumberOfRepetitions;
-			if(signal->ComTransferProperty == TRIGGERED)
+			if(signal->ComTransferProperty == TRIGGERED && N>0)
 			{
 				IPdu->ComTxIPdu.ComNumberOfTransmissions += N;
 			}
@@ -183,7 +183,7 @@ uint8 com_pdu_transmissions_handle_signal(ComIPdu_type* IPdu, ComSignal_type* si
 			{
 				IPdu->ComTxIPdu.ComNumberOfTransmissions += 1;
 			}
-			else if(signal->ComTransferProperty == TRIGGERED_ON_CHANGE && signal->ComIsSignalChanged == 1)
+			else if(signal->ComTransferProperty == TRIGGERED_ON_CHANGE && signal->ComIsSignalChanged == 1 && N>0)
 			{
 				IPdu->ComTxIPdu.ComNumberOfTransmissions += N;
 			}
@@ -210,7 +210,7 @@ uint8 com_pdu_transmissions_handle_signalGroup(ComIPdu_type* IPdu, ComSignalGrou
 		if(IPdu->ComTxIPdu.ComCurrentTransmissionSelection == 1 && (IPdu->ComTxIPdu.ComTxModeTrue.ComTxMode.ComTxModeMode == DIRECT || IPdu->ComTxIPdu.ComTxModeTrue.ComTxMode.ComTxModeMode == MIXED))
 		{
 			uint8 N = IPdu->ComTxIPdu.ComTxModeTrue.ComTxMode.ComTxModeNumberOfRepetitions;
-			if(signalGroup->ComTransferProperty == TRIGGERED)
+			if(signalGroup->ComTransferProperty == TRIGGERED && N>0)
 			{
 				IPdu->ComTxIPdu.ComNumberOfTransmissions += N;
 			}
@@ -218,7 +218,7 @@ uint8 com_pdu_transmissions_handle_signalGroup(ComIPdu_type* IPdu, ComSignalGrou
 			{
 				IPdu->ComTxIPdu.ComNumberOfTransmissions += 1;
 			}
-			else if(signalGroup->ComTransferProperty == TRIGGERED_ON_CHANGE && signalGroup->ComIsSignalGroupChanged == 1)
+			else if(signalGroup->ComTransferProperty == TRIGGERED_ON_CHANGE && signalGroup->ComIsSignalGroupChanged == 1 && N>0)
 			{
 				IPdu->ComTxIPdu.ComNumberOfTransmissions += N;
 			}
@@ -230,17 +230,17 @@ uint8 com_pdu_transmissions_handle_signalGroup(ComIPdu_type* IPdu, ComSignalGrou
 		else if(IPdu->ComTxIPdu.ComCurrentTransmissionSelection == 0 && (IPdu->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeMode == DIRECT || IPdu->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeMode == MIXED))
 		{
 			uint8 N = IPdu->ComTxIPdu.ComTxModeTrue.ComTxMode.ComTxModeNumberOfRepetitions;
-			if(signalGroup->ComTransferProperty == TRIGGERED)
+			if(signalGroup->ComTransferProperty == TRIGGERED && N>0)
 			{
-				IPdu->ComTxIPdu.ComNumberOfTransmissions += N;
+				IPdu->ComTxIPdu.ComNumberOfTransmissions += (N+1);
 			}
 			else if(signalGroup->ComTransferProperty == TRIGGERED_WITHOUT_REPETITION)
 			{
 				IPdu->ComTxIPdu.ComNumberOfTransmissions += 1;
 			}
-			else if(signalGroup->ComTransferProperty == TRIGGERED_ON_CHANGE && signalGroup->ComIsSignalGroupChanged == 1)
+			else if(signalGroup->ComTransferProperty == TRIGGERED_ON_CHANGE && signalGroup->ComIsSignalGroupChanged == 1 && N>0)
 			{
-				IPdu->ComTxIPdu.ComNumberOfTransmissions += N;
+				IPdu->ComTxIPdu.ComNumberOfTransmissions += (N+1);
 			}
 			else if(signalGroup->ComTransferProperty == TRIGGERED_ON_CHANGE_WITHOUT_REPETITION && signalGroup->ComIsSignalGroupChanged == 1)
 			{
@@ -259,7 +259,7 @@ boolean com_pdu_transmissionsModeSelection(ComIPdu_type* IPdu)
 	for (uint32 ComSignalId = 0; (IPdu->ComIPduSignalRef[ComSignalId] != NULL); ComSignalId++)
 	{
 		//Get signal
-		Signal = IPdu->ComIPduSignalRef[ComSignalId];
+		ComSignal_type* signal = IPdu->ComIPduSignalRef[ComSignalId];
 		if(signal->ComSignalFilterResult == 1)
 		{
 			TMS = 1;
@@ -271,7 +271,7 @@ boolean com_pdu_transmissionsModeSelection(ComIPdu_type* IPdu)
 		for (uint32 ComSignalGroupId = 0; (IPdu->ComIPduSignalRef[ComSignalGroupId] != NULL); ComSignalGroupId++)
 		{
 			//Get signal
-			signalGroup = IPdu->ComIPduSignalGroupRef[ComSignalGroupId];
+			ComSignalGroup_type* signalGroup = IPdu->ComIPduSignalGroupRef[ComSignalGroupId];
 			if(signalGroup->ComSignalGroupFilterResult == 1)
 			{
 				TMS = 1;
@@ -281,4 +281,13 @@ boolean com_pdu_transmissionsModeSelection(ComIPdu_type* IPdu)
 	}
 	
 	return TMS;
+}
+
+com_packSignalsToPdu(ComIPdu_type* IPdu)
+{
+	for(uint16 ComSignalId = 0; (IPdu->ComIPduSignalRef[ComSignalId] != NULL); ComSignalId++)
+	{
+		ComSignal_type* signal = IPdu->ComIPduSignalRef[ComSignalId];
+		Com_WriteSignalDataToPdu(signal->ComHandleId, signal->ComFGBuffer);
+	}
 }
