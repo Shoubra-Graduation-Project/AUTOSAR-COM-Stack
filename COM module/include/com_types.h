@@ -481,7 +481,7 @@ typedef struct {
     // ---> Not is SWS
 	const boolean IsGroupSignal;
 
-	const boolean ComSignalUpdated;
+	boolean ComIsSignalChanged;
 
 	boolean ComSignalFilterResult;
 
