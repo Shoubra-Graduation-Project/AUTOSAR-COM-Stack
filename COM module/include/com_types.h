@@ -249,6 +249,8 @@ typedef struct
 	 */
 	const float32 ComTxModeTimePeriod;
 
+	boolean comPeriodicTimeFired;
+
 } ComTxMode_type;
 
 /* If ComFilter evaluates to true */
