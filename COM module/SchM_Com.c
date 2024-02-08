@@ -99,38 +99,83 @@ void Com_MainFunctionRx(void)
 
 
 
-void Com_MainFunctionTx(void)
+void Com_MainFunctionTx (void)
 {
-    const ComIPdu_type *IPdu;
-
-
-    uint8 ComMainTxPduId;
-	uint8 ComMainTxSignalId;
-    uint8 ComMainTxGroupSignalId;
-    uint8 ComMainTxSignalGroupId;
-
-
-    for ( pduId = 0; pduId<COM_NUM_OF_IPDU; pduId++)
-    {
-        IPdu = GET_IPdu(pduId);
-
-        if(IPdu->ComIPduDirection == SEND)
-        {
-            switch(IPdu->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeMode)
-            {
-                case DIRECT:
-                
-
-                break;
-            }
-
-        }
-        else
-        {
-           
-        }
-    }
-
+	for(uint8 currentIPduID = 0; currentIPduID<COM_NUM_OF_IPDU; currentIPduID++)
+	{
+		ComIPdu_type* IPdu = GET_IPdu(currentIPduID);
+		if(IPdu !=NULL)
+		{
+			ComIPduGroup_type * IPduGroup =  IPdu->ComIPduGroupRef;
+			if(IPduGroup != NULL && IPduGroup->IpduGroupFlag != STOPPED && IPdu->ComIPduDirection == SEND)
+			{	
+				if(IPdu->ComTxIPdu.ComCurrentTransmissionSelection == 1)
+				{
+					switch(IPdu->ComTxIPdu.ComTxModeTrue.ComTxMode.ComTxModeMode)
+					{
+						case MIXED:
+									com_packSignalsToPdu(IPdu);
+									for(uint8 i = 0; i<(IPdu->ComTxIPdu.ComNumberOfTransmissions); i++)
+									{
+										Com_TriggerIPDUSend(IPdu->ComIPduHandleId);
+										delay(IPdu->ComTxIPdu.ComTxModeTrue.ComTxMode.ComTxModeRepetitionPeriod);
+									}
+									if(ComTxIPdu.ComMinimumDelayTime != 0){delay(IPdu->ComTxIPdu.ComMinimumDelayTime);}
+						
+						case PERIODIC:
+									if(IPdu->ComTxIPdu.ComTxModeTrue.ComTxMode.comPeriodicTimeFired == 1)
+									{
+										IPdu->ComTxIPdu.ComTxModeTrue.ComTxMode.comPeriodicTimeFired == 0;
+										Com_TriggerIPDUSend(IPdu->ComIPduHandleId);
+										if(ComTxIPdu.ComMinimumDelayTime != 0){delay(IPdu->ComTxIPdu.ComMinimumDelayTime);}
+									}
+									break;
+						case DIRECT:
+									com_packSignalsToPdu(IPdu);
+									for(uint8 i = 0; i<(IPdu->ComTxIPdu.ComNumberOfTransmissions); i++)
+									{
+										Com_TriggerIPDUSend(IPdu->ComIPduHandleId);
+										delay(IPdu->ComTxIPdu.ComTxModeTrue.ComTxMode.ComTxModeRepetitionPeriod);
+									}
+									if(ComTxIPdu.ComMinimumDelayTime != 0){delay(IPdu->ComTxIPdu.ComMinimumDelayTime);}
+						
+					}
+				}
+				else if(IPdu->ComTxIPdu.ComCurrentTransmissionSelection == 0)
+				{
+					switch(IPdu->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeMode)
+					{
+						case MIXED:
+									com_packSignalsToPdu(IPdu);
+									for(uint8 i = 0; i<(IPdu->ComTxIPdu.ComNumberOfTransmissions); i++)
+									{
+										Com_TriggerIPDUSend(IPdu->ComIPduHandleId);
+										delay(IPdu->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeRepetitionPeriod);
+									}
+									if(ComTxIPdu.ComMinimumDelayTime != 0){delay(IPdu->ComTxIPdu.ComMinimumDelayTime);}
+						
+						case PERIODIC:
+									if(IPdu->ComTxIPdu.ComTxModeFalse.ComTxMode.comPeriodicTimeFired == 1)
+									{
+										IPdu->ComTxIPdu.ComTxModeFalse.ComTxMode.comPeriodicTimeFired == 0;
+										Com_TriggerIPDUSend(IPdu->ComIPduHandleId);
+										if(ComTxIPdu.ComMinimumDelayTime != 0){delay(IPdu->ComTxIPdu.ComMinimumDelayTime);}
+									}
+									break;
+						case DIRECT:
+									com_packSignalsToPdu(IPdu);
+									for(uint8 i = 0; i<(IPdu->ComTxIPdu.ComNumberOfTransmissions); i++)
+									{
+										Com_TriggerIPDUSend(IPdu->ComIPduHandleId);
+										delay(IPdu->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeRepetitionPeriod);
+									}
+									if(ComTxIPdu.ComMinimumDelayTime != 0){delay(IPdu->ComTxIPdu.ComMinimumDelayTime);}
+					}
+				}
+			}
+		}
+		
+	}
 }
 
 /***************************************************************************************
