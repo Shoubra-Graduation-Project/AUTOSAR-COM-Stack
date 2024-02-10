@@ -38,6 +38,7 @@ void Com_MainFunctionRx(void)
     	const ComIPdu_type *IPdu = NULL;
 	    const ComSignal_type *signal = NULL;
         const ComSignalGroup_type *SignalGroup =NULL;
+        ComIPduGroup_type * IPduGroup; 
 
         uint8 ComMainRxPduId;
 		uint8 ComMainRxSignalId;
@@ -50,29 +51,40 @@ void Com_MainFunctionRx(void)
         // Get IPDU
 	   	IPdu = GET_IPdu(ComMainRxPduId);
 
-        if (IPdu->ComIPduSignalProcessing == DEFERRED && IPdu->ComIPduDirection == RECEIVE)
+        if(IPdu != NULL)
         {
-            // For each signal at PDU
-            for ( ComMainRxSignalId = 0; (IPdu->ComIPduSignalRef[ComMainRxSignalId] != NULL); ComMainRxSignalId++)
-            {
-                //Get signal
-                Signal = IPdu->ComIPduSignalRef[ComMainRxSignalId];
+          
+                 if (IPdu->ComIPduSignalProcessing == DEFERRED && IPdu->ComIPduDirection == RECEIVE)
+                 {
+                     // For each signal at PDU
+                     for ( ComMainRxSignalId = 0; (IPdu->ComIPduSignalRef[ComMainRxSignalId] != NULL); ComMainRxSignalId++)
+                     {
+                          //Get signal
+                         Signal = IPdu->ComIPduSignalRef[ComMainRxSignalId];
 		
-                Com_MainFunctionRxSignal(Signal);
-                CopySignalfromBGtoFG(ComMainRxSignalId);
+                        Com_MainFunctionRxSignal(Signal);
+                        CopySignalfromBGtoFG(ComMainRxSignalId);
                
-            }
+                     }
 
-            for (ComMainRxSignalGroupId = 0; IPdu[ComMainRxSignalGroupId].ComIPduSignalGroupRef[ComMainRxSignalGroupId] != NULL; ComMainRxSignalGroupId++)
-            {
-                SignalGroup = IPdu->ComIPduSignalGroupRef[ComMainRxSignalGroupId];
+                    for (ComMainRxSignalGroupId = 0; IPdu[ComMainRxSignalGroupId].ComIPduSignalGroupRef[ComMainRxSignalGroupId] != NULL; ComMainRxSignalGroupId++)
+                    {
+                        SignalGroup = IPdu->ComIPduSignalGroupRef[ComMainRxSignalGroupId];
 
-                Com_MainFunctionRxSignalGroup(SignalGroup);
+                       Com_MainFunctionRxSignalGroup(SignalGroup);
 
-                CopySignalGroupfromBGtoSB(ComMainRxSignalGroupId);
+                       CopySignalGroupfromBGtoSB(ComMainRxSignalGroupId);
 
-            }         
+                    }         
 
+              
+
+                 } 
+                 else
+                {
+
+                }
+           
         }
         else
         {
@@ -80,7 +92,6 @@ void Com_MainFunctionRx(void)
         }
 
     }
-
 
 }
 
@@ -101,12 +112,19 @@ void Com_MainFunctionRx(void)
 
 void Com_MainFunctionTx (void)
 {
-	for(uint8 currentIPduID = 0; currentIPduID<COM_NUM_OF_IPDU; currentIPduID++)
+    uint8 currentIPduID;
+
+    ComIPdu_type* IPdu;
+    ComIPduGroup_type * IPduGroup; 
+
+	for(currentIPduID = 0; currentIPduID<COM_NUM_OF_IPDU; currentIPduID++)
 	{
-		ComIPdu_type* IPdu = GET_IPdu(currentIPduID);
+		IPdu = GET_IPdu(currentIPduID);
+
 		if(IPdu !=NULL)
 		{
-			ComIPduGroup_type * IPduGroup =  IPdu->ComIPduGroupRef;
+			IPduGroup =  IPdu->ComIPduGroupRef;
+
 			if(IPduGroup != NULL && IPduGroup->IpduGroupFlag != STOPPED && IPdu->ComIPduDirection == SEND)
 			{	
 				if(IPdu->ComTxIPdu.ComCurrentTransmissionSelection == 1)

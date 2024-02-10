@@ -43,7 +43,7 @@ void Com_Init (const Com_ConfigType* config)
 
         // Initialize global and static variables
         ComConfig = config;
-        config->com_initiated=1;
+    
 	    ComIPdu_type *IPdu;
     	ComSignal_type *Signal;
 		ComSignalGroup_type *SignalGroup;
@@ -54,6 +54,8 @@ void Com_Init (const Com_ConfigType* config)
         uint8 ComInitGroupSignalId;
         uint8 ComInitSignalGroupId;
 
+		uint8 *ComShadowBuffer;
+
 	    // Loop over all I-PDUs
         for (ComInitPduId = 0; ComInitPduId < COM_NUM_OF_IPDU ; ComInitPduId++)
 		 {
@@ -61,7 +63,8 @@ void Com_Init (const Com_ConfigType* config)
 			// Get IPdu
 		    IPdu = GET_IPdu(ComInitPduId);
 	
-           // Fill not used areas within an I-PDU with a value determined by configuration parameter ComTxIPduUnusedAreasDefault
+          /*[SWS_Com_00015] The AUTOSAR COM module shall fill not used areas within an
+            I-PDU with a value determined by configuration parameter ComTxIPduUnusedAreasDefault*/
 	       if (IPdu->ComIPduDirection == SEND)
 		    {
 			   memset((void *)IPdu->ComIPduDataPtr, IPdu->ComTxIPdu.ComTxIPduUnusedAreasDefault, IPdu->ComIPduLength);
@@ -90,7 +93,7 @@ void Com_Init (const Com_ConfigType* config)
                        *dest = src++;
                         dest++;
                    }
-               // Delete update bit for all signals
+               //[SWS_Com_00117] The AUTOSAR COM module shall clear all update-bits during initialization
 			   CLEARBIT(IPdu->ComIPduDataPtr, Signal->ComUpdateBitPosition);
 
 
@@ -101,9 +104,11 @@ void Com_Init (const Com_ConfigType* config)
                 /* Get SignalGroup */
                 SignalGroup = IPdu[ComInitSignalGroupId].ComIPduSignalGroupRef[ComInitSignalGroupId];
     
-                // Delete update bit for all signal groups
+                //[SWS_Com_00117] The AUTOSAR COM module shall clear all update-bits during initialization
                 CLEARBIT(IPdu->ComIPduDataPtr, SignalGroup->ComUpdateBitPosition);
-
+                
+				// Set pointer to shadow buffer
+	            ComShadowBuffer = (uint8*)SignalGroup->ComShadowBuffer;
             
 
                 // For each group signal at signal group
@@ -134,7 +139,7 @@ void Com_Init (const Com_ConfigType* config)
 
 
          }
-
+    config->com_initiated=1;
 
 }
 
@@ -194,7 +199,7 @@ uint8 Com_SendSignal (Com_SignalIdType SignalId, const void* SignalDataPtr)
 					If Com_SendSignal or Com_InvalidateSignal is called for a signal that belongs to a signal group, then the AUTOSAR COM will only update the shadow buffer of this
 					signal group. There is no need for any further I-PDU processing like TMS evaluation, unless the I-PDU contents changed.
 					[SWS_Com_00050] ⌈If Com_SendSignalGroup is called for the signal group, the AUTOSAR COM module shall copy the shadow buffer atomically to the 
-					I-PDU buffer.⌋ (SRS_Com_02041)
+					I-PDU bufبer.⌋ (SRS_Com_02041)
 					--------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 					Com_WriteSignalDataToShadowBuffer(signalStruct->SignalGroupId, signalStruct->ComHandleId, SignalDataPtr);
 					returnValue = E_OK;
@@ -386,7 +391,8 @@ uint8 Com_SendSignal (Com_SignalIdType SignalId, const void* SignalDataPtr)
  *				COM_BUSY: in case the TP-Buffer is locked for large data types 
  *					   handling.
  * 
- *    Description:  The service Com_SendSignalGroup copies the content of the associated shadow buffer to the foreground buffer.  
+ *    Description:  The service Com_SendSignalGroup copies the content of the
+                     associated shadow buffer to the foreground buffer.  
  * 
  *********************************************************************************/
 uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
@@ -560,7 +566,7 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 				signalGroup->ComIsSignalGroupChanged = isSignalGroupChanged;
 		
 				/*----------------------------------------------------------------------------------------------------------------------------------------------------------
-				[SWS_Com_00801] ⌈If the RTE updates a signal group by calling Com_SendSignalGroup, the AUTOSAR COM module shall set the update-bit of this signal
+				[SWS_Com_00801] ⌈If the RTE updates a signal group by calling Com_SendSignalGroup, the AUTOSAR COM module shall set the update-bit of this signal
 				group.⌋ (SRS_Com_02030)
 				----------------------------------------------------------------------------------------------------------------------------------------------------------*/
 				ComIPdu_type* Ipdu = GET_IPDU(signalGroup->ComIPduHandleId);
@@ -726,7 +732,7 @@ void Com_DisableReceptionDM (Com_IpduGroupIdType IpduGroupId)
 }
  uint8 Com_ReceiveSignalGroup (Com_SignalGroupIdType SignalGroupId)
  {
-    const ComSignalGroup_Type * SignalGroup= GET_SIGNALGROUP(GroupSignal->SignalGroupId);
+    const ComSignalGroup_type * SignalGroup= GET_SIGNALGROUP(GroupSignal->SignalGroupId);
     const ComIPdu_type *Ipdu=GET_IPDU(SignalGroup->ComIPduHandleId);
 	if(Ipdu->ComIPduDirection!=RECEIVE)
 	{
@@ -737,7 +743,7 @@ void Com_DisableReceptionDM (Com_IpduGroupIdType IpduGroupId)
        if(Ipdu->ComIPduGroupRef->IpduGroupFlag==STOPPED)
     {
         /*[SWS_Com_00461] ⌈The AUTOSAR COM module shall always copy the last known 
-         data, or the ComSignalInitValue(s) if not yet written, of the I-PDU to the shadow buffer by a call to Com_ReceiveSignalGroup even if the I-PDU is stopped and COM_-
+         data, or the ComSignalInitValue(s) if not yet written, of the I-PDU to the shadow buffer by a call to Com_ReceiveSignalGroup even if the I-PDU is stopped and COM_-
         SERVICE_NOT_AVAILABLE is returned*/
         CopySignalGroupfromSBtoFG( SignalGroupId);
         return COM_SERVICE_NOT_AVAILABLE;
@@ -862,3 +868,56 @@ void Com_DisableReceptionDM (Com_IpduGroupIdType IpduGroupId)
      }
  }
 
+
+/***********************************************************************************
+ *                                                                                 *
+ *    Service Name: Com_IpduGroupStart   
+ *    
+ *    Service Id: 0x03                                                         
+ * 
+ *    Parameters (in): IpduGroupId
+ * 
+ *    Parameters (out): None 
+ * 
+ *    Return Value: None
+ * 
+ *    Description:  Starts a preconfigured I-PDU group.
+ *********************************************************************************/
+void Com_IpduGroupStart(Com_IpduGroupIdType IpduGroupId , boolean Initialize) 
+{
+	ComIPduGroup_type * IPduGroup; 
+	(void)Initialize; // Nothing to be done. This is just to avoid Lint warning.
+
+	IPduGroup = GET_IpduGroup(IpduGroupId);
+
+	if(IPduGroup != NULL)
+	{
+		IPduGroup->IpduGroupFlag = TRUE;
+	}
+}
+
+/***********************************************************************************
+ *                                                                                 *
+ *    Service Name: Com_IpduGroupStop   
+ *    
+ *    Service Id: 0x04                                                         
+ * 
+ *    Parameters (in): IpduGroupId
+ * 
+ *    Parameters (out): None 
+ * 
+ *    Return Value: None
+ * 
+ *    Description:  Stops a preconfigured I-PDU group.
+ *********************************************************************************/
+void Com_IpduGroupStop(Com_IpduGroupIdType IpduGroupId)
+ {
+	ComIPduGroup_type * IPduGroup; 
+
+	IPduGroup = GET_IpduGroup(IpduGroupId);
+
+	if(IPduGroup != NULL)
+	{
+		IPduGroup->IpduGroupFlag = FALSE;
+	}
+ }

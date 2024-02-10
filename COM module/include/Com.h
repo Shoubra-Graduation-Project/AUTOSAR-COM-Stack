@@ -57,7 +57,8 @@ typedef struct{
 
 	/* Contains the configuration parameters of the COM module's signal groups. */
 	const ComSignalGroup_type *ComSignalGroup;
-  boolean com_initiated;
+	
+    boolean com_initiated;
 
 }Com_ConfigType;
 /*------------------------------------------Data Type Declarations End-------------------------------------------------------*/
