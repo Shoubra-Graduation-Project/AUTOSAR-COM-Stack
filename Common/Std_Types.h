@@ -6,7 +6,7 @@
  *
  * Description: General type definitions
  *
- * Author: Mariam Elmonyer
+ * Author:
  *
  *******************************************************************************/
 
@@ -43,7 +43,7 @@ typedef struct
 
   typedef unsigned char StatusType;
 #endif
-
+#define NULL ((void *)0)
 #define E_NOT_OK   0x01u
 
 #define STD_HIGH   0x01u  /* Physical state 5V or 3.3V */
@@ -54,5 +54,8 @@ typedef struct
 
 #define STD_ON     0x01u
 #define STD_OFF    0x00u
+
+#define true	1
+#define false	0
 
 #endif /*__STD_TYPES_H_ */
