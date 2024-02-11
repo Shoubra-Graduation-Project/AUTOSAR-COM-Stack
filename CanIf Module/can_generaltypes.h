@@ -22,7 +22,7 @@
 #define SDU_LENGTH               8
 #define CANID_EXPECTED_MAX       10
 #define CANID_EXPECTED_MIN       1
-#define CANIF_NUM_RX_LPDU_ID     1
+#define CANIF_NUM_RX_PDU_ID      1
 #define CANIF_NUM_TX_PDU_ID      1
 
  /* Section : Macros Functions Declaration */
@@ -85,6 +85,8 @@ typedef enum
  	CAN_WAKEUP,
 } Can_ReturnType;
 
+
+
 typedef enum 
 {
 	/** Transceiver mode NORMAL */
@@ -102,27 +104,13 @@ typedef uint16 PduIdType;
 typedef uint16 PduLengthType;
 
 
-
-typedef struct 
+typedef struct
 {
-    //TxLPdu
-    struct 
-    {
-        uint8 data[8];
-        // if DLC is -1 -> indicates empty buffer
-        uint8 dlc;
-    } txLpdu[CANIF_NUM_TX_PDU_ID];
+    uint8* SduDataPtr;
+    uint8* MetaDataPtr;
+    PduLengthType   SduLength;
 
-    //RxLPdu
-    struct 
-    {
-        uint8 data[8];
-        // if DLC is -1 -> indicates empty buffer
-        uint8 dlc;
-    } rxLpdu[CANIF_NUM_RX_LPDU_ID];
-
-} CanIf_LPduDataType;
-
+} PduInfoType;
 
 typedef struct 
 {
@@ -133,93 +121,73 @@ typedef struct
     // data ptr
     uint8*      sdu;
     // Controller Id
-    uint8 controllerId;
+    PduIdType  swPduHandle;
 } Can_PduType;
-
 
 
 /** SWS_CAN_00496 */
 typedef struct
 {
     Can_IdType CanId;       /* CAN ID of the CAN L-PDU */
-    Can_HwHandleType Hoh;   /* ID of the corresponding hardware Object Range */
-    uint8 ControllerId;     /* Cntrollre provided by Canif clearly identify the corresponding controller */
+    Can_HwHandleType HOH;   /* ID of the corresponding hardware Object Range */
+    uint8 ControllerId;     /* Cntroller provided by Canif clearly identify the corresponding controller */
 
 } Can_HwType;
 
 
+typedef enum
+{
+    CANIF_Channel_1,
+    CANIF_Channel_2,
+    CANIF_Channel_3,
+    CANIF_CHANNEL_CNT
+} CanIf_ChannelIdType;
+
+
 typedef struct 
 {
-    // can id used for transmission
-    Can_IdType id;
+    // CAN id used for transmission.
+    Can_IdType ID;
 
     // data length (DLC)
-    uint8 dlc;
+    uint8 Dlc;
 
     // can driver controller id to be used for transmission
-    uint8 controller;
+    uint8 ControllerID;
 
-    // can driver hth id to be used for transmission
-    Can_HwHandleType hth;
+    // Can driver hth id to be used for transmission
+    Can_HwHandleType HTH;
 
-    // upper layer confirmation function, set to null if no confirmation
+    /// upper layer confirmation function, set to null if no confirmation
     void(*user_TxConfirmation)(PduIdType txPduId);
 
-    // upper layer pdu id passed to callout function
-    PduIdType ulPduId;
-
-} CanIf_TxPduConfig;
+} CanIfTxPduCfg;
 
 
 
 typedef struct 
 {
-    // can id used for reception filtering
-    Can_IdType id;
+    // can id used for reception Filtering
+    Can_IdType ID;
 
     // data length (DLC)
-    uint8 dlc;
+    uint8 Dlc;
 
     // can driver controller id from where to receive lpdu
-    uint8 controller;
+    uint8 ControllerID;
 
     /** SWS_CANIF_00012
      upper layer indication function, set to null if no rx indication */
     void(*user_RxIndication)(PduIdType RxPduId, const PduInfoType* PduInfoPtr);
 
-    // upper layer pdu id passed to callout function
-    PduIdType ulPduId;
-
-} CanIf_RxPduConfig;
-
-
-typedef struct
-{
-    uint8* SduDataPtr;
-    uint8* MetaDataPtr;
-    PduLengthType   SduLength;
-
-} PduInfoType;
-
-
-typedef struct
-{
-    union 
-    {
-        PduIdType lpduId;
-        PduIdType* array;
-    }pduInfo;
-
-    PduIdType arrayLen; // 0 means no ptr no filtering = fullCan reception (one single CanId) else ->>> (Range of IDs of group of single IDs)
-}CanIf_HrHConfigType;
-
+} CanIfRxPduCfg;
 
 
 typedef struct 
 {
-    const CanIf_TxPduConfig* TxPduCfg;
-    const CanIf_RxPduConfig* RxLpduCfg;
-    const CanIf_HrHConfigType** canIfHrhCfg;  // This is an array of Hrh objects, for each controller ID
+    const CanIfTxPduCfg* TxPduCfg;
+    const CanIfRxPduCfg* RxPduCfg;
+    const Can_HwType** canIfHrhCfg;  // This is an array of Hrh objects, for each controller ID
 
 } CanIf_ConfigType;
 
@@ -230,4 +198,3 @@ extern const CanIf_ConfigType CanIf_Config;
  /* Section : Function Declaration */
 
 #endif	/* CANIF_GENERAL_TYPES_H */
-
