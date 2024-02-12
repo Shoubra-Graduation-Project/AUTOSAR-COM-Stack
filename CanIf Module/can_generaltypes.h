@@ -19,11 +19,6 @@
 #define NUM_OF_HRHS              1
 #define NUM_OF_HOHS              1
 #define NUM_OF_HTHS              1
-#define SDU_LENGTH               8
-#define CANID_EXPECTED_MAX       10
-#define CANID_EXPECTED_MIN       1
-#define CANIF_NUM_RX_PDU_ID      1
-#define CANIF_NUM_TX_PDU_ID      1
 
  /* Section : Macros Functions Declaration */
 
@@ -31,86 +26,6 @@
 
 typedef uint8 Can_HwHandleType;
 
-/* CanIf_PduModeType */
-typedef enum 
-{
-	CANIF_OFFLINE,
-	CANIF_TX_OFFLINE,
-	CANIF_TX_OFFLINE_ACTIVE,
-    CANIF_ONLINE
-} CanIf_PduModeType;
-
-
-typedef enum 
-{
-	CAN_T_STOP = 1, // cannot request mode CAN_UNINIT
-	CAN_T_START,
-	CAN_T_SLEEP,
-	CAN_T_WAKEUP
-} Can_StateTransitionType;
-
-
-typedef enum 
-{
-  /** UNINIT mode. Default mode of the CAN driver and all
-   *  CAN controllers connected to one CAN network after
-   *  power on. */
-  CANIF_CS_UNINIT = 0,
-
-  /**  STOPPED mode. At least one of all CAN controllers
-   *   connected to one CAN network are halted and does
-   *   not operate on the bus. */
-  CANIF_CS_STOPPED,
-
-  /** STARTED mode. All CAN controllers connected to
-   *  one CAN network are started by the CAN driver and
-   *  in full-operational mode. */
-  CANIF_CS_STARTED,
-
-  /** SLEEP mode. At least one of all CAN controllers
-   *  connected to one CAN network are set into the
-   *  SLEEP mode and can be woken up by request of the
-   *  CAN driver or by a network event (must be supported
-   *  by CAN hardware) */
-  CANIF_CS_SLEEP
-} CanIf_ControllerModeType;
-
-
-
-typedef enum 
-{
-	CAN_OK,
-	CAN_NOT_OK,
-	CAN_BUSY,
- 	CAN_WAKEUP,
-} Can_ReturnType;
-
-
-
-typedef enum 
-{
-	/** Transceiver mode NORMAL */
-  CANTRCV_TRCVMODE_NORMAL = 0,
-  /** Transceiver mode STANDBY */
-  CANTRCV_TRCVMODE_STANDBY,
-  /** Transceiver mode SLEEP */
-  CANTRCV_TRCVMODE_SLEEP
-} CanTrcv_TrcvModeType ;
-
-
-
-typedef uint32 Can_IdType;
-typedef uint16 PduIdType;
-typedef uint16 PduLengthType;
-
-
-typedef struct
-{
-    uint8* SduDataPtr;
-    uint8* MetaDataPtr;
-    PduLengthType   SduLength;
-
-} PduInfoType;
 
 typedef struct 
 {
@@ -133,67 +48,6 @@ typedef struct
     uint8 ControllerId;     /* Cntroller provided by Canif clearly identify the corresponding controller */
 
 } Can_HwType;
-
-
-typedef enum
-{
-    CANIF_Channel_1,
-    CANIF_Channel_2,
-    CANIF_Channel_3,
-    CANIF_CHANNEL_CNT
-} CanIf_ChannelIdType;
-
-
-typedef struct 
-{
-    // CAN id used for transmission.
-    Can_IdType ID;
-
-    // data length (DLC)
-    uint8 Dlc;
-
-    // can driver controller id to be used for transmission
-    uint8 ControllerID;
-
-    // Can driver hth id to be used for transmission
-    Can_HwHandleType HTH;
-
-    /// upper layer confirmation function, set to null if no confirmation
-    void(*user_TxConfirmation)(PduIdType txPduId);
-
-} CanIfTxPduCfg;
-
-
-
-typedef struct 
-{
-    // can id used for reception Filtering
-    Can_IdType ID;
-
-    // data length (DLC)
-    uint8 Dlc;
-
-    // can driver controller id from where to receive lpdu
-    uint8 ControllerID;
-
-    /** SWS_CANIF_00012
-     upper layer indication function, set to null if no rx indication */
-    void(*user_RxIndication)(PduIdType RxPduId, const PduInfoType* PduInfoPtr);
-
-} CanIfRxPduCfg;
-
-
-typedef struct 
-{
-    const CanIfTxPduCfg* TxPduCfg;
-    const CanIfRxPduCfg* RxPduCfg;
-    const Can_HwType** canIfHrhCfg;  // This is an array of Hrh objects, for each controller ID
-
-} CanIf_ConfigType;
-
-
-extern const CanIf_ConfigType CanIf_Config;
-
 
  /* Section : Function Declaration */
 
