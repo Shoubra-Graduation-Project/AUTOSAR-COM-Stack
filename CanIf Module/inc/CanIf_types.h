@@ -19,6 +19,12 @@
 #define  NUMBER_OF_CONTROLLERS        (uint8)2
 #define NUMBER_OF_CANDRIVERS 1
 #define NUMBER_OF_BUFFERS    1
+#define SDU_LENGTH               8
+#define CANID_EXPECTED_MAX       10
+#define CANID_EXPECTED_MIN       1
+#define CANIF_NUM_RX_PDU_ID      1
+#define CANIF_NUM_TX_PDU_ID      1
+
 
 typedef uint8 Can_ControllerStateType;
 typedef uint8 PduIdType;
