@@ -517,11 +517,26 @@ void CanIf_TxConfirmation (PduIdType CanTxPduId)
 }
 
 
+const CanIfTxPduCfg* CanIf_FindTxPduEntry(PduIdType TxPduId) {
+    if (TxPduId >= CanIfMaxTxPduCfg) {
+        return (CanIfTxPduCfg*)NULL;
+    }
+    uint32 Index, i;
+    for (i = 0; i < CanIfMaxTxPduCfg; i++) {
+        if (TxPduId == CanIf_ConfigPtr->CanIfInitCfg.CanIfTxPduCfg[i].CanIfTxPduId) {
+            Index = i;
+            break;
+        }
+    }
+    return &CanIf_ConfigPtr->CanIfInitCfg.CanIfTxPduCfg[index];
+}
+
 Std_ReturnType CanIf_Transmit(PduIdType TxPduId, const PduInfoType* PduInfoPtr) 
 {
 
     Std_ReturnType RET = E_OK;
     Can_PduType CanPdu;
+    const CanIfTxPduCfg* TxEntry;
     CanIf_ControllerModeType ControllerMode = (CanIf_ControllerModeType)0;
     CanIf_PduModeType PduMode = (CanIf_PduModeType)0;
 
@@ -538,27 +553,23 @@ Std_ReturnType CanIf_Transmit(PduIdType TxPduId, const PduInfoType* PduInfoPtr)
         return E_NOT_OK;
     }
 
-    //Check DataLength not exceeed maximum
-    /* SWS_CANIF_00893 */
-    if ((PduInfoPtr->SduLength) > SDU_LENGTH) {
-        Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, CANIF_CHECKVALIDATION_ID, CANIF_E_TXPDU_LENGTH_EXCEEDED);
-        return E_NOT_OK;
-    }
-
-    //Check ID if it's Valid unexceed Range it's static id not dynamic
+    //Check ID if it's Valid
     /* SWS_CANIF_00319 */
-    if (TxPduId > CANIF_NUM_TX_PDU_ID) {
+    TxEntry = CanIf_FindTxPduEntry(TxPduId);
+    if (txEntry == 0) {
         Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, CANIF_SET_PDU_MODE_ID, CANIF_E_INVALID_TXPDUID);
         return E_NOT_OK;
     }
 
+    CanIf_Channel_t Controller_ID = (CanIf_Channel_t)TxEntry->CanIfTxPduBufferRef->CanIfBufferHthRef->CanIfHthCanCtrlIdRef->CanIfCtrlId;
+
     //Check Controller Mode
-    if (CanIf_GetControllerMode(CanIf_ConfigPtr->TxPduCfg.ControllerID, &ControllerMode) != E_OK) {
+    if (CanIf_GetControllerMode(Controller_ID, &ControllerMode) != E_OK) {
         return E_NOT_OK;
     }
 
     //Check PDU Mode
-    if (CanIf_GetPduMode(CanIf_ConfigPtr->TxPduCfg.ControllerID, &PduMode) != E_OK) {
+    if (CanIf_GetPduMode(Controller_ID, &PduMode) != E_OK) {
         return E_NOT_OK;
     }
 
@@ -575,14 +586,13 @@ Std_ReturnType CanIf_Transmit(PduIdType TxPduId, const PduInfoType* PduInfoPtr)
         return E_NOT_OK;
     }
 
-    //Copy data to CanPdu
     CanPdu.length = PduInfoPtr->SduLength;
-    CanPdu.id = CanIf_ConfigPtr->TxPduCfg.ID;
+    CanPdu.id = TxEntry->CanIfTxPduCanId;;
     CanPdu.sdu = PduInfoPtr->SduDataPtr;
     CanPdu.swPduHandle = TxPduId;
 
     /* SWS_CANIF_00162 */
-    //RET = Can_Write(CanIf_ConfigPtr->TxPduCfg.HTH, &CanPdu);
+    //RET = Can_Write(TxEntry->CanIfTxPduBufferRef->CanIfBufferHthRef->CanIfHthIdSymRef->CanObjectId, &CanPdu);
 
     return RET;
 }
