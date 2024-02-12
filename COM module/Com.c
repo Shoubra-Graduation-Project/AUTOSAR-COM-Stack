@@ -892,7 +892,7 @@ void Com_IpduGroupStart(Com_IpduGroupIdType IpduGroupId , boolean Initialize)
 
 	if(IPduGroup != NULL)
 	{
-		IPduGroup->IpduGroupFlag = TRUE;
+		IPduGroup->IpduGroupFlag = STARTED;
 	}
 }
 
@@ -918,6 +918,6 @@ void Com_IpduGroupStop(Com_IpduGroupIdType IpduGroupId)
 
 	if(IPduGroup != NULL)
 	{
-		IPduGroup->IpduGroupFlag = FALSE;
+		IPduGroup->IpduGroupFlag = STOPPED;
 	}
  }

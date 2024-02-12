@@ -35,15 +35,10 @@
  ***********************************************************************************/
 void Com_MainFunctionRx(void)
 {
-    	const ComIPdu_type *IPdu = NULL;
-	    const ComSignal_type *signal = NULL;
-        const ComSignalGroup_type *SignalGroup =NULL;
+        ComIPdu_type *IPdu = NULL;
         ComIPduGroup_type * IPduGroup; 
 
         uint8 ComMainRxPduId;
-		uint8 ComMainRxSignalId;
-        uint8 ComMainRxSignalGroupId;
-
     
     // Loop over all PDUs
 	for ( ComMainRxPduId = 0; ComMainRxPduId < COM_NUM_OF_IPDU; ComMainRxPduId++)
@@ -53,41 +48,36 @@ void Com_MainFunctionRx(void)
 
         if(IPdu != NULL)
         {
-          
-                 if (IPdu->ComIPduSignalProcessing == DEFERRED && IPdu->ComIPduDirection == RECEIVE)
-                 {
-                     // For each signal at PDU
-                     for ( ComMainRxSignalId = 0; (IPdu->ComIPduSignalRef[ComMainRxSignalId] != NULL); ComMainRxSignalId++)
-                     {
-                          //Get signal
-                         Signal = IPdu->ComIPduSignalRef[ComMainRxSignalId];
-		
-                        Com_MainFunctionRxSignal(Signal);
-                        CopySignalfromBGtoFG(ComMainRxSignalId);
-               
-                     }
+            // If the Current IPD-U belongs to any IPDU group
+            if(IPdu->ComIPduGroupRef != NULL)
+            {
+               IPduGroup =  IPdu->ComIPduGroupRef;
 
-                    for (ComMainRxSignalGroupId = 0; IPdu[ComMainRxSignalGroupId].ComIPduSignalGroupRef[ComMainRxSignalGroupId] != NULL; ComMainRxSignalGroupId++)
-                    {
-                        SignalGroup = IPdu->ComIPduSignalGroupRef[ComMainRxSignalGroupId];
+               // If the IPD-U group is started
+               if(IPduGroup->IpduGroupFlag == STARTED)
+               {
+                
+                // Proceed to process this recieve IPDU
+                CheckRXIpdu(IPdu);
 
-                       Com_MainFunctionRxSignalGroup(SignalGroup);
+               }
+               else
+               {
+                 /* IPDU group STOPPED*/
+               }
 
-                       CopySignalGroupfromBGtoSB(ComMainRxSignalGroupId);
-
-                    }         
-
-              
-
-                 } 
-                 else
-                {
-
-                }
+                
+            }
+            else
+            // IPD-U does not belong to any IPDU group
+            {
+                CheckRXIpdu(IPdu);
+            }     
            
         }
         else
         {
+            /* IPDU is NULL */
 
         }
 
@@ -343,4 +333,54 @@ void Com_MainFunctionRxSignalGroup(ComSignalGroup_type SignalGroup)
 
 
 
+/***************************************************************************************
+ Service name:               CheckRXIpdu
+ Parameters (in):               IPdu
+ Parameters (inout):            None
+ Parameters (out):              None
+ Return value:                  None
+ Description:        This function checks the recived IPDUs and loop over all signals
+                     and signal groups for each IPDU to process Com_MainFunctionRX 
+                     Requirements
+ ***************************************************************************************/
+void CheckRXIpdu(ComIPdu_type IPdu)
+{
+        
+	const ComSignal_type *signal = NULL;
+    const ComSignalGroup_type *SignalGroup =NULL;
+        
 
+	uint8 ComMainRxSignalId;
+    uint8 ComMainRxSignalGroupId;
+
+    if (IPdu->ComIPduSignalProcessing == DEFERRED && IPdu->ComIPduDirection == RECEIVE)
+    {
+        // For each signal at PDU
+        for ( ComMainRxSignalId = 0; (IPdu->ComIPduSignalRef[ComMainRxSignalId] != NULL); ComMainRxSignalId++)
+        {
+            //Get signal
+            Signal = IPdu->ComIPduSignalRef[ComMainRxSignalId];
+		
+            Com_MainFunctionRxSignal(Signal);
+            CopySignalfromBGtoFG(ComMainRxSignalId);
+               
+        }
+
+        for (ComMainRxSignalGroupId = 0; IPdu[ComMainRxSignalGroupId].ComIPduSignalGroupRef[ComMainRxSignalGroupId] != NULL; ComMainRxSignalGroupId++)
+        {
+            SignalGroup = IPdu->ComIPduSignalGroupRef[ComMainRxSignalGroupId];
+
+            Com_MainFunctionRxSignalGroup(SignalGroup);
+
+            CopySignalGroupfromBGtoSB(ComMainRxSignalGroupId);
+
+        }         
+
+              
+
+    } 
+    else
+    {
+
+    }
+}
