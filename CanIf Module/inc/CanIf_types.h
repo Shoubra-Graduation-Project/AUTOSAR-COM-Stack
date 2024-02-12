@@ -618,5 +618,8 @@ typedef struct
 	CanIfTxPduCfg	CanIfTxPduCfg[CanIfMaxTxPduCfg];
 	
 }CanIfInitCfg;
+
+extern const CanIf_ConfigType CanIf_Config;
+
 #endif /* CANIF_TYPES_H_ */
 
