@@ -556,7 +556,7 @@ Std_ReturnType CanIf_Transmit(PduIdType TxPduId, const PduInfoType* PduInfoPtr)
     //Check ID if it's Valid
     /* SWS_CANIF_00319 */
     TxEntry = CanIf_FindTxPduEntry(TxPduId);
-    if (txEntry == 0) {
+    if (TxEntry == 0) {
         Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, CANIF_SET_PDU_MODE_ID, CANIF_E_INVALID_TXPDUID);
         return E_NOT_OK;
     }
@@ -604,6 +604,7 @@ Std_ReturnType CanIf_RxIndication(const Can_HwType* MailBox, const PduInfoType* 
 {
     Std_ReturnType RET = E_OK;
     CanIf_PduModeType PduMode = (CanIf_PduModeType)0;
+    const CanIfRxPduCfg* TxEntry;
  
     //Check CAN is INITIATE or Not
     if (CanIfState != CANIF_INIT) {
@@ -618,10 +619,9 @@ Std_ReturnType CanIf_RxIndication(const Can_HwType* MailBox, const PduInfoType* 
         return E_NOT_OK;
     }
 
-
-    // Check if MailBox->Hoh has Invalid Value
+    // Check if MailBox->HOH has Invalid Value
     /* SWS_CANIF_00416 */
-    if ((MailBox->Hoh) > NUM_OF_HOHS) {
+    if ((MailBox->HOH) > NUM_OF_HOHS) {
         Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, CANIF_RX_INDICATION_ID, CANIF_E_PARAM_HRH);
         return E_NOT_OK;
     }
@@ -640,8 +640,10 @@ Std_ReturnType CanIf_RxIndication(const Can_HwType* MailBox, const PduInfoType* 
         return E_NOT_OK;
     }
 
+    CanIf_Channel_t Controller_ID = (CanIf_Channel_t)TxEntry->CanIfTxPduBufferRef->CanIfBufferHthRef->CanIfHthCanCtrlIdRef->CanIfCtrlId;
+
     //Check PDU Mode
-    if (CanIf_GetPduMode(CanIf_ConfigPtr->RxPduCfg.ControllerID, &PduMode) != E_OK) {
+    if (CanIf_GetPduMode(Controller_ID, &PduMode) != E_OK) {
         return E_NOT_OK;
     }
 
@@ -660,9 +662,10 @@ Std_ReturnType CanIf_RxIndication(const Can_HwType* MailBox, const PduInfoType* 
 }
 
 
-Std_ReturnType CanIf_ReadRxPduData(PduIdType  CanIfRxSduId, PduInfoType* CanIfRxInfoPtr)
+Std_ReturnType CanIf_ReadRxPduData(PduIdType CanIfRxSduId, PduInfoType* CanIfRxInfoPtr)
 {
     Std_ReturnType RET = E_OK;
+    const CanIfRxPduCfg* TxEntry;
     CanIf_ControllerModeType ControllerMode = (CanIf_ControllerModeType)0;
 
     //Check CAN is INITIATE or Not
@@ -680,13 +683,16 @@ Std_ReturnType CanIf_ReadRxPduData(PduIdType  CanIfRxSduId, PduInfoType* CanIfRx
 
     //Check Validation of CanIfRxSduId
     /* SWS_CANIF_00325 */
-    if (CanIfRxSduId > CANIF_NUM_RX_LPDU_ID) {
+    if (CanIfRxSduId > CANIF_NUM_RX_PDU_ID) {
         Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, CANIF_READRXNOTIFSTATUS_ID, CANIF_E_INVALID_RXPDUID);
         return E_NOT_OK;
     }
 
+    CanIf_Channel_t Controller_ID = (CanIf_Channel_t)TxEntry->CanIfTxPduBufferRef->CanIfBufferHthRef->CanIfHthCanCtrlIdRef->CanIfCtrlId;
+
+
     //Check Controller Mode
-    if (CanIf_GetControllerMode(CanIf_ConfigPtr->TxPduCfg.ControllerID, &ControllerMode) != E_OK) {
+    if (CanIf_GetControllerMode(Controller_ID, &ControllerMode) != E_OK) {
         return E_NOT_OK;
     }
 
@@ -697,12 +703,9 @@ Std_ReturnType CanIf_ReadRxPduData(PduIdType  CanIfRxSduId, PduInfoType* CanIfRx
         return E_NOT_OK;
     }
 
+
     // Copy Data
 
     return RET;
 }
-
     
-
-
-
