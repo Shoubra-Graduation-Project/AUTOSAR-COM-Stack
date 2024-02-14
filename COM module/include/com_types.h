@@ -487,6 +487,8 @@ typedef struct {
 
     ComIPdu_type *containingIPDU;
 
+	boolean ComSignalUpdated;
+
 }ComSignal_type;
 
 
