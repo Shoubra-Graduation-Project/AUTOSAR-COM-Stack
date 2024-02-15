@@ -290,4 +290,16 @@ com_packSignalsToPdu(ComIPdu_type* IPdu)
 		ComSignal_type* signal = IPdu->ComIPduSignalRef[ComSignalId];
 		Com_WriteSignalDataToPdu(signal->ComHandleId, signal->ComFGBuffer);
 	}
+	void * dataAddress = NULL;
+	for(uint16 ComSignaGrouplId = 0; (IPdu->ComIPduSignalGroupRef[ComSignaGrouplId] != NULL); ComSignaGrouplId++)
+	{
+		ComSignalGroup_type* signalGroup = IPdu->ComIPduSignalGroupRef[ComSignaGrouplId];
+		for(uint16 ComGroupSignalId = 0; (signalGroup->ComIPduGroupSignalRef[ComGroupSignalId] != NULL); ComGroupSignalId++)
+		{
+			ComGroupSignal_type* groupSignal = signalGroup->ComIPduGroupSignalRef[ComGroupSignalId];
+			CopyGroupSignalFromFGtoAddress(signalGroup->ComHandleId, groupSignal->ComHandleId, dataAddress);
+			Com_WriteGroupSignalDataToPdu(groupSignal->ComHandleId, dataAddress);
+		}
+		
+	}
 }
