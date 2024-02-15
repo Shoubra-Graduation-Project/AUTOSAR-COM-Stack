@@ -291,6 +291,8 @@ typedef struct
 
 	boolean ComCurrentTransmissionSelection;
 
+	boolean ComIsIPduDeferred;
+
 } ComTxIPdu_type;
 
 
