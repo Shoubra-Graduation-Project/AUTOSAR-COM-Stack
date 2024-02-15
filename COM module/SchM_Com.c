@@ -102,20 +102,13 @@ void Com_MainFunctionRx(void)
 
 void Com_MainFunctionTx (void)
 {
-    uint8 currentIPduID;
-
-    ComIPdu_type* IPdu;
-    ComIPduGroup_type * IPduGroup; 
-
-	for(currentIPduID = 0; currentIPduID<COM_NUM_OF_IPDU; currentIPduID++)
+	for(uint8 currentIPduID = 0; currentIPduID<COM_NUM_OF_IPDU; currentIPduID++)
 	{
-		IPdu = GET_IPdu(currentIPduID);
-
+		ComIPdu_type* IPdu = GET_IPdu(currentIPduID);
 		if(IPdu !=NULL)
 		{
-			IPduGroup =  IPdu->ComIPduGroupRef;
-
-			if(IPduGroup != NULL && IPduGroup->IpduGroupFlag != STOPPED && IPdu->ComIPduDirection == SEND)
+			ComIPduGroup_type * IPduGroup =  IPdu->ComIPduGroupRef;
+			if((IPduGroup == NULL || IPduGroup->IpduGroupFlag == STARTED) && IPdu->ComIPduDirection == SEND)
 			{	
 				if(IPdu->ComTxIPdu.ComCurrentTransmissionSelection == 1)
 				{
@@ -123,6 +116,7 @@ void Com_MainFunctionTx (void)
 					{
 						case MIXED:
 									com_packSignalsToPdu(IPdu);
+									if(IPdu->ComIPduCallout != NULL) {IPdu->ComIPduCallout();}
 									for(uint8 i = 0; i<(IPdu->ComTxIPdu.ComNumberOfTransmissions); i++)
 									{
 										Com_TriggerIPDUSend(IPdu->ComIPduHandleId);
@@ -134,12 +128,14 @@ void Com_MainFunctionTx (void)
 									if(IPdu->ComTxIPdu.ComTxModeTrue.ComTxMode.comPeriodicTimeFired == 1)
 									{
 										IPdu->ComTxIPdu.ComTxModeTrue.ComTxMode.comPeriodicTimeFired == 0;
+										if(IPdu->ComIPduCallout != NULL) {IPdu->ComIPduCallout();}
 										Com_TriggerIPDUSend(IPdu->ComIPduHandleId);
 										if(ComTxIPdu.ComMinimumDelayTime != 0){delay(IPdu->ComTxIPdu.ComMinimumDelayTime);}
 									}
 									break;
 						case DIRECT:
 									com_packSignalsToPdu(IPdu);
+									if(IPdu->ComIPduCallout != NULL) {IPdu->ComIPduCallout();}
 									for(uint8 i = 0; i<(IPdu->ComTxIPdu.ComNumberOfTransmissions); i++)
 									{
 										Com_TriggerIPDUSend(IPdu->ComIPduHandleId);
@@ -155,6 +151,7 @@ void Com_MainFunctionTx (void)
 					{
 						case MIXED:
 									com_packSignalsToPdu(IPdu);
+									if(IPdu->ComIPduCallout != NULL) {IPdu->ComIPduCallout();}
 									for(uint8 i = 0; i<(IPdu->ComTxIPdu.ComNumberOfTransmissions); i++)
 									{
 										Com_TriggerIPDUSend(IPdu->ComIPduHandleId);
@@ -166,12 +163,14 @@ void Com_MainFunctionTx (void)
 									if(IPdu->ComTxIPdu.ComTxModeFalse.ComTxMode.comPeriodicTimeFired == 1)
 									{
 										IPdu->ComTxIPdu.ComTxModeFalse.ComTxMode.comPeriodicTimeFired == 0;
+										if(IPdu->ComIPduCallout != NULL) {IPdu->ComIPduCallout();}
 										Com_TriggerIPDUSend(IPdu->ComIPduHandleId);
 										if(ComTxIPdu.ComMinimumDelayTime != 0){delay(IPdu->ComTxIPdu.ComMinimumDelayTime);}
 									}
 									break;
 						case DIRECT:
 									com_packSignalsToPdu(IPdu);
+									if(IPdu->ComIPduCallout != NULL) {IPdu->ComIPduCallout();}
 									for(uint8 i = 0; i<(IPdu->ComTxIPdu.ComNumberOfTransmissions); i++)
 									{
 										Com_TriggerIPDUSend(IPdu->ComIPduHandleId);
