@@ -108,7 +108,7 @@ void Com_MainFunctionTx (void)
 		if(IPdu !=NULL)
 		{
 			/*-----------------------------------------------Notify RTE layer if IPDU is DEFERED--------------------------------------------------------*/
-			if((IPdu->ComTxIPdu).ComIsIPduDeferred == 1)
+			if(IPdu->ComIPduSignalProcessing == DEFERRED && (IPdu->ComTxIPdu).ComIsIPduDeferred == 1)
 			{
 				for(uint16 signalID=0; (IPdu->ComIPduSignalRef[signalID] != NULL); signalID++)
 				{
