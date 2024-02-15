@@ -107,6 +107,25 @@ void Com_MainFunctionTx (void)
 		ComIPdu_type* IPdu = GET_IPdu(currentIPduID);
 		if(IPdu !=NULL)
 		{
+			/*-----------------------------------------------Notify RTE layer if IPDU is DEFERED--------------------------------------------------------*/
+			if((IPdu->ComTxIPdu).ComIsIPduDeferred == 1)
+			{
+				for(uint16 signalID=0; (IPdu->ComIPduSignalRef[signalID] != NULL); signalID++)
+				{
+					if(IPdu->ComIPduSignalRef[signalID]->ComTimeoutNotification != NULL)
+					{
+						IPdu->ComIPduSignalRef[signalID]->ComTimeoutNotification();
+					}
+				}
+				for(uint16 signalGroupID=0; (IPdu->ComIPduSignalGroupRef[signalGroupID] != NULL); signalGroupID++)
+				{
+					if(IPdu->ComIPduSignalGroupRef[signalGroupID]->ComTimeoutNotification != NULL)
+					{
+						IPdu->ComIPduSignalGroupRef[signalGroupID]->ComTimeoutNotification();
+					}
+				}
+			}
+			/*---------------------------------------------------------Start sending IPDU-------------------------------------------------------------------*/
 			ComIPduGroup_type * IPduGroup =  IPdu->ComIPduGroupRef;
 			if((IPduGroup == NULL || IPduGroup->IpduGroupFlag == STARTED) && IPdu->ComIPduDirection == SEND)
 			{	
@@ -180,6 +199,7 @@ void Com_MainFunctionTx (void)
 					}
 				}
 			}
+			
 		}
 		
 	}
