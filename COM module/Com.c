@@ -734,6 +734,7 @@ void Com_DisableReceptionDM (Com_IpduGroupIdType IpduGroupId)
  {
     const ComSignalGroup_type * SignalGroup= GET_SIGNALGROUP(GroupSignal->SignalGroupId);
     const ComIPdu_type *Ipdu=GET_IPDU(SignalGroup->ComIPduHandleId);
+	
 	if(Ipdu->ComIPduDirection!=RECEIVE)
 	{
 		return E_NOT_OK;
@@ -885,10 +886,52 @@ void Com_DisableReceptionDM (Com_IpduGroupIdType IpduGroupId)
  *********************************************************************************/
 void Com_IpduGroupStart(Com_IpduGroupIdType IpduGroupId , boolean Initialize) 
 {
-	ComIPduGroup_type * IPduGroup; 
-	(void)Initialize; // Nothing to be done. This is just to avoid Lint warning.
+	ComIPduGroup_type * IPduGroup;
+
+	ComIPdu_type * IPdu;
+
+	uint8 IpduId; 
+
 
 	IPduGroup = GET_IpduGroup(IpduGroupId);
+
+    for (IpduId = 0; IpduId < COM_NUM_OF_IPDU ; IpduId++)
+		 {
+
+		    IPdu = GET_IPdu(IpduId);
+
+			if(IPdu->ComIPduGroupRef != NULL)
+
+			{
+				/*[SWS_Com_00787] If an I-PDU is started by Com_IpduGroupStart, the AUTOSAR
+                COM module shall always initialize the following attributes of this I-PDU:
+                1) ComMinimumDelayTime of I-PDUs in transmission mode DIRECT or MIXED
+                2) restart all reception deadline monitoring timers for all signals with a non-zero
+                configured ComFirstTimeout
+                3) cancel all transmission deadline monitoring timers and use ComFirstTimeout (if
+                configured) as value when a transmission timer is started the first time after the
+                I-PDU activation
+                4) all included update-bits shall be cleared
+                5) reset OCCURRENCE of filters with ComFilterAlgorithm ONE_EVERY_N
+                6) set the I-PDU counter to 0 for I-PDUs with ComIPduDirection configured to
+                SEND
+                7) accept for I-PDUs with ComIPduDirection configured to RECEIVED any next
+                incoming I-PDU counter⌋*/
+				if(IPdu->ComIPduGroupRef->ComIPduGroupHandleId == IpduGroupId)
+				{
+
+				}
+				else
+				{
+
+				}
+			}
+			else
+			{
+
+			}
+
+		 }
 
 	if(IPduGroup != NULL)
 	{
