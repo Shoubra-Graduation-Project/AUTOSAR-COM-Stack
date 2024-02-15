@@ -419,3 +419,130 @@ void Com_WriteSignalDataToPdu(const Com_SignalIdType signalId, const void *signa
 	// Get data
 	Com_WriteSignalDataToPduBuffer(signalId, signalData);
 }
+
+
+/***********************************************************************************
+ *                                                                                 *
+ *    Service Name: Com_WriteSignalDataToPduBuffer                                                             
+ * 
+ *    Parameters (in): signalId, signalData
+ * 
+ *    Parameters (out): None 
+ * 
+ *    Return Value: None
+ * 
+ *    Description:  Write signal data to Ipdu buffer
+ * 
+ *********************************************************************************/
+
+void Com_WriteGroupSignalDataToPduBuffer(const uint16 groupSignalId, const void *signalData)
+{
+	uint32 BitPosition;
+	uint8 data;
+	uint8 mask;
+	uint8 pduMask;
+	uint8 signalMask;
+	uint8 *pduBufferBytes = NULL;
+	uint8 *pduBeforChange = NULL;
+	uint8 *dataBytes = NULL;
+	uint8 signalLength;
+	uint8 BitOffsetInByte;
+	uint8 pduStartByte;
+	uint8 i;
+
+    // Get signal
+	const ComGroupSignal_type * GroupSignal =  GET_GroupSignal(groupSignalId);
+
+	// Get PDU
+	const ComIPdu_type *IPdu = GET_IPdu(GroupSignal->ComIPduHandleId);
+
+    // Set pduBuffer to the ComIPduDataPtr pointer
+	void * const PduBuffer = IPdu->ComIPduDataPtr;
+
+
+    
+	BitPosition = GroupSignal->ComBitPosition;
+	BitOffsetInByte = BitPosition % 8;
+	pduStartByte = BitPosition / 8;
+	pduBufferBytes = (uint8 *)PduBuffer;
+	dataBytes = (uint8 *) signalData;
+	signalLength = GroupSignal->ComBitSize/8;
+	pduBeforChange = pduBufferBytes;
+
+	pduBufferBytes += pduStartByte;
+
+	for(i = 0; i<=signalLength; i++)
+	{
+	    pduMask = 255;
+	    signalMask = 255;
+        if( i == 0)
+        {
+            pduMask = mask >> (8 - BitOffsetInByte);
+            signalMask = signalMask >> BitOffsetInByte;
+            *pduBufferBytes = (* pduBufferBytes) & pduMask;
+            data = (* dataBytes) & signalMask;
+            data = data << BitOffsetInByte;
+            *pduBufferBytes = (* pduBufferBytes) | data;
+            pduBufferBytes ++;
+        }
+        else if(i==signalLength)
+        {
+            pduMask = mask << BitOffsetInByte;
+            signalMask = signalMask << (8 - BitOffsetInByte);
+            *pduBufferBytes = (* pduBufferBytes) & pduMask;
+            data = (* dataBytes) & signalMask;
+            data = data >> (8 - BitOffsetInByte);
+            *pduBufferBytes = (* pduBufferBytes) | data;
+        }
+        else
+        {
+            pduMask = mask << BitOffsetInByte;
+            signalMask = signalMask << (8 - BitOffsetInByte);
+            *pduBufferBytes = (* pduBufferBytes) & pduMask;
+            data = (* dataBytes) & signalMask;
+            data = data >> (8 - BitOffsetInByte);
+            *pduBufferBytes = (* pduBufferBytes) | data;
+
+            dataBytes++;
+
+            pduMask = 255;
+            signalMask = 255;
+            pduMask = mask >> (8 - BitOffsetInByte);
+            signalMask = signalMask >> BitOffsetInByte;
+            *pduBufferBytes = (* pduBufferBytes) & pduMask;
+            data = (* dataBytes) & signalMask;
+            data = data << BitOffsetInByte;
+            *pduBufferBytes = (* pduBufferBytes) | data;
+            pduBufferBytes ++;
+
+        }
+
+	}
+
+}
+
+
+/***********************************************************************************
+ *                                                                                 *
+ *    Service Name: Com_WriteSignalDataToPdu                                                             
+ * 
+ *    Parameters (in): signalId, signalData
+ * 
+ *    Parameters (out): None 
+ * 
+ *    Return Value: None
+ * 
+ *    Description:  Write signal data to Ipdu 
+ * 
+ *********************************************************************************/
+void Com_WriteGroupSignalDataToPdu(const Com_SignalIdType signalId, const void *signalData) 
+{
+	// Get Signal
+	const ComGroupSignal_type *GroupSignal     = GET_GroupSignal(signalId);
+
+    // Get Ipdu
+	const ComIPdu_type   *IPdu       = GET_IPdu(GroupSignal->ComIPduHandleId);
+
+	// Get data
+	Com_WriteSignalDataToPduBuffer(signalId, signalData);
+}
