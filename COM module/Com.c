@@ -971,9 +971,9 @@ void Com_TxConfirmation(PduIdType TxPduId, Std_ReturnType result)
 	ComIPduGroup_type* IPduGroup =  IPdu->ComIPduGroupRef;
 	if(IPdu->ComIPduSignalProcessing == DEFERRED)
 	{
-		/*set the flag*/
+		(IPdu->ComTxIPdu).ComIsIPduDeferred = 1;
 	}
-	if(IPdu->ComIPduSignalProcessing == IMMEDIATE || /*the flag is 1*/)
+	else(IPdu->ComIPduSignalProcessing == IMMEDIATE)
 	{
 		if(/*deadline monitor timeout*/)
 		{
