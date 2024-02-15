@@ -324,10 +324,10 @@ void Com_WriteSignalDataToPduBuffer(const uint16 signalId, const void *signalDat
 	uint8 i;
 
     // Get signal
-	const ComSignal_type * Signal =  GET_Signal(signalId);
+	const ComSignal_type * Signal =  GET_SIGNAL(signalId);
 
 	// Get PDU
-	const ComIPdu_type *IPdu = GET_IPdu(Signal->ComIPduHandleId);
+	const ComIPdu_type *IPdu = GET_IPDU(Signal->ComIPduHandleId);
 
     // Set pduBuffer to the ComIPduDataPtr pointer
 	void * const PduBuffer = IPdu->ComIPduDataPtr;
@@ -411,10 +411,10 @@ void Com_WriteSignalDataToPduBuffer(const uint16 signalId, const void *signalDat
 void Com_WriteSignalDataToPdu(const Com_SignalIdType signalId, const void *signalData) 
 {
 	// Get Signal
-	const ComSignal_type *Signal     = GET_Signal(signalId);
+	const ComSignal_type *Signal     = GET_SIGNAL(signalId);
 
     // Get Ipdu
-	const ComIPdu_type   *IPdu       = GET_IPdu(Signal->ComIPduHandleId);
+	const ComIPdu_type   *IPdu       = GET_IPDU(Signal->ComIPduHandleId);
 
 	// Get data
 	Com_WriteSignalDataToPduBuffer(signalId, signalData);
@@ -451,10 +451,10 @@ void Com_WriteGroupSignalDataToPduBuffer(const uint16 groupSignalId, const void 
 	uint8 i;
 
     // Get signal
-	const ComGroupSignal_type * GroupSignal =  GET_GroupSignal(groupSignalId);
+	const ComGroupSignal_type * GroupSignal =  GET_GROUPSIGNAL(groupSignalId);
 
 	// Get PDU
-	const ComIPdu_type *IPdu = GET_IPdu(GroupSignal->ComIPduHandleId);
+	const ComIPdu_type *IPdu = GET_IPDU(GroupSignal->ComIPduHandleId);
 
     // Set pduBuffer to the ComIPduDataPtr pointer
 	void * const PduBuffer = IPdu->ComIPduDataPtr;
@@ -538,10 +538,10 @@ void Com_WriteGroupSignalDataToPduBuffer(const uint16 groupSignalId, const void 
 void Com_WriteGroupSignalDataToPdu(const Com_SignalIdType signalId, const void *signalData) 
 {
 	// Get Signal
-	const ComGroupSignal_type *GroupSignal     = GET_GroupSignal(signalId);
+	const ComGroupSignal_type *GroupSignal     = GET_GROUPSIGNAL(signalId);
 
     // Get Ipdu
-	const ComIPdu_type   *IPdu       = GET_IPdu(GroupSignal->ComIPduHandleId);
+	const ComIPdu_type   *IPdu       = GET_IPDU(GroupSignal->ComIPduHandleId);
 
 	// Get data
 	Com_WriteSignalDataToPduBuffer(signalId, signalData);
