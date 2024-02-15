@@ -1032,3 +1032,35 @@ void Com_TxConfirmation(PduIdType TxPduId, Std_ReturnType result)
 	}
 	
 }
+
+uint8 Com_InvalidateSignal(Com_SignalIdType SignalId)
+{
+	uint8 returnValue;
+	ComSignal_type* signal = GET_SIGNAL(SignalId);
+	ComIPdu_type* IPdu = GET_IPDU(signal->ComIPduHandleId);
+	if(signal->ComSignalDataInvalidValue == NULL || (IPdu->ComIPduGroupRef)->IpduGroupFlag == STOPPED)
+	{
+		returnValue = COM_SERVICE_NOT_AVAILABLE;
+	}
+	else
+	{
+		void * SignalDataPtr = NULL;
+		uint8 *dest = (uint8 *) SignalDataPtr;
+		uint8 *src =  (uint8 *) signal->ComSignalDataInvalidValue;
+		for(int i= 0; i < signal->ComBitSize/8 ; i++)
+		{
+			*dest = src++;
+			dest++;
+		}
+		if(Com_SendSignal(SignalId, SignalDataPtr) == E_OK)
+		{
+			returnValue = E_OK;
+		}
+		else
+		{
+			returnValue = COM_SERVICE_NOT_AVAILABLE;
+		}
+	}
+	
+	return returnValue;		
+}
