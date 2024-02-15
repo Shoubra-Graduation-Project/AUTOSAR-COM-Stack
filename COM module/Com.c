@@ -964,3 +964,71 @@ void Com_IpduGroupStop(Com_IpduGroupIdType IpduGroupId)
 		IPduGroup->IpduGroupFlag = STOPPED;
 	}
  }
+
+void Com_TxConfirmation(PduIdType TxPduId, Std_ReturnType result)
+{
+	ComIPdu_type* IPdu = GET_IPdu(TxPduId);
+	ComIPduGroup_type* IPduGroup =  IPdu->ComIPduGroupRef;
+	if(IPdu->ComIPduSignalProcessing == DEFERRED)
+	{
+		/*set the flag*/
+	}
+	if(IPdu->ComIPduSignalProcessing == IMMEDIATE || /*the flag is 1*/)
+	{
+		if(/*deadline monitor timeout*/)
+		{
+			for(uint16 signalID=0; (IPdu->ComIPduSignalRef[signalID] != NULL); signalID++)
+			{
+				if(IPdu->ComIPduSignalRef[signalID]->ComTimeoutNotification != NULL)
+				{
+					IPdu->ComIPduSignalRef[signalID]->ComTimeoutNotification();
+				}
+			}
+			for(uint16 signalGroupID=0; (IPdu->ComIPduSignalGroupRef[signalGroupID] != NULL); signalGroupID++)
+			{
+				if(IPdu->ComIPduSignalGroupRef[signalGroupID]->ComTimeoutNotification != NULL)
+				{
+					IPdu->ComIPduSignalGroupRef[signalGroupID]->ComTimeoutNotification();
+				}
+			}
+		}
+		else if(result == E_OK)
+		{
+			for(uint16 signalID=0; (IPdu->ComIPduSignalRef[signalID] != NULL); signalID++)
+			{
+				if(IPdu->ComIPduSignalRef[signalID]->ComNotification != NULL)
+				{
+					IPdu->ComIPduSignalRef[signalID]->ComNotification();
+				}
+			}
+			for(uint16 signalGroupID=0; (IPdu->ComIPduSignalGroupRef[signalGroupID] != NULL); signalGroupID++)
+			{
+				if(IPdu->ComIPduSignalGroupRef[signalGroupID]->ComNotification != NULL)
+				{
+					IPdu->ComIPduSignalGroupRef[signalGroupID]->ComNotification();
+				}
+			}
+		}
+		else if(result == E_NOT_OK)
+		{
+			if(IPduGroup != NULL && IPduGroup->IpduGroupFlag == STOPPED)
+			{
+				for(uint16 signalID=0; (IPdu->ComIPduSignalRef[signalID] != NULL); signalID++)
+				{
+					if(IPdu->ComIPduSignalRef[signalID]->ComErrorNotification != NULL)
+					{
+						IPdu->ComIPduSignalRef[signalID]->ComErrorNotification();
+					}
+				}
+				for(uint16 signalGroupID=0; (IPdu->ComIPduSignalGroupRef[signalGroupID] != NULL); signalGroupID++)
+				{
+					if(IPdu->ComIPduSignalGroupRef[signalGroupID]->ComErrorNotification != NULL)
+					{
+						IPdu->ComIPduSignalGroupRef[signalGroupID]->ComErrorNotification();
+					}
+				}
+			}
+		}
+	}
+	
+}
