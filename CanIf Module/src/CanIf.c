@@ -636,21 +636,15 @@ uint8 CanIf_FindHrhChannel(Can_HwHandleType HRH)
 }
 
 
-/* To Find ID of Recieving Pdu */
-const CanIfRxPduCfg* CanIf_FindRxPduEntry(const Can_HwType* MailBox)
+/* To Find RxPdu*/
+const CanIfRxPduCfg* CanIf_FindRxPduEntry(Can_HwHandleType Hoh)
 {
-    if ((MailBox->CanId) >= CanIfMaxTxPduCfg) {
-        return (CanIfRxPduCfg*)NULL;
-    }
-
-    uint32 Index, i;
-    for (i = 0; i < CanIfMaxRxPduCfg; i++) {
-        if ((MailBox->CanId) == CanIf_ConfigPtr->CanIfInitCfg.CanIfRxPduCfg[i].CanIfRxPduId) {
-            Index = i;
-            break;
+    for (uint8 i = 0; i < CanIfMaxRxPduCfg; i++) {
+        if (Hoh == (CanIf_ConfigPtr)->CanIfInitCfg->CanIfRxPduCfg[i].CanIfRxPduHrhIdRef->CanIfHrhIdSymRef->CanObjectId) {
+            return (CanIfRxPduCfg* const)(&CanIf_ConfigPtr->CanIfInitCfg.CanIfRxPduCfg[i]);
         }
     }
-    return &CanIf_ConfigPtr->CanIfInitCfg.CanIfRxPduCfg[Index];
+    return 0
 }
 
 
@@ -658,7 +652,7 @@ Std_ReturnType CanIf_RxIndication(const Can_HwType* MailBox, const PduInfoType* 
 {
     Std_ReturnType RET = E_OK;
     CanIf_PduModeType PduMode = (CanIf_PduModeType)0;
-    const CanIfRxPduCfg* RxPduIndex = CanIf_FindRxPduEntry(MailBox);
+    const CanIfRxPduCfg* RxPduIndex = CanIf_FindRxPduEntry(MailBox->HOH);
     uint8 ControllerID = CanIf_FindHrhChannel(Mailbox->HOH);
  
     //Check CAN is INITIATE or Not
@@ -697,7 +691,7 @@ Std_ReturnType CanIf_RxIndication(const Can_HwType* MailBox, const PduInfoType* 
 
     // Check if Data Length has invalid Value
     /* SWS_CANIF_00417 */
-    if ((RxPduIndex->CanIfRxPduDataLength) >= (PduInfoPtr->SduLength)) {
+    if ((PduInfoPtr->SduLength) != (RxPduIndex->CanIfRxPduDataLength)) {
         Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, CANIF_RX_INDICATION_ID, CANIF_E_PARAM_DLC);
         return E_NOT_OK;
     }
@@ -706,8 +700,8 @@ Std_ReturnType CanIf_RxIndication(const Can_HwType* MailBox, const PduInfoType* 
     CanifBuffer.SduDataPtr = PduInfoPtr->SduDataPtr;
     CanifBuffer.SduLength = PduInfoPtr->SduLength;
 
-    /* Callback Function of *User_RxIndication To Copy Data From Recieving Buffer To User */
-    //User_RxIndication(RxPduIndex->CanIfRxPduId, &PduInfoBuffer);
+    /* Callback Function To Copy Data To User */
+    (RxPduIndex->CanIfRxPduUserRxIndicationUL)(RxPduIndex->CanIfRxPduId, &PduInfoPtr);
 	
     return RET;
 }
