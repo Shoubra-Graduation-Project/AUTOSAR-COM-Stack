@@ -517,20 +517,6 @@ void CanIf_TxConfirmation (PduIdType CanTxPduId)
 }
 
 
-const CanIfTxPduCfg* CanIf_FindTxPduEntry(PduIdType TxPduId) {
-    if (TxPduId >= CanIfMaxTxPduCfg) {
-        return (CanIfTxPduCfg*)NULL;
-    }
-    uint32 Index, i;
-    for (i = 0; i < CanIfMaxTxPduCfg; i++) {
-        if (TxPduId == CanIf_ConfigPtr->CanIfInitCfg.CanIfTxPduCfg[i].CanIfTxPduId) {
-            Index = i;
-            break;
-        }
-    }
-    return &CanIf_ConfigPtr->CanIfInitCfg.CanIfTxPduCfg[index];
-}
-
 /* Find ID of Transmit Pdu */
 const CanIfTxPduCfg* CanIf_FindTxPduEntry(PduIdType TxPduId) 
 {
@@ -617,25 +603,6 @@ Std_ReturnType CanIf_Transmit(PduIdType TxPduId, const PduInfoType* PduInfoPtr)
 
 
 
-/* To Find Controller ID of Recieving Pdu */
-uint8 CanIf_FindHrhChannel(Can_HwHandleType HRH)
-{
-    CanIfHrhCfg* HrhCfg;
-    uint8 Entry;
-
-    HrhCfg = CanIf_ConfigPtr->CanIfInitCfg.CanIfInitHohCfg[0].CanIfHrhCfg[1U];
-    uint8 len = sizeof(HrhCfg) / sizeof(HrhCfg[0]);
-
-    for (int i = 0; i < len; i++) {
-        if ((HrhCfg[i].CanIfHrhIdSymRef->CanObjectId) == HRH){
-            Entry = HrhCfg[i].CanIfHrhCanCtrlIdRef->CanIfCtrlId;
-            break;
-        }
-    }
-    return Entry;
-}
-
-
 /* To Find RxPdu*/
 const CanIfRxPduCfg* CanIf_FindRxPduEntry(Can_HwHandleType Hoh)
 {
@@ -653,7 +620,8 @@ Std_ReturnType CanIf_RxIndication(const Can_HwType* MailBox, const PduInfoType* 
     Std_ReturnType RET = E_OK;
     CanIf_PduModeType PduMode = (CanIf_PduModeType)0;
     const CanIfRxPduCfg* RxPduIndex = CanIf_FindRxPduEntry(MailBox->HOH);
-    uint8 ControllerID = CanIf_FindHrhChannel(Mailbox->HOH);
+    uint8 ControllerID = (uint8)RxPduIndex->CanIfRxPduHrhIdRef->CanIfHrhCanCtrlIdRef->CanIfCtrlId;
+
  
     //Check CAN is INITIATE or Not
     if (CanIfState != CANIF_INIT) {
