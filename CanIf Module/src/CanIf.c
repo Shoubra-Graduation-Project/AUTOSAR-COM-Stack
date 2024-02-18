@@ -21,7 +21,7 @@ static CanIf_ControllerModeType CanIfControllerMode[NUMBER_OF_CONTROLLERS] = {
 static CanIf_PduModeType CanIfPduMode[NUMBER_OF_CONTROLLERS];
 
 static const CanIf_ConfigType* CanIf_ConfigPtr;
-static CanIf_LPduDataType lPduData;
+PduInfoType* CanifBuffer;
 
 /******************************************* CanIf_SetControllerMode ***********************************************/
 LOCAL VAR(CanIf_GlobalType ,AUTOMATIC) CanIf_Global;
@@ -531,6 +531,23 @@ const CanIfTxPduCfg* CanIf_FindTxPduEntry(PduIdType TxPduId) {
     return &CanIf_ConfigPtr->CanIfInitCfg.CanIfTxPduCfg[index];
 }
 
+/* Find ID of Transmit Pdu */
+const CanIfTxPduCfg* CanIf_FindTxPduEntry(PduIdType TxPduId) 
+{
+    if (TxPduId >= CanIfMaxTxPduCfg) {
+        return (CanIfTxPduCfg*)NULL;
+    }
+
+    uint32 Index, i;
+    for (i = 0; i < CanIfMaxTxPduCfg; i++) {
+        if (TxPduId == CanIf_ConfigPtr->CanIfInitCfg.CanIfTxPduCfg[i].CanIfTxPduId) {
+            Index = i;
+            break;
+        }
+    }
+    return &CanIf_ConfigPtr->CanIfInitCfg.CanIfTxPduCfg[Index];
+}
+
 Std_ReturnType CanIf_Transmit(PduIdType TxPduId, const PduInfoType* PduInfoPtr) 
 {
 
@@ -561,7 +578,7 @@ Std_ReturnType CanIf_Transmit(PduIdType TxPduId, const PduInfoType* PduInfoPtr)
         return E_NOT_OK;
     }
 
-    CanIf_Channel_t Controller_ID = (CanIf_Channel_t)TxEntry->CanIfTxPduBufferRef->CanIfBufferHthRef->CanIfHthCanCtrlIdRef->CanIfCtrlId;
+    uint8 Controller_ID = (uint8)TxEntry->CanIfTxPduBufferRef->CanIfBufferHthRef->CanIfHthCanCtrlIdRef->CanIfCtrlId;
 
     //Check Controller Mode
     if (CanIf_GetControllerMode(Controller_ID, &ControllerMode) != E_OK) {
@@ -586,6 +603,7 @@ Std_ReturnType CanIf_Transmit(PduIdType TxPduId, const PduInfoType* PduInfoPtr)
         return E_NOT_OK;
     }
 
+    /* Copy data to CanPdu */
     CanPdu.length = PduInfoPtr->SduLength;
     CanPdu.id = TxEntry->CanIfTxPduCanId;;
     CanPdu.sdu = PduInfoPtr->SduDataPtr;
@@ -599,12 +617,49 @@ Std_ReturnType CanIf_Transmit(PduIdType TxPduId, const PduInfoType* PduInfoPtr)
 
 
 
+/* To Find Controller ID of Recieving Pdu */
+uint8 CanIf_FindHrhChannel(Can_HwHandleType HRH)
+{
+    CanIfHrhCfg* HrhCfg;
+    uint8 Entry;
+
+    HrhCfg = CanIf_ConfigPtr->CanIfInitCfg.CanIfInitHohCfg[0].CanIfHrhCfg[1U];
+    uint8 len = sizeof(HrhCfg) / sizeof(HrhCfg[0]);
+
+    for (int i = 0; i < len; i++) {
+        if ((HrhCfg[i].CanIfHrhIdSymRef->CanObjectId) == HRH){
+            Entry = HrhCfg[i].CanIfHrhCanCtrlIdRef->CanIfCtrlId;
+            break;
+        }
+    }
+    return Entry;
+}
+
+
+/* To Find ID of Recieving Pdu */
+const CanIfRxPduCfg* CanIf_FindRxPduEntry(const Can_HwType* MailBox)
+{
+    if ((MailBox->CanId) >= CanIfMaxTxPduCfg) {
+        return (CanIfRxPduCfg*)NULL;
+    }
+
+    uint32 Index, i;
+    for (i = 0; i < CanIfMaxRxPduCfg; i++) {
+        if ((MailBox->CanId) == CanIf_ConfigPtr->CanIfInitCfg.CanIfRxPduCfg[i].CanIfRxPduId) {
+            Index = i;
+            break;
+        }
+    }
+    return &CanIf_ConfigPtr->CanIfInitCfg.CanIfRxPduCfg[Index];
+}
+
 
 Std_ReturnType CanIf_RxIndication(const Can_HwType* MailBox, const PduInfoType* PduInfoPtr) 
 {
     Std_ReturnType RET = E_OK;
     CanIf_PduModeType PduMode = (CanIf_PduModeType)0;
-    const CanIfRxPduCfg* TxEntry;
+    const CanIfRxPduCfg* RxPduIndex = CanIf_FindRxPduEntry(MailBox);
+    uint8 ControllerID = CanIf_FindHrhChannel(Mailbox->HOH);
  
     //Check CAN is INITIATE or Not
     if (CanIfState != CANIF_INIT) {
@@ -619,45 +674,41 @@ Std_ReturnType CanIf_RxIndication(const Can_HwType* MailBox, const PduInfoType* 
         return E_NOT_OK;
     }
 
-    // Check if MailBox->HOH has Invalid Value
-    /* SWS_CANIF_00416 */
-    if ((MailBox->HOH) > NUM_OF_HOHS) {
-        Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, CANIF_RX_INDICATION_ID, CANIF_E_PARAM_HRH);
-        return E_NOT_OK;
-    }
-  
-    // Check Range of IDs
-    /* SWS_CANIF_00417 */
-    if (((MailBox->CanId) < CANID_EXPECTED_MIN) && ((MailBox->CanId) > CANID_EXPECTED_MAX)) {
-        Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, CANIF_RX_INDICATION_ID, CANIF_E_PARAM_CANID);
-        return E_NOT_OK;
-    }
-
-    // Check if Data Lenght has invalid Value
-    /* SWS_CANIF_00417 */
-    if ((PduInfoPtr->SduLength) > SDU_LENGTH) {
-        Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, CANIF_RX_INDICATION_ID, CANIF_E_PARAM_DLC);
-        return E_NOT_OK;
-    }
-
-    CanIf_Channel_t Controller_ID = (CanIf_Channel_t)TxEntry->CanIfTxPduBufferRef->CanIfBufferHthRef->CanIfHthCanCtrlIdRef->CanIfCtrlId;
-
     //Check PDU Mode
     if (CanIf_GetPduMode(Controller_ID, &PduMode) != E_OK) {
         return E_NOT_OK;
     }
 
     // RX is not online and tx offline active not, report to Det and return
-    if (PduMode != CANIF_ONLINE && PduMode != CANIF_TX_OFFLINE_ACTIVE) {
+    if (PduMode != CANIF_ONLINE && PduMode != CANIF_TX_OFFLINE_ACTIVE && PduMode != CANIF_TX_OFFLINE) {
         Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, CANIF_SET_PDU_MODE_ID, CANIF_E_PARAM_PDU_MODE);
         // Rx not online,discard message.
         return E_NOT_OK;
     }
 
-    /* ------------------------------------ Filteraing ------------------------------------ */
+    /* ------------------------------------ Filteraing & Copy Data To Recieving Buffer Of CanIf ------------------------------------ */
 
-    /* Callback Function of *user_RxIndication */
+    // Check IDs (MailBox)
+    /* SWS_CANIF_00416 */
+    if (RxPduIndex == NULL) {
+        Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, CANIF_SET_PDU_MODE_ID, CANIF_E_INVALID_TXPDUID);
+        return E_NOT_OK;
+    }
 
+    // Check if Data Length has invalid Value
+    /* SWS_CANIF_00417 */
+    if ((RxPduIndex->CanIfRxPduDataLength) >= (PduInfoPtr->SduLength)) {
+        Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, CANIF_RX_INDICATION_ID, CANIF_E_PARAM_DLC);
+        return E_NOT_OK;
+    }
+
+    // Copy data from CAN to CanIf buffer
+    CanifBuffer.SduDataPtr = PduInfoPtr->SduDataPtr;
+    CanifBuffer.SduLength = PduInfoPtr->SduLength;
+
+    /* Callback Function of *User_RxIndication To Copy Data From Recieving Buffer To User */
+    //User_RxIndication(RxPduIndex->CanIfRxPduId, &PduInfoBuffer);
+	
     return RET;
 }
 
@@ -665,7 +716,7 @@ Std_ReturnType CanIf_RxIndication(const Can_HwType* MailBox, const PduInfoType* 
 Std_ReturnType CanIf_ReadRxPduData(PduIdType CanIfRxSduId, PduInfoType* CanIfRxInfoPtr)
 {
     Std_ReturnType RET = E_OK;
-    const CanIfRxPduCfg* TxEntry;
+    const CanIfRxPduCfg* RxEntry;
     CanIf_ControllerModeType ControllerMode = (CanIf_ControllerModeType)0;
 
     //Check CAN is INITIATE or Not
@@ -683,12 +734,12 @@ Std_ReturnType CanIf_ReadRxPduData(PduIdType CanIfRxSduId, PduInfoType* CanIfRxI
 
     //Check Validation of CanIfRxSduId
     /* SWS_CANIF_00325 */
-    if (CanIfRxSduId > CANIF_NUM_RX_PDU_ID) {
+    if (CanIfRxSduId >= CanIfMaxRxPduCfg) {
         Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, CANIF_READRXNOTIFSTATUS_ID, CANIF_E_INVALID_RXPDUID);
         return E_NOT_OK;
     }
 
-    CanIf_Channel_t Controller_ID = (CanIf_Channel_t)TxEntry->CanIfTxPduBufferRef->CanIfBufferHthRef->CanIfHthCanCtrlIdRef->CanIfCtrlId;
+    uint8 Controller_ID = (uint8)RxEntry->CanIfRxPduBufferRef->CanIfBufferHthRef->CanIfHthCanCtrlIdRef->CanIfCtrlId;
 
 
     //Check Controller Mode
@@ -703,8 +754,9 @@ Std_ReturnType CanIf_ReadRxPduData(PduIdType CanIfRxSduId, PduInfoType* CanIfRxI
         return E_NOT_OK;
     }
 
-
-    // Copy Data
+    // Copy Data from CanIf Buffer
+    CanIfRxInfoPtr->SduLength = CanifBuffer.SduLength;
+    CanIfRxInfoPtr->SduDataPtr = CanifBuffer.SduDataPtr;
 
     return RET;
 }
