@@ -16,15 +16,17 @@
 
  /* Section : Macros Definition */
 
-#define NUM_OF_HRHS              1
-#define NUM_OF_HOHS              1
-#define NUM_OF_HTHS              1
+#define MAX_NUM_OF_HTHS_IDs      1
+#define MAX_NUM_OF_HRHS_IDs      1
+#define MAX_NUM_OF_HOHS_IDs      1
 
  /* Section : Macros Functions Declaration */
 
  /* Section : Data Types Declaration */
 
 typedef uint8 Can_HwHandleType;
+typedef uint8 Can_IdType;
+typedef uint8 PduIdType;
 
 
 typedef struct 
