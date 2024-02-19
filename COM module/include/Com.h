@@ -1,24 +1,22 @@
 
 #ifndef _COM_H_
 #define _COM_H_
-/*------------------------------------------Includes Start-------------------------------------------------------------------*/
+
 #include "libraries/Std_Types.h"
 #include "com_types.h"
 #include "ComStack_Types.h"
-/*------------------------------------------Includes End---------------------------------------------------------------------*/
 
 
-/*------------------------------------------Macro Declarations Start---------------------------------------------------------*/
+
+
 /* The service is currently not available */
 #define  COM_SERVICE_NOT_AVAILABLE 0x80
 
 /* Successful execution of this function is currently not possible */
 #define COM_BUSY 0x81
-/*------------------------------------------Macro Declarations End-----------------------------------------------------------*/
 
 
 
-/*------------------------------------------ComStack Type Declarations Start-------------------------------------------------*/
 /* The COM module's signal object identifier. */
 typedef uint16 Com_SignalIdType;
 
@@ -27,15 +25,18 @@ typedef uint16 Com_SignalGroupIdType;
 
 /* The COM I-PDU module's group object identifier. */
 typedef uint16 Com_IpduGroupIdType;
-/*------------------------------------------ComStack Type Declarations End---------------------------------------------------*/
 
 
-/*------------------------------------------Data Type Declarations Start-----------------------------------------------------*/
 /*This is a status value returned by the API service Com_GetStatus()*/
 typedef enum 
 {
- COM_UNINIT = 0x00,
- COM_INIT	
+   // The AUTOSAR COM module is initialized and usable.
+   COM_UNINIT = 0x00,
+
+   /*The AUTOSAR COM module is not initialized or not usable. This
+   shall be the default value after reset. This status shall have the
+   value 0. */
+   COM_INIT	
 }Com_StatusType;
 
 typedef struct{
@@ -61,11 +62,10 @@ typedef struct{
     boolean com_initiated;
 
 }Com_ConfigType;
-/*------------------------------------------Data Type Declarations End-------------------------------------------------------*/
 
 
-/*------------------------------------------Software Interfaces Declarations Start-------------------------------------------*/
- 
+
+
 
 void Com_Init (const Com_ConfigType* config);
 

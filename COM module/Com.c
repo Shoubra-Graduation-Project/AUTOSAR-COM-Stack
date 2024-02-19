@@ -12,10 +12,9 @@
 #include <cstddef>
 #include <minwindef.h>
 
-/**********************************************************************************
- *                             Functions Definitions                              *
- **********************************************************************************/
+static Com_StatusType initStatus = COM_UNINIT;
 
+const Com_ConfigType * ComConfig;
 
 /***********************************************************************************
  *                                                                                 *
@@ -35,7 +34,7 @@
  *                  communication is still disabled.  
  * 
  *********************************************************************************/
-const Com_ConfigType * ComConfig;
+
 
 
 void Com_Init (const Com_ConfigType* config)
@@ -139,7 +138,7 @@ void Com_Init (const Com_ConfigType* config)
 
 
          }
-    config->com_initiated=1;
+   initStatus = COM_INIT;
 
 }
 
@@ -174,7 +173,7 @@ void Com_Init (const Com_ConfigType* config)
 uint8 Com_SendSignal (Com_SignalIdType SignalId, const void* SignalDataPtr)
 {
 	uint8 returnValue;
-	if(is_com_initiated(config)==0)
+	if(initStatus != COM_INIT)
 	{
 		returnValue = E_NOT_OK;
 	}
@@ -403,7 +402,7 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 	   4- set update bit of signal group
 	*/
 	uint8 returnValue;
-	if(is_com_initiated(config)==0)
+	if(initStatus != COM_INIT)
 	{
 		returnValue = E_NOT_OK;
 	}
@@ -760,7 +759,7 @@ void Com_DisableReceptionDM (Com_IpduGroupIdType IpduGroupId)
  }
  void Com_RxIndication (PduIdType RxPduId, const PduInfoType* PduInfoPtr)
  {
-	if(!is_com_initiated())
+	if(initStatus != COM_INIT)
 	{
 		return;
 	}
