@@ -8,6 +8,8 @@
 #include "include/Com_Types.h"
 #include "include/Com_Cfg.h"
 #include "include/ComMacros.h"
+#include "Det/include/Det.h"
+#include "Det/include/Com_Det.h"
 #include <string.h>
 #include <cstddef>
 #include <minwindef.h>
@@ -142,6 +144,157 @@ void Com_Init (const Com_ConfigType* config)
 
 }
 
+
+/***********************************************************************************
+ *                                                                                 *
+ *    Service Name: Com_DeInit    
+ *    
+ *    Service Id: 0x02                                                             *
+ * 
+ *    Parameters (in):  None
+ * 
+ *    Parameters (out): None 
+ * 
+ *    Return Value: None
+ * 
+ *    Description: This service stops the inter-ECU communication.
+ *                 All started I-PDU groups are stopped and have to 
+ *                 be started again, if needed, after Com_Init is called. 
+ *                 By a call to Com_DeInit the AUTOSAR COM module is put
+ *                 into an not initialized state.
+ * 
+ *********************************************************************************/
+
+void Com_DeInit( void ) 
+{
+	ComIPdu_type *IPdu;
+	uint8 ComDeInitPduId;
+
+    if( initStatus != COM_INIT ) 
+	{
+
+        Det_ReportError(COM_MODULE_ID, COM_INSTANCE_ID, COM_DEINIT_ID, COM_E_UNINIT);
+
+        return;
+    }
+    
+    for (ComDeInitPduId = 0; ComDeInitPduId < COM_NUM_OF_IPDU ; ComDeInitPduId++)
+		 { 
+			// Get IPdu
+		    IPdu = GET_IPdu(ComDeInitPduId);
+
+			if(IPdu->ComIPduGroupRef != NULL)
+			{
+				Com_IpduGroupStop(IPdu->ComIPduGroupRef->ComIPduGroupHandleId);
+
+			}
+			else
+			{
+				// NULL pointer (IPdu does not belongs to any IPdu group)
+				Det_ReportError(COM_MODULE_ID, COM_INSTANCE_ID, COM_DEINIT_ID, COM_E_PARAM_POINTER);
+			}
+
+         }
+    initStatus = COM_UNINIT;
+}
+
+
+
+
+/***********************************************************************************
+ *                                                                                 *
+ *    Service Name: Com_IpduGroupStart   
+ *    
+ *    Service Id: 0x03                                                         
+ * 
+ *    Parameters (in): IpduGroupId
+ * 
+ *    Parameters (out): None 
+ * 
+ *    Return Value: None
+ * 
+ *    Description:  Starts a preconfigured I-PDU group.
+ *********************************************************************************/
+void Com_IpduGroupStart(Com_IpduGroupIdType IpduGroupId , boolean Initialize) 
+{
+	ComIPduGroup_type * IPduGroup;
+
+	ComIPdu_type * IPdu;
+
+	uint8 IpduId; 
+
+
+	IPduGroup = GET_IpduGroup(IpduGroupId);
+
+    for (IpduId = 0; IpduId < COM_NUM_OF_IPDU ; IpduId++)
+		 {
+
+		    IPdu = GET_IPdu(IpduId);
+
+			if(IPdu->ComIPduGroupRef != NULL)
+
+			{
+				/*[SWS_Com_00787] If an I-PDU is started by Com_IpduGroupStart, the AUTOSAR
+                COM module shall always initialize the following attributes of this I-PDU:
+                1) ComMinimumDelayTime of I-PDUs in transmission mode DIRECT or MIXED
+                2) restart all reception deadline monitoring timers for all signals with a non-zero
+                configured ComFirstTimeout
+                3) cancel all transmission deadline monitoring timers and use ComFirstTimeout (if
+                configured) as value when a transmission timer is started the first time after the
+                I-PDU activation
+                4) all included update-bits shall be cleared
+                5) reset OCCURRENCE of filters with ComFilterAlgorithm ONE_EVERY_N
+                6) set the I-PDU counter to 0 for I-PDUs with ComIPduDirection configured to
+                SEND
+                7) accept for I-PDUs with ComIPduDirection configured to RECEIVED any next
+                incoming I-PDU counter⌋*/
+				if(IPdu->ComIPduGroupRef->ComIPduGroupHandleId == IpduGroupId)
+				{
+
+				}
+				else
+				{
+
+				}
+			}
+			else
+			{
+
+			}
+
+		 }
+
+	if(IPduGroup != NULL)
+	{
+		IPduGroup->IpduGroupFlag = STARTED;
+	}
+}
+
+/***********************************************************************************
+ *                                                                                 *
+ *    Service Name: Com_IpduGroupStop   
+ *    
+ *    Service Id: 0x04                                                         
+ * 
+ *    Parameters (in): IpduGroupId
+ * 
+ *    Parameters (out): None 
+ * 
+ *    Return Value: None
+ * 
+ *    Description:  Stops a preconfigured I-PDU group.
+ *********************************************************************************/
+void Com_IpduGroupStop(Com_IpduGroupIdType IpduGroupId)
+ {
+	ComIPduGroup_type * IPduGroup; 
+
+	IPduGroup = GET_IpduGroup(IpduGroupId);
+
+	if(IPduGroup != NULL)
+	{
+		IPduGroup->IpduGroupFlag = STOPPED;
+	}
+ }
 
 
 
@@ -868,101 +1021,6 @@ void Com_DisableReceptionDM (Com_IpduGroupIdType IpduGroupId)
      }
  }
 
-
-/***********************************************************************************
- *                                                                                 *
- *    Service Name: Com_IpduGroupStart   
- *    
- *    Service Id: 0x03                                                         
- * 
- *    Parameters (in): IpduGroupId
- * 
- *    Parameters (out): None 
- * 
- *    Return Value: None
- * 
- *    Description:  Starts a preconfigured I-PDU group.
- *********************************************************************************/
-void Com_IpduGroupStart(Com_IpduGroupIdType IpduGroupId , boolean Initialize) 
-{
-	ComIPduGroup_type * IPduGroup;
-
-	ComIPdu_type * IPdu;
-
-	uint8 IpduId; 
-
-
-	IPduGroup = GET_IpduGroup(IpduGroupId);
-
-    for (IpduId = 0; IpduId < COM_NUM_OF_IPDU ; IpduId++)
-		 {
-
-		    IPdu = GET_IPdu(IpduId);
-
-			if(IPdu->ComIPduGroupRef != NULL)
-
-			{
-				/*[SWS_Com_00787] If an I-PDU is started by Com_IpduGroupStart, the AUTOSAR
-                COM module shall always initialize the following attributes of this I-PDU:
-                1) ComMinimumDelayTime of I-PDUs in transmission mode DIRECT or MIXED
-                2) restart all reception deadline monitoring timers for all signals with a non-zero
-                configured ComFirstTimeout
-                3) cancel all transmission deadline monitoring timers and use ComFirstTimeout (if
-                configured) as value when a transmission timer is started the first time after the
-                I-PDU activation
-                4) all included update-bits shall be cleared
-                5) reset OCCURRENCE of filters with ComFilterAlgorithm ONE_EVERY_N
-                6) set the I-PDU counter to 0 for I-PDUs with ComIPduDirection configured to
-                SEND
-                7) accept for I-PDUs with ComIPduDirection configured to RECEIVED any next
-                incoming I-PDU counter⌋*/
-				if(IPdu->ComIPduGroupRef->ComIPduGroupHandleId == IpduGroupId)
-				{
-
-				}
-				else
-				{
-
-				}
-			}
-			else
-			{
-
-			}
-
-		 }
-
-	if(IPduGroup != NULL)
-	{
-		IPduGroup->IpduGroupFlag = STARTED;
-	}
-}
-
-/***********************************************************************************
- *                                                                                 *
- *    Service Name: Com_IpduGroupStop   
- *    
- *    Service Id: 0x04                                                         
- * 
- *    Parameters (in): IpduGroupId
- * 
- *    Parameters (out): None 
- * 
- *    Return Value: None
- * 
- *    Description:  Stops a preconfigured I-PDU group.
- *********************************************************************************/
-void Com_IpduGroupStop(Com_IpduGroupIdType IpduGroupId)
- {
-	ComIPduGroup_type * IPduGroup; 
-
-	IPduGroup = GET_IpduGroup(IpduGroupId);
-
-	if(IPduGroup != NULL)
-	{
-		IPduGroup->IpduGroupFlag = STOPPED;
-	}
- }
 
 void Com_TxConfirmation(PduIdType TxPduId, Std_ReturnType result)
 {
