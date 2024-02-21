@@ -1121,3 +1121,43 @@ uint8 Com_InvalidateSignal(Com_SignalIdType SignalId)
 	
 	return returnValue;		
 }
+uint8 Com_InvalidateSignalGroup (Com_SignalGroupIdType SignalGroupId)
+{   uint8 flag=0;
+	const ComSignalGroup_type * SignalGroup= GET_SIGNALGROUP(GroupSignal->SignalGroupId);
+    const ComIPdu_type *Ipdu=GET_IPDU(SignalGroup->ComIPduHandleId);
+	     if(Ipdu->ComIPduGroupRef->IpduGroupFlag==STOPPED)
+    {
+        return COM_SERVICE_NOT_AVAILABLE;
+    }
+	else
+	{
+		for(int group_signalId=COM_MIN_GROUPSIGNAL;group_signalId<=COM_MAX_GROUPSIGNAL;group_signalId++)
+		{
+          if(SignalGroup->ComGroupSignal[group_signalId]!=NULL)
+		  {
+			if(SignalGroup->ComGroupSignal[group_signalId]->ComSignalDataInvalidValue!=NULL)
+			{
+				flag=1;
+				memcpy(SignalGroup->ComGroupSignal[group_signalId]->ComSignalDataPtr,SignalGroup->ComGroupSignal[group_signalId]->ComSignalDataInvalidValue,(SignalGroup->ComGroupSignal[group_signalId]->ComBitSize)/8);
+			}
+			else
+			{
+
+			}
+		  }
+		  else
+		  {
+
+		  }
+		}
+		if(flag==0)
+		{
+           return COM_SERVICE_NOT_AVAILABLE;
+		}
+		else
+		{
+			Com_SendSignalGroup(SignalGroupId);
+			return E_OK;
+		}
+	}
+}
