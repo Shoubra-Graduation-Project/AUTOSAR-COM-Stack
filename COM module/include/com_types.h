@@ -338,7 +338,7 @@ typedef struct {
 	 ComSignalGroup_type * ComIPduSignalGroupRef;
 
 	 /* References to all signals contained in this I-PDU.*/
-	 ComSignal_type* ComIPduSignalRef;
+	 ComSignal_type** ComIPduSignalRef;
 
 	 /*Reference to the "global" Pdu structure to allow harmonization of handle
 	 IDs in the COM-Stack.*/
@@ -553,7 +553,7 @@ typedef struct{
 	const uint32 ComUpdateBitPosition;
 
 	/* Group signals included in this signal group  -------> Not in SWS*/
-	ComGroupSignal_type *ComGroupSignal;
+	ComGroupSignal_type **ComGroupSignal;
     
 	/* Identify shadow buffer -------> Not in SWS*/    
 	 void * ComShadowBuffer;
