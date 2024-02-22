@@ -335,7 +335,7 @@ typedef struct {
 	 ComIPduGroup_type * ComIPduGroupRef;
 
 	 /*References to all signal groups contained in this I-Pdu*/
-	 ComSignalGroup_type * ComIPduSignalGroupRef;
+	 ComSignalGroup_type ** ComIPduSignalGroupRef;
 
 	 /* References to all signals contained in this I-PDU.*/
 	 ComSignal_type** ComIPduSignalRef;

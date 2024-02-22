@@ -937,29 +937,19 @@ void Com_DisableReceptionDM (Com_IpduGroupIdType IpduGroupId)
 		/*data sequence check*/
 		//if()
 	}
-	for(int signalid=0;signalid<=COM_MAX_SIGNAL;signalid++)
+	for(uint16 signalid=0;Ipdu_Rx->ComIPduSignalRef[signalid]!=NULL;signalid++)
 	{
-		if(Ipdu_Rx->ComIPduSignalRef[signalid]!=NULL)
-		{
+	
 			memcpy(Ipdu->ComIPduSignalRef[signalid]->ComBGBuffer,Ipdu_Rx->ComIPduSignalRef[signalid]->ComSignalDataPtr,(Ipdu_Rx->ComIPduSignalRef[signalid]->ComBitSize)/8);
-		}
-		else
-		{
-
-		}
+		
 
 	}
-	for(int signalgroupid=0;signalid<=COM_MAX_GROUPSIGNAL;signalgroupid++)
+	for(uint16 signalgroupid=0;Ipdu_Rx->ComIPduSignalGroupRef[signalgroupid]!=NULL;signalgroupid++)
 	{
-		if(Ipdu_Rx->ComIPduSignalGroupRef[signalgroupid]!=NULL)
-		{
+		
 			memcpy(Ipdu->ComIPduSignalGroupRef[signalgroupid]->ComBGBuffer,Ipdu_Rx->ComIPduSignalGroupRef[signalgroupid]->SignalGroupDataPtr,Ipdu_Rx->ComIPduSignalGroupRef[signalgroupid]->signalGroupSize);
 
-		}
-		else
-		{
-
-		}
+	
 		
 	}
 	return;
@@ -1131,10 +1121,9 @@ uint8 Com_InvalidateSignalGroup (Com_SignalGroupIdType SignalGroupId)
     }
 	else
 	{
-		for(int group_signalId=COM_MIN_GROUPSIGNAL;group_signalId<=COM_MAX_GROUPSIGNAL;group_signalId++)
+		for(uint16 group_signalId=0;SignalGroup->ComGroupSignal[group_signalId]!=NULL;group_signalId++)
 		{
-          if(SignalGroup->ComGroupSignal[group_signalId]!=NULL)
-		  {
+          
 			if(SignalGroup->ComGroupSignal[group_signalId]->ComSignalDataInvalidValue!=NULL)
 			{
 				flag=1;
@@ -1144,11 +1133,8 @@ uint8 Com_InvalidateSignalGroup (Com_SignalGroupIdType SignalGroupId)
 			{
 
 			}
-		  }
-		  else
-		  {
-
-		  }
+		  
+		  
 		}
 		if(flag==0)
 		{
@@ -1156,8 +1142,15 @@ uint8 Com_InvalidateSignalGroup (Com_SignalGroupIdType SignalGroupId)
 		}
 		else
 		{
-			Com_SendSignalGroup(SignalGroupId);
-			return E_OK;
+			uint8 return_val=Com_SendSignalGroup(SignalGroupId);
+			if(return_val==E_OK)
+			{
+			    return E_OK;
+			}
+			else
+			{
+				return E_NOT_OK;
+			}
 		}
 	}
 }
