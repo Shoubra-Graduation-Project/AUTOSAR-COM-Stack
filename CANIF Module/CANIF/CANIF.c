@@ -115,7 +115,7 @@ FUNC(Std_ReturnType,CANIF_CODE) CanIf_GetControllerMode(VAR(uint8_t ,AUTOMATIC) 
     
       if (CanIfState == CANIF_UNINIT)
     {
-	Det_ReportError(CANIF_MODULE_ID,CANIF_INSTANCE_ID,CANIF_SET_CONTROLLER_MODE_ID,CANIF_E_UNINIT);    
+	Det_ReportError(CANIF_MODULE_ID,CANIF_INSTANCE_ID,CANIF_GET_CONTROLLER_MODE_ID,CANIF_E_UNINIT);    
         return E_NOT_OK;
 	   
     }
