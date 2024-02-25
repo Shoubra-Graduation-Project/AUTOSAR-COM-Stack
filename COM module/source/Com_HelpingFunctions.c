@@ -141,8 +141,6 @@ boolean Com_ProcessTxSignalFilter_float(ComSignal_type* signalStruct, float64 ol
 }
 
 
-
-
 uint8 com_pdu_transmissions_handle_signal(ComIPdu_type* IPdu, ComSignal_type* signal)
 {
 	uint8 returnValue;
@@ -201,7 +199,7 @@ uint8 com_pdu_transmissions_handle_signal(ComIPdu_type* IPdu, ComSignal_type* si
 uint8 com_pdu_transmissions_handle_signalGroup(ComIPdu_type* IPdu, ComSignalGroup_type* signalGroup)
 {
 	uint8 returnValue;
-	if(IPdu == NULL || signalGroup == NULL)
+	if(IPdu == NULL || signalGroup == NULL || (IPdu->ComIPduGroupRef != NULL && (IPdu->ComIPduGroupRef)->IpduGroupFlag == STOPPED) )
 	{
 		returnValue = E_NOT_OK;
 	}
@@ -278,6 +276,16 @@ boolean com_pdu_transmissionsModeSelection(ComIPdu_type* IPdu)
 				break;
 			}
 		}
+	}
+	/*--------------------------------------------------------------------------------------------------------------------------------------------------------
+	When a call to Com_SendSignal or Com_SendSignalGroup results into a change of the transmission mode of a started I-PDU to the transmission mode PERIODIC
+	or MIXED, then the AUTOSAR COM module shall start the new transmission cycle with a call to PduR_ComTransmit within the next main function at the latest.
+	--------------------------------------------------------------------------------------------------------------------------------------------------------*/
+	boolean oldTMS = IPdu->ComTxIPdu.ComCurrentTransmissionSelection;
+	if((oldTMS == 0 && TMS == 1 && IPdu->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeMode == DIRECT && IPdu->ComTxIPdu.ComTxModeTrue.ComTxMode.ComTxModeMode != DIRECT)
+	||(oldTMS == 1 && TMS == 0 && IPdu->ComTxIPdu.ComTxModeTrue.ComTxMode.ComTxModeMode == DIRECT && IPdu->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeMode != DIRECT))
+	{
+		 IPdu->ComTxIPdu.ComFirstPeriodicModeEntry = 1;
 	}
 	
 	return TMS;
