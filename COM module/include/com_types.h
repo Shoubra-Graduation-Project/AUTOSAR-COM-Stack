@@ -293,6 +293,8 @@ typedef struct
 
 	boolean ComIsIPduDeferred;
 
+	boolean ComFirstPeriodicModeEntry;
+
 } ComTxIPdu_type;
 
 
