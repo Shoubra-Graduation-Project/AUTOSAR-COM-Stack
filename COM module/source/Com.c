@@ -1024,74 +1024,76 @@ void Com_DisableReceptionDM (Com_IpduGroupIdType IpduGroupId)
  }
 
 
+
 void Com_TxConfirmation(PduIdType TxPduId, Std_ReturnType result)
 {
-	ComIPdu_type* IPdu = GET_IPdu(TxPduId);
+	ComIPdu_type* IPdu = GET_IPDU(TxPduId);
 	ComIPduGroup_type* IPduGroup =  IPdu->ComIPduGroupRef;
-	if(IPdu->ComIPduSignalProcessing == DEFERRED)
+	if(IPduGroup!=NULL && IPduGroup->IpduGroupFlag == STOPPED)
 	{
-		(IPdu->ComTxIPdu).ComIsIPduDeferred = 1;
-	}
-	else(IPdu->ComIPduSignalProcessing == IMMEDIATE)
-	{
-		if(/*deadline monitor timeout*/)
+		if(IPdu->ComIPduSignalProcessing == DEFERRED)
 		{
-			for(uint16 signalID=0; (IPdu->ComIPduSignalRef[signalID] != NULL); signalID++)
-			{
-				if(IPdu->ComIPduSignalRef[signalID]->ComTimeoutNotification != NULL)
-				{
-					IPdu->ComIPduSignalRef[signalID]->ComTimeoutNotification();
-				}
-			}
-			for(uint16 signalGroupID=0; (IPdu->ComIPduSignalGroupRef[signalGroupID] != NULL); signalGroupID++)
-			{
-				if(IPdu->ComIPduSignalGroupRef[signalGroupID]->ComTimeoutNotification != NULL)
-				{
-					IPdu->ComIPduSignalGroupRef[signalGroupID]->ComTimeoutNotification();
-				}
-			}
+			(IPdu->ComTxIPdu).ComIsIPduDeferred = 1;
 		}
-		else if(result == E_OK)
+		else(IPdu->ComIPduSignalProcessing == IMMEDIATE)
 		{
-			for(uint16 signalID=0; (IPdu->ComIPduSignalRef[signalID] != NULL); signalID++)
-			{
-				if(IPdu->ComIPduSignalRef[signalID]->ComNotification != NULL)
-				{
-					IPdu->ComIPduSignalRef[signalID]->ComNotification();
-				}
-			}
-			for(uint16 signalGroupID=0; (IPdu->ComIPduSignalGroupRef[signalGroupID] != NULL); signalGroupID++)
-			{
-				if(IPdu->ComIPduSignalGroupRef[signalGroupID]->ComNotification != NULL)
-				{
-					IPdu->ComIPduSignalGroupRef[signalGroupID]->ComNotification();
-				}
-			}
-		}
-		else if(result == E_NOT_OK)
-		{
-			if(IPduGroup != NULL && IPduGroup->IpduGroupFlag == STOPPED)
+			if(/*deadline monitor timeout*/)
 			{
 				for(uint16 signalID=0; (IPdu->ComIPduSignalRef[signalID] != NULL); signalID++)
 				{
-					if(IPdu->ComIPduSignalRef[signalID]->ComErrorNotification != NULL)
+					if(IPdu->ComIPduSignalRef[signalID]->ComTimeoutNotification != NULL)
 					{
-						IPdu->ComIPduSignalRef[signalID]->ComErrorNotification();
+						IPdu->ComIPduSignalRef[signalID]->ComTimeoutNotification();
 					}
 				}
 				for(uint16 signalGroupID=0; (IPdu->ComIPduSignalGroupRef[signalGroupID] != NULL); signalGroupID++)
 				{
-					if(IPdu->ComIPduSignalGroupRef[signalGroupID]->ComErrorNotification != NULL)
+					if(IPdu->ComIPduSignalGroupRef[signalGroupID]->ComTimeoutNotification != NULL)
 					{
-						IPdu->ComIPduSignalGroupRef[signalGroupID]->ComErrorNotification();
+						IPdu->ComIPduSignalGroupRef[signalGroupID]->ComTimeoutNotification();
+					}
+				}
+			}
+			else if(result == E_OK)
+			{
+				for(uint16 signalID=0; (IPdu->ComIPduSignalRef[signalID] != NULL); signalID++)
+				{
+					if(IPdu->ComIPduSignalRef[signalID]->ComNotification != NULL)
+					{
+						IPdu->ComIPduSignalRef[signalID]->ComNotification();
+					}
+				}
+				for(uint16 signalGroupID=0; (IPdu->ComIPduSignalGroupRef[signalGroupID] != NULL); signalGroupID++)
+				{
+					if(IPdu->ComIPduSignalGroupRef[signalGroupID]->ComNotification != NULL)
+					{
+						IPdu->ComIPduSignalGroupRef[signalGroupID]->ComNotification();
+					}
+				}
+			}
+			else if(result == E_NOT_OK)
+			{
+				if(IPduGroup != NULL && IPduGroup->IpduGroupFlag == STOPPED)
+				{
+					for(uint16 signalID=0; (IPdu->ComIPduSignalRef[signalID] != NULL); signalID++)
+					{
+						if(IPdu->ComIPduSignalRef[signalID]->ComErrorNotification != NULL)
+						{
+							IPdu->ComIPduSignalRef[signalID]->ComErrorNotification();
+						}
+					}
+					for(uint16 signalGroupID=0; (IPdu->ComIPduSignalGroupRef[signalGroupID] != NULL); signalGroupID++)
+					{
+						if(IPdu->ComIPduSignalGroupRef[signalGroupID]->ComErrorNotification != NULL)
+						{
+							IPdu->ComIPduSignalGroupRef[signalGroupID]->ComErrorNotification();
+						}
 					}
 				}
 			}
 		}
 	}
-	
 }
-
 
 uint8 Com_InvalidateSignal(Com_SignalIdType SignalId)
 {
