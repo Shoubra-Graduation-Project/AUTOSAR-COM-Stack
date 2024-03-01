@@ -116,6 +116,7 @@ void Com_MainFunctionTx (void)
 						{
 							IPdu->ComIPduSignalRef[signalID]->ComTimeoutNotification();
 						}
+						else{}
 					}
 					for(uint16 signalGroupID=0; (IPdu->ComIPduSignalGroupRef[signalGroupID] != NULL); signalGroupID++)
 					{
@@ -123,9 +124,11 @@ void Com_MainFunctionTx (void)
 						{
 							IPdu->ComIPduSignalGroupRef[signalGroupID]->ComTimeoutNotification();
 						}
+						else{}
 					}
 					(IPdu->ComTxIPdu).ComIsIPduDeferred = 0;
 				}
+				else{}
 				
 				/*---------------------------------------------------------Start sending IPDU-------------------------------------------------------------------*/
 				if(IPdu->ComTxIPdu.ComCurrentTransmissionSelection == 1)
@@ -138,17 +141,21 @@ void Com_MainFunctionTx (void)
 									IPdu->ComTxIPdu.ComFirstPeriodicModeEntry = 0;
 									com_packSignalsToPdu(IPdu);
 									if(IPdu->ComIPduCallout != NULL) {IPdu->ComIPduCallout();}
+									else{}
 									Com_TriggerIPDUSend(IPdu->ComIPduHandleId);
 									if((IPdu->ComTxIPdu.ComNumberOfTransmissions) == 0)
 									{
 										if(ComTxIPdu.ComMinimumDelayTime != 0){delay(IPdu->ComTxIPdu.ComMinimumDelayTime);}
+										else{}
 									}
-										
+									else{}	
 								}
+								else{}
 								if(IPdu->ComTxIPdu.ComNumberOfTransmissions > 0)
 								{
 									com_packSignalsToPdu(IPdu);
 									if(IPdu->ComIPduCallout != NULL) {IPdu->ComIPduCallout();}
+									else{}
 									while( (IPdu->ComTxIPdu.ComNumberOfTransmissions) > 0)
 									{
 										Com_TriggerIPDUSend(IPdu->ComIPduHandleId);
@@ -157,24 +164,31 @@ void Com_MainFunctionTx (void)
 										if((IPdu->ComTxIPdu.ComNumberOfTransmissions) == 0)
 										{
 											if(ComTxIPdu.ComMinimumDelayTime != 0){delay(IPdu->ComTxIPdu.ComMinimumDelayTime);}
+											else{}
 										}
+										else{}
 									}
-									}
+								}
+								else{}
 									
 						case PERIODIC:
 								if(IPdu->ComTxIPdu.ComTxModeTrue.ComTxMode.comPeriodicTimeFired == 1)
 								{
 									IPdu->ComTxIPdu.ComTxModeTrue.ComTxMode.comPeriodicTimeFired == 0;
 									if(IPdu->ComIPduCallout != NULL) {IPdu->ComIPduCallout();}
+									else{}
 									Com_TriggerIPDUSend(IPdu->ComIPduHandleId);
 									if(ComTxIPdu.ComMinimumDelayTime != 0){delay(IPdu->ComTxIPdu.ComMinimumDelayTime);}
+									else{}
 								}
+								else{}
 								break;
 						case DIRECT:
 								if(IPdu->ComTxIPdu.ComNumberOfTransmissions > 0)
 								{
 									com_packSignalsToPdu(IPdu);
 									if(IPdu->ComIPduCallout != NULL) {IPdu->ComIPduCallout();}
+									else{}
 									while( IPdu->ComTxIPdu.ComNumberOfTransmissions > 0)
 									{
 										Com_TriggerIPDUSend(IPdu->ComIPduHandleId);
@@ -183,9 +197,12 @@ void Com_MainFunctionTx (void)
 										if((IPdu->ComTxIPdu.ComNumberOfTransmissions) == 0)
 										{
 											if(ComTxIPdu.ComMinimumDelayTime != 0){delay(IPdu->ComTxIPdu.ComMinimumDelayTime);}
+											else{}
 										}
+										else{}
 									}
 								}
+								else{}
 					
 					}
 				}
@@ -199,17 +216,21 @@ void Com_MainFunctionTx (void)
 									IPdu->ComTxIPdu.ComFirstPeriodicModeEntry = 0;
 									com_packSignalsToPdu(IPdu);
 									if(IPdu->ComIPduCallout != NULL) {IPdu->ComIPduCallout();}
+									else{}
 									Com_TriggerIPDUSend(IPdu->ComIPduHandleId);
 									if((IPdu->ComTxIPdu.ComNumberOfTransmissions) == 0)
 									{
 										if(ComTxIPdu.ComMinimumDelayTime != 0){delay(IPdu->ComTxIPdu.ComMinimumDelayTime);}
+										else{}
 									}
-								
+									else{}
 								}
+								else{}
 								if(IPdu->ComTxIPdu.ComNumberOfTransmissions > 0)
 								{
 									com_packSignalsToPdu(IPdu);
 									if(IPdu->ComIPduCallout != NULL) {IPdu->ComIPduCallout();}
+									else{}
 									while( (IPdu->ComTxIPdu.ComNumberOfTransmissions) > 0)
 									{
 										Com_TriggerIPDUSend(IPdu->ComIPduHandleId);
@@ -218,9 +239,12 @@ void Com_MainFunctionTx (void)
 										if((IPdu->ComTxIPdu.ComNumberOfTransmissions) == 0)
 										{
 											if(ComTxIPdu.ComMinimumDelayTime != 0){delay(IPdu->ComTxIPdu.ComMinimumDelayTime);}
+											else{}
 										}
+										else{}
 									}
 								}
+								else{}
 									
 						case PERIODIC:
 								if(IPdu->ComTxIPdu.ComTxModeFalse.ComTxMode.comPeriodicTimeFired == 1)
@@ -228,15 +252,19 @@ void Com_MainFunctionTx (void)
 									IPdu->ComTxIPdu.ComTxModeFalse.ComTxMode.comPeriodicTimeFired == 0;
 									com_packSignalsToPdu(IPdu);
 									if(IPdu->ComIPduCallout != NULL) {IPdu->ComIPduCallout();}
+									else{}
 									Com_TriggerIPDUSend(IPdu->ComIPduHandleId);
 									if(ComTxIPdu.ComMinimumDelayTime != 0){delay(IPdu->ComTxIPdu.ComMinimumDelayTime);}
+									else{}
 								}
+								else{}
 								break;
 						case DIRECT:
 								if(IPdu->ComTxIPdu.ComNumberOfTransmissions > 0)
 								{
 									com_packSignalsToPdu(IPdu);
 									if(IPdu->ComIPduCallout != NULL) {IPdu->ComIPduCallout();}
+									else{}
 									while( IPdu->ComTxIPdu.ComNumberOfTransmissions > 0)
 									{
 										Com_TriggerIPDUSend(IPdu->ComIPduHandleId);
@@ -245,15 +273,21 @@ void Com_MainFunctionTx (void)
 										if((IPdu->ComTxIPdu.ComNumberOfTransmissions) == 0)
 										{
 											if(ComTxIPdu.ComMinimumDelayTime != 0){delay(IPdu->ComTxIPdu.ComMinimumDelayTime);}
+											else{}
 										}
+										else{}
 									}
 								}
+								else{}
 									
 					}
 				}
+				else{}
 			}
+			else{}
 			
 		}
+		else{}
 		
 	}
 }
