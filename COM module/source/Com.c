@@ -1169,3 +1169,29 @@ uint8 Com_InvalidateSignalGroup (Com_SignalGroupIdType SignalGroupId)
 		}
 	}
 }
+
+
+void Com_SwitchIpduTxMode (PduIdType PduId, boolean Mode)
+{
+	if(is_com_initiated(config) == 1)
+	{
+		ComIPdu_type* IPdu = GET_IPDU(PduId);
+		if(IPdu != NULL)
+		{
+			boolean oldTMS = IPdu->ComTxIPdu.ComCurrentTransmissionSelection;
+			IPdu->ComTxIPdu.ComCurrentTransmissionSelection = Mode;
+			/*--------------------------------------------------------------------------------------------------------------------------------------------------------
+			When a call to Com_SendSignal or Com_SendSignalGroup results into a change of the transmission mode of a started I-PDU to the transmission mode PERIODIC
+			or MIXED, then the AUTOSAR COM module shall start the new transmission cycle with a call to PduR_ComTransmit within the next main function at the latest.
+			--------------------------------------------------------------------------------------------------------------------------------------------------------*/
+			if((oldTMS == 0 && Mode == 1 && IPdu->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeMode == DIRECT && IPdu->ComTxIPdu.ComTxModeTrue.ComTxMode.ComTxModeMode != DIRECT)
+			||(oldTMS == 1 && Mode == 0 && IPdu->ComTxIPdu.ComTxModeTrue.ComTxMode.ComTxModeMode == DIRECT && IPdu->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeMode != DIRECT))
+			{
+				 IPdu->ComTxIPdu.ComFirstPeriodicModeEntry = 1;
+			}
+			else{}
+		}
+		else{}
+	}
+	else{}
+}
