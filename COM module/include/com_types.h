@@ -217,6 +217,9 @@ typedef struct{
 	/*Activate/Deactivate the version information API (Com_GetVersionInfo).*/
 	const boolean ComVersionInfoApi;
 
+    //Defines the maximum number of supported I-PDU groups.
+	const uint16 ComSupportedIPduGroups;
+
 }ComGeneral_type;
 
 
@@ -344,7 +347,7 @@ typedef struct {
 	 IDs in the COM-Stack.*/
 	 Pdu* ComPduIdRef;
 
-	 ComTxIPdu_type ComTxIPdu;
+	 ComTxIPdu_type *ComTxIPdu;
     
 	/*Pointer to IPDU data ---->  Not in SWS*/
     void const * ComIPduDataPtr;

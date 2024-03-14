@@ -225,9 +225,9 @@ void Com_MainFunctionRxSignal(ComSignal_type Signal)
         the PduR into COM. Then the AUTOSAR COM module shall invoke the configured
         ComNotifications for the included signals and signal groups asynchronously during
         the next call to Com_MainFunctionRx*/
-		if (signal->ComNotification != NULL)
+		if (Signal->ComNotification != NULL)
 		{
-			signal->ComNotification();
+			Signal->ComNotification();
 		}
 		Signal->ComSignalUpdated = FALSE;
 
@@ -268,7 +268,7 @@ void Com_MainFunctionRxSignal(ComSignal_type Signal)
             {
             }
             // Restart the timer
-            Signal->DeadlineMonitoringTimer = signal->ComTimeout;
+            Signal->DeadlineMonitoringTimer = Signal->ComTimeout;
         }
         else
         {
@@ -365,7 +365,7 @@ void Com_MainFunctionRxSignalGroup(ComSignalGroup_type SignalGroup)
 void CheckRXIpdu(ComIPdu_type IPdu)
 {
         
-	const ComSignal_type *signal = NULL;
+	const ComSignal_type *Signal = NULL;
     const ComSignalGroup_type *SignalGroup =NULL;
         
 

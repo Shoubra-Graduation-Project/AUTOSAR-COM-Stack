@@ -218,10 +218,13 @@ void Com_DeInit( void )
 void Com_IpduGroupStart(Com_IpduGroupIdType IpduGroupId , boolean Initialize) 
 {
 	ComIPduGroup_type * IPduGroup;
-
+    ComSignal_type *Signal = NULL;
 	ComIPdu_type * IPdu;
 
-	uint8 IpduId; 
+	uint8 IpduId;
+	uint8 ComSignalId;
+
+	float mdt;
 
 
 	IPduGroup = GET_IpduGroup(IpduGroupId);
@@ -236,20 +239,36 @@ void Com_IpduGroupStart(Com_IpduGroupIdType IpduGroupId , boolean Initialize)
 			{
 				/*[SWS_Com_00787] If an I-PDU is started by Com_IpduGroupStart, the AUTOSAR
                 COM module shall always initialize the following attributes of this I-PDU:
-                1) ComMinimumDelayTime of I-PDUs in transmission mode DIRECT or MIXED
-                2) restart all reception deadline monitoring timers for all signals with a non-zero
-                configured ComFirstTimeout
+                
                 3) cancel all transmission deadline monitoring timers and use ComFirstTimeout (if
                 configured) as value when a transmission timer is started the first time after the
                 I-PDU activation
-                4) all included update-bits shall be cleared
+              
                 5) reset OCCURRENCE of filters with ComFilterAlgorithm ONE_EVERY_N
                 6) set the I-PDU counter to 0 for I-PDUs with ComIPduDirection configured to
                 SEND
                 7) accept for I-PDUs with ComIPduDirection configured to RECEIVED any next
-                incoming I-PDU counter⌋*/
+                incoming I-PDU counter*/
 				if(IPdu->ComIPduGroupRef->ComIPduGroupHandleId == IpduGroupId)
 				{
+					//1) ComMinimumDelayTime of I-PDUs in transmission mode DIRECT or MIXED
+					IPdu->ComTxIPdu->ComMinimumDelayTime = mdt;
+
+					for (ComSignalId = 0; (IPdu->ComIPduSignalRef[ComSignalId] != NULL); ComSignalId++)
+                    {
+                        //Get signal
+                        Signal = IPdu->ComIPduSignalRef[ComSignalId];
+                        // 2) restart all reception deadline monitoring timers for all signals with a non-zero configured ComFirstTimeout
+						if (Signal->ComFirstTimeout > 0)
+						{
+							Signal->DeadlineMonitoringTimer = Signal->ComFirstTimeout;
+						}
+                        // 4) all included update-bits shall be cleared
+						CLEARBIT(IPdu->ComIPduDataPtr, Signal->ComUpdateBitPosition);
+		
+          
+                    }
+				
 
 				}
 				else
@@ -296,6 +315,165 @@ void Com_IpduGroupStop(Com_IpduGroupIdType IpduGroupId)
 	}
  }
 
+ 
+/***********************************************************************************
+ *                                                                                 *
+ *    Service Name: Com_EnableReceptionDM   
+ *    
+ *    Service Id: 0x06                                                          
+ * 
+ *    Parameters (in): IpduGroupId
+ * 
+ *    Parameters (out): None 
+ * 
+ *    Return Value: None
+ * 
+ *    Description:  Enables the reception deadline monitoring for the I-PDUs
+ *                  within the given IPDU group.
+ * 
+ *********************************************************************************/
+void Com_EnableReceptionDM (Com_IpduGroupIdType IpduGroupId)
+{   
+     uint16 ipduIndex;
+     uint16  ComSignalIndex ;
+
+     ComIPduGroup_type *ipduGroup;
+     ComIPdu_type *IPdu;
+     ComSignal_type *Signal;
+
+    ipduGroup = GET_IpduGroup(IpduGroupId);
+
+      if (ipduGroup != NULL) 
+      {
+         for (ipduIndex = 0; ipduIndex < ipduGroup->numIPdus; ipduIndex++)
+          {
+            /*
+              [SWS_Com_00534] If Com_EnableReceptionDM is invoked on an I-PDU group
+              containing Tx-I-PDUs, then the AUTOSAR COM module shall silently ignore 
+              this request.
+            */
+            if(ipduGroup->IPDU[ipduIndex].ComIPduDirection != SEND)
+            {
+            /*
+              [SWS_Com_00486] The AUTOSAR COM module shall silently ignore setting the
+              reception deadline monitoring of an I-PDU to enabled by Com_EnableReceptionDM,
+              in case the reception deadline monitoring is already enabled for this I-PDU
+            */
+               if(!ipduGroup->IPDU[ipduIndex].ReceptionDMEnabled)
+               {
+                  ipduGroup->IPDU[ipduIndex].ReceptionDMEnabled = TRUE;
+                
+               }
+               else
+               {
+
+               }
+
+            }
+            else
+            {
+
+            }
+
+          }
+      }
+      else
+      {
+
+      }
+
+}
+
+/***********************************************************************************
+ *                                                                                 *
+ *    Service Name: Com_DisableReceptionDM   
+ *    
+ *    Service Id: 0x05                                                          
+ * 
+ *    Parameters (in): IpduGroupId
+ * 
+ *    Parameters (out): None 
+ * 
+ *    Return Value: None
+ * 
+ *    Description:  Disables the reception deadline monitoring for the I-PDUs
+ *                  within the given IPDU group.
+ *********************************************************************************/
+void Com_DisableReceptionDM (Com_IpduGroupIdType IpduGroupId)
+{   
+     uint16 ipduIndex;
+     uint16  ComSignalIndex ;
+
+     ComIPduGroup_type *ipduGroup;
+     ComIPdu_type *IPdu;
+     ComSignal_type *Signal;
+
+    ipduGroup = GET_IpduGroup(IpduGroupId);
+
+      if (ipduGroup != NULL) 
+      {
+         for (ipduIndex = 0; ipduIndex < ipduGroup->numIPdus; ipduIndex++)
+          {
+            /*
+              [SWS_Com_00534] If Com_DisableReceptionDM is invoked on an I-PDU group
+              containing Tx-I-PDUs, then the AUTOSAR COM module shall silently ignore 
+              this request.
+            */
+            if(ipduGroup->IPDU[ipduIndex].ComIPduDirection != SEND)
+            {
+            /*
+              [SWS_Com_00486] The AUTOSAR COM module shall silently ignore setting the
+              reception deadline monitoring of an I-PDU to enabled by Com_EnableReceptionDM,
+              in case the reception deadline monitoring is already enabled for this I-PDU
+            */
+               if(!ipduGroup->IPDU[ipduIndex].ReceptionDMEnabled)
+               {
+                  ipduGroup->IPDU[ipduIndex].ReceptionDMEnabled = FALSE;
+                
+               }
+               else
+               {
+
+               }
+
+            }
+            else
+            {
+
+            }
+
+          }
+      }
+      else
+      {
+
+      }
+
+}
+
+/***********************************************************************************
+ *                                                                                 *
+ *    Service Name: Com_GetStatus    
+ *    
+ *    Service Id: 0x07                                                            *
+ * 
+ *    Parameters (in): None.
+ * 
+ *    Parameters (out): None 
+ * 
+ *    Return Value: COM_UNINIT: the AUTOSAR COM module is not initialized
+ *                  and not usable
+ *                  COM_INIT: the AUTOSAR COM module is initialized and
+ *                  usable
+ * 
+ *    Description:  Returns the status of the AUTOSAR COM module.  
+ * 
+ *********************************************************************************/
+Com_StatusType Com_GetStatus(void)
+{
+    return initStatus;
+}
+
 
 
 /***********************************************************************************
@@ -316,8 +494,8 @@ void Com_IpduGroupStop(Com_IpduGroupIdType IpduGroupId)
  *				COM_BUSY: in case the TP-Buffer is locked for large data types 
  *					   handling.
  * 
- *    Description:  The service Com_SendSignal updates the signal object identified by SignalId with 
- *		    the signal referenced by the SignalDataPtr parameter.  
+ *    Description:  The service Com_SendSignal updates the signal object identified 
+ *                  by SignalId with the signal referenced by the SignalDataPtr parameter.  
  * 
  *********************************************************************************/
 
@@ -748,140 +926,6 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 	return returnValue;
 }
 
-/***********************************************************************************
- *                                                                                 *
- *    Service Name: Com_EnableReceptionDM   
- *    
- *    Service Id: 0x06                                                          
- * 
- *    Parameters (in): IpduGroupId
- * 
- *    Parameters (out): None 
- * 
- *    Return Value: None
- * 
- *    Description:  Enables the reception deadline monitoring for the I-PDUs
- *                  within the given IPDU group.
- * 
- *********************************************************************************/
-void Com_EnableReceptionDM (Com_IpduGroupIdType IpduGroupId)
-{   
-     uint16 ipduIndex;
-     uint16  ComSignalIndex ;
-
-     ComIPduGroup_type *ipduGroup;
-     ComIPdu_type *IPdu;
-     ComSignal_type *Signal;
-
-    ipduGroup = GET_IpduGroup(IpduGroupId);
-
-      if (ipduGroup != NULL) 
-      {
-         for (ipduIndex = 0; ipduIndex < ipduGroup->numIPdus; ipduIndex++)
-          {
-            /*
-              [SWS_Com_00534] If Com_EnableReceptionDM is invoked on an I-PDU group
-              containing Tx-I-PDUs, then the AUTOSAR COM module shall silently ignore 
-              this request.
-            */
-            if(ipduGroup->IPDU[ipduIndex].ComIPduDirection != SEND)
-            {
-            /*
-              [SWS_Com_00486] The AUTOSAR COM module shall silently ignore setting the
-              reception deadline monitoring of an I-PDU to enabled by Com_EnableReceptionDM,
-              in case the reception deadline monitoring is already enabled for this I-PDU
-            */
-               if(!ipduGroup->IPDU[ipduIndex].ReceptionDMEnabled)
-               {
-                  ipduGroup->IPDU[ipduIndex].ReceptionDMEnabled = TRUE;
-                
-               }
-               else
-               {
-
-               }
-
-            }
-            else
-            {
-
-            }
-
-          }
-      }
-      else
-      {
-
-      }
-
-}
-
-/***********************************************************************************
- *                                                                                 *
- *    Service Name: Com_DisableReceptionDM   
- *    
- *    Service Id: 0x05                                                          
- * 
- *    Parameters (in): IpduGroupId
- * 
- *    Parameters (out): None 
- * 
- *    Return Value: None
- * 
- *    Description:  Disables the reception deadline monitoring for the I-PDUs
- *                  within the given IPDU group.
- *********************************************************************************/
-void Com_DisableReceptionDM (Com_IpduGroupIdType IpduGroupId)
-{   
-     uint16 ipduIndex;
-     uint16  ComSignalIndex ;
-
-     ComIPduGroup_type *ipduGroup;
-     ComIPdu_type *IPdu;
-     ComSignal_type *Signal;
-
-    ipduGroup = GET_IpduGroup(IpduGroupId);
-
-      if (ipduGroup != NULL) 
-      {
-         for (ipduIndex = 0; ipduIndex < ipduGroup->numIPdus; ipduIndex++)
-          {
-            /*
-              [SWS_Com_00534] If Com_DisableReceptionDM is invoked on an I-PDU group
-              containing Tx-I-PDUs, then the AUTOSAR COM module shall silently ignore 
-              this request.
-            */
-            if(ipduGroup->IPDU[ipduIndex].ComIPduDirection != SEND)
-            {
-            /*
-              [SWS_Com_00486] The AUTOSAR COM module shall silently ignore setting the
-              reception deadline monitoring of an I-PDU to enabled by Com_EnableReceptionDM,
-              in case the reception deadline monitoring is already enabled for this I-PDU
-            */
-               if(!ipduGroup->IPDU[ipduIndex].ReceptionDMEnabled)
-               {
-                  ipduGroup->IPDU[ipduIndex].ReceptionDMEnabled = FALSE;
-                
-               }
-               else
-               {
-
-               }
-
-            }
-            else
-            {
-
-            }
-
-          }
-      }
-      else
-      {
-
-      }
-
-}
  uint8 Com_ReceiveSignalGroup (Com_SignalGroupIdType SignalGroupId)
  {
     const ComSignalGroup_type * SignalGroup= GET_SIGNALGROUP(GroupSignal->SignalGroupId);
