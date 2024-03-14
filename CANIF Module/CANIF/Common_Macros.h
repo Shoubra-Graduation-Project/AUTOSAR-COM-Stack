@@ -6,7 +6,7 @@
  *
  * Description: Commonly used Macros
  *
- * Author: Mohamed Tarek
+ * Author: 
  *
  *******************************************************************************/
 
@@ -108,6 +108,7 @@
 #define CANIF_CHECKVALIDATION_ID             (uint8_t)0x12
 #define CANIF_TX_CONFIRMATION_ID             (uint8_t)0x13
 #define CANIF_RX_INDICATION_ID               (uint8_t)0x14
+#define CANIF_CONTROLLER_BUS_OFF_ID          (uint8_t)0x16
 
 #define MAX_DATA_SIZE_FD                     (uint8_t)64
 #define MAX_DATA_SIZE_CLASSIC               (uint8_t)8

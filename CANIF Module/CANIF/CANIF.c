@@ -33,7 +33,7 @@ FUNC(Std_ReturnType,CANIF_CODE) CanIf_SetControllerMode(VAR(uint8_t,AUTOMATIC) C
     
       if (CanIfState == CANIF_UNINIT)
     {
-	Det_ReportError(CANIF_MODULE_ID,CANIF_INSTANCE_ID,CANIF_SET_CONTROLLER_MODE_ID,CANIF_E_PARAM_CTRLMODE);    
+	Det_ReportError(CANIF_MODULE_ID,CANIF_INSTANCE_ID,CANIF_SET_CONTROLLER_MODE_ID,CANIF_E_UNINIT );    
         return E_NOT_OK;
 	   
     }
@@ -115,7 +115,7 @@ FUNC(Std_ReturnType,CANIF_CODE) CanIf_GetControllerMode(VAR(uint8_t ,AUTOMATIC) 
     
       if (CanIfState == CANIF_UNINIT)
     {
-	Det_ReportError(CANIF_MODULE_ID,CANIF_INSTANCE_ID,CANIF_SET_CONTROLLER_MODE_ID,CANIF_E_PARAM_CTRLMODE);    
+	Det_ReportError(CANIF_MODULE_ID,CANIF_INSTANCE_ID,CANIF_GET_CONTROLLER_MODE_ID,CANIF_E_UNINIT);    
         return E_NOT_OK;
 	   
     }
@@ -169,7 +169,7 @@ FUNC(Std_ReturnType,CANIF_CODE) CanIf_GetControllerMode(VAR(uint8_t ,AUTOMATIC) 
     
    
 
-/******************************************* CanIf_ControllerBusOff ***********************************************/
+/******************************************* CanIf_Controller_Bus_Off ***********************************************/
 
 FUNC(Std_ReturnType,CANIF_CODE) CanIf_ControllerBusOff(VAR(uint8_t ,AUTOMATIC) ControllerId) {
 
@@ -183,7 +183,7 @@ is called() */
 
   if (CanIfState == CANIF_UNINIT)
     {
-	Det_ReportError(CANIF_MODULE_ID,CANIF_INSTANCE_ID,CANIF_SET_CONTROLLER_MODE_ID,CANIF_E_PARAM_CTRLMODE);    
+	Det_ReportError(CANIF_MODULE_ID,CANIF_INSTANCE_ID,CANIF_CONTROLLER_BUS_OFF_ID,CANIF_E_UNINIT);    
         return E_NOT_OK;
 	   
     }
@@ -203,7 +203,7 @@ is called() */
        ErrorStatus = E_OK;
 
 #if CAN_GENERAL_CAN_DEV_ERROR_DETECT == STD_ON
-        Det_ReportError(CANIF_MODULE_ID,CANIF_INSTANCE_ID,CANIF_GET_CONTROLLER_MODE_ID,CANIF_E_PARAM_POINTER);
+        Det_ReportError(CANIF_MODULE_ID,CANIF_INSTANCE_ID,CANIF_CONTROLLER_BUS_OFF_ID,CANIF_E_PARAM_CONTROLLERID);
 #endif
     }	
   
@@ -213,6 +213,21 @@ is called() */
     }
    
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 void CanIf_Init(const CanIf_ConfigType* ConfigPtr)
