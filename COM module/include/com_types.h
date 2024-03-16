@@ -5,17 +5,6 @@
 #include "libraries/Std_Types.h"
 
 
-/***************************************************************************************************
-Name: Com_StatusType
-
-Type: EcucEnumerationParamDef
-
-Description: Possible COM module status
-****************************************************************************************************/
-typedef enum {
-	COM_UNINIT,
-	COM_INIT
-} Com_StatusType;
 
 /***************************************************************************************************
 Name: state_type
@@ -328,7 +317,7 @@ typedef struct {
        Defines for I-PDUs with ComIPduType TP: If the underlying TP-module supports RX and TX cancellation of ongoing requests.
     */
     const boolean ComIPduCancellationSupport;
-
+    ComIPduCounter_type* ComIPduCounter;
     /* sent or received */
     ComIPduDirection_type ComIPduDirection;
 

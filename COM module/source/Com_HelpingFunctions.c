@@ -12,12 +12,24 @@
 /**********************************************************************************
  *                             Functions Definitions                              *
  **********************************************************************************/
- boolean is_com_initiated(const Com_ConfigType* config)
- {
-    return config->com_initiated;
- }
+ 
 
+boolean check_Data_Sequence(ComIPdu_type *Ipdu,ComIPdu_type *Ipdu_Rx)
+{
+	uint8 excounter,recounter;
+	void * data=NULL;
+	Ipdu->ComIPduCounter->ComIPduCounterSize
+    Ipdu->ComIPduCounter->ComIPduCounterStartPosition
 
+    unit64 mask = 0;
+	for(uint8 i = 0; i<Ipdu->ComIPduCounter->ComIPduCounterSize; i++)
+	{
+		uint64 currentmask = 1u<< (ComIPduCounter->ComIPduCounterStartPosition+i);
+		mask = mask | currentmask;
+	}
+    memcpy((uint8 *)data,(uint8 *)Ipdu->ComIPduDataPtr,Ipdu->ComIPduLength)
+	mask = data & mask
+}
 boolean Com_ProcessTxSignalFilter(ComSignal_type* signalStruct, uint64 oldData, uint64 newData)
 {
 	boolean filterResult = 0;

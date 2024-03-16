@@ -922,9 +922,13 @@ void Com_DisableReceptionDM (Com_IpduGroupIdType IpduGroupId)
 	}
     
  }
+  Com_StatusType  Com_GetStatus(void)
+  {
+	return initStatus;
+  }
  void Com_RxIndication (PduIdType RxPduId, const PduInfoType* PduInfoPtr)
  {
-	if(initStatus != COM_INIT)
+	if(Com_GetStatus()!= COM_INIT)
 	{
 		return;
 	}
@@ -932,6 +936,7 @@ void Com_DisableReceptionDM (Com_IpduGroupIdType IpduGroupId)
 	{
       const ComIPdu_type *Ipdu=GET_IPDU(RxPduId);
 	  const ComIPdu_type *Ipdu_Rx=(ComIPdu_type *)PduInfoPtr->SduDataPtr;
+	  
 	if(Ipdu->ComIPduGroupRef->IpduGroupFlag==STOPPED)
 	{
 		return;
@@ -947,19 +952,28 @@ void Com_DisableReceptionDM (Com_IpduGroupIdType IpduGroupId)
 
 		}
 		/*data sequence check*/
-		//if()
+		if(!check_Data_Sequence())
+		{
+			return;
+		}
+		else
+		{
+
+		}
+		
+		
 	}
 	for(uint16 signalid=0;Ipdu_Rx->ComIPduSignalRef[signalid]!=NULL;signalid++)
 	{
 	
-			memcpy(Ipdu->ComIPduSignalRef[signalid]->ComBGBuffer,Ipdu_Rx->ComIPduSignalRef[signalid]->ComSignalDataPtr,(Ipdu_Rx->ComIPduSignalRef[signalid]->ComBitSize)/8);
+			memcpy((uint8 *)Ipdu->ComIPduSignalRef[signalid]->ComBGBuffer,(uint8 *)Ipdu_Rx->ComIPduSignalRef[signalid]->ComSignalDataPtr,(Ipdu_Rx->ComIPduSignalRef[signalid]->ComBitSize)/8);
 		
 
 	}
 	for(uint16 signalgroupid=0;Ipdu_Rx->ComIPduSignalGroupRef[signalgroupid]!=NULL;signalgroupid++)
 	{
 		
-			memcpy(Ipdu->ComIPduSignalGroupRef[signalgroupid]->ComBGBuffer,Ipdu_Rx->ComIPduSignalGroupRef[signalgroupid]->SignalGroupDataPtr,Ipdu_Rx->ComIPduSignalGroupRef[signalgroupid]->signalGroupSize);
+			memcpy((uint8 *)Ipdu->ComIPduSignalGroupRef[signalgroupid]->ComBGBuffer,(uint8 *)Ipdu_Rx->ComIPduSignalGroupRef[signalgroupid]->SignalGroupDataPtr,Ipdu_Rx->ComIPduSignalGroupRef[signalgroupid]->signalGroupSize);
 
 	
 		
