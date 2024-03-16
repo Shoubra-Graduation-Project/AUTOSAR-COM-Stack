@@ -321,12 +321,11 @@ void Com_IpduGroupStop(Com_IpduGroupIdType IpduGroupId)
  * 
  *********************************************************************************/
 
-
 uint8 Com_SendSignal (Com_SignalIdType SignalId, const void* SignalDataPtr)
 {
 	uint8 returnValue;
 	ComSignal_type* signalStruct =  GET_SIGNAL(SignalId);
-	if(is_com_initiated(config) == 0 || SignalDataPtr == NULL || signalStruct == NULL)
+	if(Com_GetStatus() == COM_UNINIT || SignalDataPtr == NULL || signalStruct == NULL)
 	{
 		returnValue = COM_SERVICE_NOT_AVAILABLE;
 	}
@@ -369,6 +368,7 @@ uint8 Com_SendSignal (Com_SignalIdType SignalId, const void* SignalDataPtr)
 							{
 								isSignalChanged = 1;
 							}
+							else{}
 							*(boolean*)(signalStruct->ComFGBuffer) = new_signalData_boolean;
 							break;
 						
@@ -381,6 +381,7 @@ uint8 Com_SendSignal (Com_SignalIdType SignalId, const void* SignalDataPtr)
 							{
 								isSignalChanged = 1;
 							}
+							else{}
 							*(float32*)(signalStruct->ComFGBuffer) = new_signalData_float32;
 							break;
 						
@@ -393,6 +394,7 @@ uint8 Com_SendSignal (Com_SignalIdType SignalId, const void* SignalDataPtr)
 							{
 								isSignalChanged = 1;
 							}
+							else{}
 							*(float64*)(signalStruct->ComFGBuffer) = new_signalData_float64;
 							break;
 						
@@ -405,6 +407,7 @@ uint8 Com_SendSignal (Com_SignalIdType SignalId, const void* SignalDataPtr)
 							{
 								isSignalChanged = 1;
 							}
+							else{}
 							*(sint16*)(signalStruct->ComFGBuffer) = new_signalData_sint16;
 							break;
 						
@@ -417,6 +420,7 @@ uint8 Com_SendSignal (Com_SignalIdType SignalId, const void* SignalDataPtr)
 							{
 								isSignalChanged = 1;
 							}
+							else{}
 							*(sint32*)(signalStruct->ComFGBuffer) = new_signalData_sint32;
 							break;
 						
@@ -429,6 +433,7 @@ uint8 Com_SendSignal (Com_SignalIdType SignalId, const void* SignalDataPtr)
 							{
 								isSignalChanged = 1;
 							}
+							else{}
 							*(sint64*)(signalStruct->ComFGBuffer) = new_signalData_sint64;
 							break;
 						
@@ -441,6 +446,7 @@ uint8 Com_SendSignal (Com_SignalIdType SignalId, const void* SignalDataPtr)
 							{
 								isSignalChanged = 1;
 							}
+							else{}
 							*(sint8*)(signalStruct->ComFGBuffer) = new_signalData_sint8;
 							break;
 						
@@ -453,6 +459,7 @@ uint8 Com_SendSignal (Com_SignalIdType SignalId, const void* SignalDataPtr)
 							{
 								isSignalChanged = 1;
 							}
+							else{}
 							*(uint16*)(signalStruct->ComFGBuffer) = new_signalData_uint16;
 							break;
 						
@@ -465,6 +472,7 @@ uint8 Com_SendSignal (Com_SignalIdType SignalId, const void* SignalDataPtr)
 							{
 								isSignalChanged = 1;
 							}
+							else{}
 							*(uint32*)(signalStruct->ComFGBuffer) = new_signalData_uint32;
 							break;
 						
@@ -477,6 +485,7 @@ uint8 Com_SendSignal (Com_SignalIdType SignalId, const void* SignalDataPtr)
 							{
 								isSignalChanged = 1;
 							}
+							else{}
 							*(uint64*)(signalStruct->ComFGBuffer) = new_signalData_uint64;
 							break;
 						
@@ -489,6 +498,7 @@ uint8 Com_SendSignal (Com_SignalIdType SignalId, const void* SignalDataPtr)
 							{
 								isSignalChanged = 1;
 							}
+							else{}
 							*(uint8*)(signalStruct->ComFGBuffer) = new_signalData_uint8;
 							break;
 					}
@@ -502,9 +512,13 @@ uint8 Com_SendSignal (Com_SignalIdType SignalId, const void* SignalDataPtr)
 					[SWS_Com_00061] ⌈If the RTE updates the value of a signal by calling Com_SendSignal, the AUTOSAR COM module shall set the update-bit of this signal.⌋ 
 					(SRS_Com_02030)
 					---------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-					uint64 updatebitMask = 1u << (signalStruct->ComUpdateBitPosition);
-					*(uint64*)(Ipdu->ComIPduDataPtr) = *(uint64*)(Ipdu->ComIPduDataPtr) | updatebitMask;
+					uint8 byteOffset = signalStruct->ComUpdateBitPosition /8;
+					uint8 bitOffset = signalStruct->ComUpdateBitPosition %8 ;
 					
+					uint8* pduBufferPointer = (uint8*)Ipdu->ComIPduDataPtr;
+					pduBufferPointer += byteOffset;
+					uint8 updatebitMask = 1u << (bitOffset);
+					*pduBufferPointer = *pduBufferPointer | updatebitMask;
 					/*-----------------------------------------------IPDU Transmission Mode Selection---------------------------------------------------------*/
 					Ipdu->ComTxIPdu.ComCurrentTransmissionSelection = com_pdu_transmissionsModeSelection(Ipdu);
 					/*--------------------------Handle required number of transmissions of IPDU according to this signal--------------------------------------*/
@@ -516,12 +530,16 @@ uint8 Com_SendSignal (Com_SignalIdType SignalId, const void* SignalDataPtr)
 					{
 						returnValue = E_OK;
 					}
+					
+				
 				}
 			}
 		}			
-	}
-	return returnValue; 
+			
+	return returnValue;
+			 
 }
+
 
 
 /***********************************************************************************
@@ -545,6 +563,7 @@ uint8 Com_SendSignal (Com_SignalIdType SignalId, const void* SignalDataPtr)
                      associated shadow buffer to the foreground buffer.  
  * 
  *********************************************************************************/
+
 uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 {
 	/* 1- copy all group signal data from shadow buffer to foreground buffer
@@ -553,7 +572,7 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 	   4- set update bit of signal group
 	*/
 	uint8 returnValue;
-	if(is_com_initiated(config)==0)
+	if(Com_GetStatus() == COM_UNINIT)
 	{
 		returnValue = COM_SERVICE_NOT_AVAILABLE;
 	}
@@ -595,6 +614,7 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 							{
 								isSignalGroupChanged = 1;
 							}
+							else{}
 							*(boolean*)(groupSignal->ComFGBuffer) = new_signalData_boolean;
 							break;
 					
@@ -608,6 +628,7 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 							{
 								isSignalGroupChanged = 1;
 							}
+							else{}
 							*(float32*)(groupSignal->ComFGBuffer) = new_signalData_float32;
 							break;
 					
@@ -621,6 +642,7 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 							{
 								isSignalGroupChanged = 1;
 							}
+							else{}
 							*(float64*)(groupSignal->ComFGBuffer) = new_signalData_float64;
 							break;
 					
@@ -634,6 +656,7 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 							{
 								isSignalGroupChanged = 1;
 							}
+							else{}
 							*(sint16*)(groupSignal->ComFGBuffer) = new_signalData_sint16;
 							break;
 					
@@ -647,6 +670,7 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 							{
 								isSignalGroupChanged = 1;
 							}
+							else{}
 							*(sint32*)(groupSignal->ComFGBuffer) = new_signalData_sint32;
 							break;
 					
@@ -660,6 +684,7 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 							{
 								isSignalGroupChanged = 1;
 							}
+							else{}
 							*(sint64*)(groupSignal->ComFGBuffer) = new_signalData_sint64;
 							break;
 					
@@ -673,6 +698,7 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 							{
 								isSignalGroupChanged = 1;
 							}
+							else{}
 							*(sint8*)(groupSignal->ComFGBuffer) = new_signalData_sint8;
 							break;
 					
@@ -686,6 +712,7 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 							{
 								isSignalGroupChanged = 1;
 							}
+							else{}
 							*(uint16*)(groupSignal->ComFGBuffer) = new_signalData_uint16;
 							break;
 					
@@ -699,6 +726,7 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 							{
 								isSignalGroupChanged = 1;
 							}
+							else{}
 							*(uint32*)(groupSignal->ComFGBuffer) = new_signalData_uint32;
 							break;
 					
@@ -712,6 +740,7 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 							{
 								isSignalGroupChanged = 1;
 							}
+							else{}
 							*(uint64*)(groupSignal->ComFGBuffer) = new_signalData_uint64;
 							break;
 					
@@ -725,6 +754,7 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 							{
 								isSignalGroupChanged = 1;
 							}
+							else{}
 							*(uint8*)(groupSignal->ComFGBuffer) = new_signalData_uint8;
 							break;
 					}
@@ -740,8 +770,13 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 					[SWS_Com_00801] ⌈If the RTE updates a signal group by calling Com_SendSignalGroup, the AUTOSAR COM module shall set the update-bit of this signal
 					group.⌋ (SRS_Com_02030)
 					----------------------------------------------------------------------------------------------------------------------------------------------------------*/
-					uint64 updatebitMask = 1u << (signalGroup->ComUpdateBitPosition);
-					*(uint64*)(Ipdu->ComIPduDataPtr) = *(uint64*)(Ipdu->ComIPduDataPtr) | updatebitMask;
+					uint8 byteOffset = signalGroup->ComUpdateBitPosition /8;
+					uint8 bitOffset = signalGroup->ComUpdateBitPosition %8 ;
+					
+					uint8* pduBufferPointer = (uint8*)Ipdu->ComIPduDataPtr;
+					pduBufferPointer += byteOffset;
+					uint8 updatebitMask = 1u << (bitOffset);
+					*pduBufferPointer = *pduBufferPointer | updatebitMask;
 				
 					/*-----------------------------------------------IPDU Transmission Mode Selection---------------------------------------------------------*/
 					Ipdu->ComTxIPdu.ComCurrentTransmissionSelection = com_pdu_transmissionsModeSelection(Ipdu);
@@ -755,8 +790,9 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 						returnValue = E_OK;
 					}
 			}
-		}			
-	}	
+		}		
+			
+	}
 	return returnValue;
 }
 
