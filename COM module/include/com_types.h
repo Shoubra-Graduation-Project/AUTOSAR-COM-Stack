@@ -4,6 +4,26 @@
 
 #include "libraries/Std_Types.h"
 
+
+/***************************************************************************************************
+Name: Com_StatusType
+
+Type: EcucEnumerationParamDef
+
+Description: Possible COM module status
+****************************************************************************************************/
+typedef enum {
+	COM_UNINIT,
+	COM_INIT
+} Com_StatusType;
+
+/***************************************************************************************************
+Name: state_type
+
+Type: EcucEnumerationParamDef
+
+Description: Possible IPdu group statues
+****************************************************************************************************/
 typedef enum
 {
 	STOPPED,
@@ -294,6 +314,8 @@ typedef struct
 	boolean ComIsIPduDeferred;
 
 	boolean ComFirstPeriodicModeEntry;
+
+	boolean ComFirstDirectModeEntry;
 
 } ComTxIPdu_type;
 
