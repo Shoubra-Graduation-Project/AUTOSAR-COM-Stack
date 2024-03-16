@@ -1041,104 +1041,122 @@ void Com_DisableReceptionDM (Com_IpduGroupIdType IpduGroupId)
 
 void Com_TxConfirmation(PduIdType TxPduId, Std_ReturnType result)
 {
-	ComIPdu_type* IPdu = GET_IPDU(TxPduId);
-	ComIPduGroup_type* IPduGroup =  IPdu->ComIPduGroupRef;
-	if(IPduGroup!=NULL && IPduGroup->IpduGroupFlag == STOPPED)
+	if(Com_GetStatus() == COM_INIT)
 	{
-		if(IPdu->ComIPduSignalProcessing == DEFERRED)
+		ComIPdu_type* IPdu = GET_IPDU(TxPduId);
+		ComIPduGroup_type* IPduGroup =  IPdu->ComIPduGroupRef;
+		if(IPduGroup==NULL || IPduGroup->IpduGroupFlag == STARTED)
 		{
-			(IPdu->ComTxIPdu).ComIsIPduDeferred = 1;
-		}
-		else(IPdu->ComIPduSignalProcessing == IMMEDIATE)
-		{
-			if(/*deadline monitor timeout*/)
+			if(IPdu->ComIPduSignalProcessing == DEFERRED)
 			{
-				for(uint16 signalID=0; (IPdu->ComIPduSignalRef[signalID] != NULL); signalID++)
-				{
-					if(IPdu->ComIPduSignalRef[signalID]->ComTimeoutNotification != NULL)
-					{
-						IPdu->ComIPduSignalRef[signalID]->ComTimeoutNotification();
-					}
-				}
-				for(uint16 signalGroupID=0; (IPdu->ComIPduSignalGroupRef[signalGroupID] != NULL); signalGroupID++)
-				{
-					if(IPdu->ComIPduSignalGroupRef[signalGroupID]->ComTimeoutNotification != NULL)
-					{
-						IPdu->ComIPduSignalGroupRef[signalGroupID]->ComTimeoutNotification();
-					}
-				}
+				(IPdu->ComTxIPdu).ComIsIPduDeferred = 1;
 			}
-			else if(result == E_OK)
+			else if(IPdu->ComIPduSignalProcessing == IMMEDIATE)
 			{
-				for(uint16 signalID=0; (IPdu->ComIPduSignalRef[signalID] != NULL); signalID++)
-				{
-					if(IPdu->ComIPduSignalRef[signalID]->ComNotification != NULL)
-					{
-						IPdu->ComIPduSignalRef[signalID]->ComNotification();
-					}
-				}
-				for(uint16 signalGroupID=0; (IPdu->ComIPduSignalGroupRef[signalGroupID] != NULL); signalGroupID++)
-				{
-					if(IPdu->ComIPduSignalGroupRef[signalGroupID]->ComNotification != NULL)
-					{
-						IPdu->ComIPduSignalGroupRef[signalGroupID]->ComNotification();
-					}
-				}
-			}
-			else if(result == E_NOT_OK)
-			{
-				if(IPduGroup != NULL && IPduGroup->IpduGroupFlag == STOPPED)
+				if(/*deadline monitor timeout*/)
 				{
 					for(uint16 signalID=0; (IPdu->ComIPduSignalRef[signalID] != NULL); signalID++)
 					{
-						if(IPdu->ComIPduSignalRef[signalID]->ComErrorNotification != NULL)
+						if(IPdu->ComIPduSignalRef[signalID]->ComTimeoutNotification != NULL)
 						{
-							IPdu->ComIPduSignalRef[signalID]->ComErrorNotification();
+							IPdu->ComIPduSignalRef[signalID]->ComTimeoutNotification();
 						}
+						else{}
 					}
 					for(uint16 signalGroupID=0; (IPdu->ComIPduSignalGroupRef[signalGroupID] != NULL); signalGroupID++)
 					{
-						if(IPdu->ComIPduSignalGroupRef[signalGroupID]->ComErrorNotification != NULL)
+						if(IPdu->ComIPduSignalGroupRef[signalGroupID]->ComTimeoutNotification != NULL)
 						{
-							IPdu->ComIPduSignalGroupRef[signalGroupID]->ComErrorNotification();
+							IPdu->ComIPduSignalGroupRef[signalGroupID]->ComTimeoutNotification();
 						}
+						else{}
 					}
 				}
+				else if(result == E_OK)
+				{
+					for(uint16 signalID=0; (IPdu->ComIPduSignalRef[signalID] != NULL); signalID++)
+					{
+						if(IPdu->ComIPduSignalRef[signalID]->ComNotification != NULL)
+						{
+							IPdu->ComIPduSignalRef[signalID]->ComNotification();
+						}
+						else{}
+					}
+					for(uint16 signalGroupID=0; (IPdu->ComIPduSignalGroupRef[signalGroupID] != NULL); signalGroupID++)
+					{
+						if(IPdu->ComIPduSignalGroupRef[signalGroupID]->ComNotification != NULL)
+						{
+							IPdu->ComIPduSignalGroupRef[signalGroupID]->ComNotification();
+						}
+						else{}
+					}
+				}
+				else if(result == E_NOT_OK)
+				{
+					if(IPduGroup != NULL && IPduGroup->IpduGroupFlag == STOPPED)
+					{
+						for(uint16 signalID=0; (IPdu->ComIPduSignalRef[signalID] != NULL); signalID++)
+						{
+							if(IPdu->ComIPduSignalRef[signalID]->ComErrorNotification != NULL)
+							{
+								IPdu->ComIPduSignalRef[signalID]->ComErrorNotification();
+							}
+							else{}
+						}
+						for(uint16 signalGroupID=0; (IPdu->ComIPduSignalGroupRef[signalGroupID] != NULL); signalGroupID++)
+						{
+							if(IPdu->ComIPduSignalGroupRef[signalGroupID]->ComErrorNotification != NULL)
+							{
+								IPdu->ComIPduSignalGroupRef[signalGroupID]->ComErrorNotification();
+							}
+							else{}
+						}
+					}
+					else{}
+				}
+				else{}
 			}
+			else{}
 		}
+		else{}
 	}
+	else{}
 }
 
 uint8 Com_InvalidateSignal(Com_SignalIdType SignalId)
 {
 	uint8 returnValue;
-	if(is_com_initiated(config) == 0)
+	if(Com_GetStatus() == COM_UNINIT)
 	{
 		returnValue = COM_SERVICE_NOT_AVAILABLE;
 	}
 	else
 	{
 		ComSignal_type* signal = GET_SIGNAL(SignalId);
-		ComIPdu_type* IPdu = GET_IPDU(signal->ComIPduHandleId);
-		if(signal->ComSignalDataInvalidValue == NULL || (IPdu->ComIPduGroupRef)->IpduGroupFlag == STOPPED)
+		if(signal != NULL)
 		{
-			returnValue = COM_SERVICE_NOT_AVAILABLE;
-		}
-		else
-		{
-			if(Com_SendSignal(SignalId, signal->ComSignalDataInvalidValue) == E_OK)
-			{
-				returnValue = E_OK;
-			}
-			else
+			ComIPdu_type* IPdu = GET_IPDU(signal->ComIPduHandleId);
+			if(IPdu == NULL || signal->ComSignalDataInvalidValue == NULL || (IPdu->ComIPduGroupRef)->IpduGroupFlag == STOPPED)
 			{
 				returnValue = COM_SERVICE_NOT_AVAILABLE;
 			}
+			else
+			{
+				if(Com_SendSignal(SignalId, signal->ComSignalDataInvalidValue) == E_OK)
+				{
+					returnValue = E_OK;
+				}
+				else
+				{
+					returnValue = COM_SERVICE_NOT_AVAILABLE;
+				}
+			}
 		}
+		else{}
 	}
-	
 	return returnValue;		
 }
+
 
 uint8 Com_InvalidateSignalGroup (Com_SignalGroupIdType SignalGroupId)
 {   uint8 flag=0;
@@ -1187,7 +1205,7 @@ uint8 Com_InvalidateSignalGroup (Com_SignalGroupIdType SignalGroupId)
 
 void Com_SwitchIpduTxMode (PduIdType PduId, boolean Mode)
 {
-	if(is_com_initiated(config) == 1)
+	if(Com_GetStatus() == COM_INIT)
 	{
 		ComIPdu_type* IPdu = GET_IPDU(PduId);
 		if(IPdu != NULL)
@@ -1199,9 +1217,14 @@ void Com_SwitchIpduTxMode (PduIdType PduId, boolean Mode)
 			or MIXED, then the AUTOSAR COM module shall start the new transmission cycle with a call to PduR_ComTransmit within the next main function at the latest.
 			--------------------------------------------------------------------------------------------------------------------------------------------------------*/
 			if((oldTMS == 0 && Mode == 1 && IPdu->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeMode == DIRECT && IPdu->ComTxIPdu.ComTxModeTrue.ComTxMode.ComTxModeMode != DIRECT)
-			||(oldTMS == 1 && Mode == 0 && IPdu->ComTxIPdu.ComTxModeTrue.ComTxMode.ComTxModeMode == DIRECT && IPdu->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeMode != DIRECT))
+				||(oldTMS == 1 && Mode == 0 && IPdu->ComTxIPdu.ComTxModeTrue.ComTxMode.ComTxModeMode == DIRECT && IPdu->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeMode != DIRECT))
 			{
 				 IPdu->ComTxIPdu.ComFirstPeriodicModeEntry = 1;
+			}
+			else if((oldTMS == 0 && Mode == 1 && IPdu->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeMode != DIRECT && IPdu->ComTxIPdu.ComTxModeTrue.ComTxMode.ComTxModeMode == DIRECT)
+					||(oldTMS == 1 && Mode == 0 && IPdu->ComTxIPdu.ComTxModeTrue.ComTxMode.ComTxModeMode != DIRECT && IPdu->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeMode == DIRECT))
+			{
+				IPdu->ComTxIPdu.ComFirstDirectModeEntry = 1;
 			}
 			else{}
 		}
