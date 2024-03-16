@@ -30,6 +30,7 @@ boolean check_Data_Sequence(ComIPdu_type *Ipdu,ComIPdu_type *Ipdu_Rx)
     memcpy((uint8 *)data,(uint8 *)Ipdu->ComIPduDataPtr,Ipdu->ComIPduLength)
 	mask = data & mask
 }
+
 boolean Com_ProcessTxSignalFilter(ComSignal_type* signalStruct, uint64 oldData, uint64 newData)
 {
 	boolean filterResult = 0;
@@ -80,6 +81,7 @@ boolean Com_ProcessTxSignalFilter(ComSignal_type* signalStruct, uint64 oldData, 
 			}
 			
 		}
+		else{}
 	}
 	else
 	{
@@ -124,6 +126,7 @@ boolean Com_ProcessTxSignalFilter(ComSignal_type* signalStruct, uint64 oldData, 
 			}
 			
 		}
+		else{}
 	}
 	
 	return filterResult;
@@ -146,11 +149,14 @@ boolean Com_ProcessTxSignalFilter_float(ComSignal_type* signalStruct, float64 ol
 		{
 			(signalStruct->comFilter)->ComFilterOccurrence = 0;
 		}
-		
+		else{}
 	}
+	else{}
 	
 	return filterResult;
 }
+
+
 
 
 uint8 com_pdu_transmissions_handle_signal(ComIPdu_type* IPdu, ComSignal_type* signal)
@@ -181,6 +187,7 @@ uint8 com_pdu_transmissions_handle_signal(ComIPdu_type* IPdu, ComSignal_type* si
 			{
 				IPdu->ComTxIPdu.ComNumberOfTransmissions += 1;
 			}
+			else{}
 		}
 		else if(IPdu->ComTxIPdu.ComCurrentTransmissionSelection == 0 && (IPdu->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeMode == DIRECT || IPdu->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeMode == MIXED))
 		{
@@ -201,7 +208,9 @@ uint8 com_pdu_transmissions_handle_signal(ComIPdu_type* IPdu, ComSignal_type* si
 			{
 				IPdu->ComTxIPdu.ComNumberOfTransmissions += 1;
 			}
+			else{}
 		}
+		else{}
 		returnValue = E_OK;
 	}
 	return returnValue;
@@ -236,6 +245,7 @@ uint8 com_pdu_transmissions_handle_signalGroup(ComIPdu_type* IPdu, ComSignalGrou
 			{
 				IPdu->ComTxIPdu.ComNumberOfTransmissions += 1;
 			}
+			else{}
 		}
 		else if(IPdu->ComTxIPdu.ComCurrentTransmissionSelection == 0 && (IPdu->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeMode == DIRECT || IPdu->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeMode == MIXED))
 		{
@@ -256,7 +266,9 @@ uint8 com_pdu_transmissions_handle_signalGroup(ComIPdu_type* IPdu, ComSignalGrou
 			{
 				IPdu->ComTxIPdu.ComNumberOfTransmissions += 1;
 			}
+			else{}
 		}
+		else{}
 		returnValue = E_OK;
 	}
 	return returnValue;
@@ -275,6 +287,7 @@ boolean com_pdu_transmissionsModeSelection(ComIPdu_type* IPdu)
 			TMS = 1;
 			break;
 		}
+		else{}
 	}
 	if(TMS == 0)
 	{
@@ -287,6 +300,7 @@ boolean com_pdu_transmissionsModeSelection(ComIPdu_type* IPdu)
 				TMS = 1;
 				break;
 			}
+			else{}
 		}
 	}
 	/*--------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -295,10 +309,16 @@ boolean com_pdu_transmissionsModeSelection(ComIPdu_type* IPdu)
 	--------------------------------------------------------------------------------------------------------------------------------------------------------*/
 	boolean oldTMS = IPdu->ComTxIPdu.ComCurrentTransmissionSelection;
 	if((oldTMS == 0 && TMS == 1 && IPdu->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeMode == DIRECT && IPdu->ComTxIPdu.ComTxModeTrue.ComTxMode.ComTxModeMode != DIRECT)
-	||(oldTMS == 1 && TMS == 0 && IPdu->ComTxIPdu.ComTxModeTrue.ComTxMode.ComTxModeMode == DIRECT && IPdu->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeMode != DIRECT))
+		||(oldTMS == 1 && TMS == 0 && IPdu->ComTxIPdu.ComTxModeTrue.ComTxMode.ComTxModeMode == DIRECT && IPdu->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeMode != DIRECT))
 	{
 		 IPdu->ComTxIPdu.ComFirstPeriodicModeEntry = 1;
 	}
+	else if((oldTMS == 0 && Mode == 1 && IPdu->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeMode != DIRECT && IPdu->ComTxIPdu.ComTxModeTrue.ComTxMode.ComTxModeMode == DIRECT)
+			||(oldTMS == 1 && Mode == 0 && IPdu->ComTxIPdu.ComTxModeTrue.ComTxMode.ComTxModeMode != DIRECT && IPdu->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeMode == DIRECT))
+	{
+		IPdu->ComTxIPdu.ComFirstDirectModeEntry = 1;
+	}
+	else{}
 	
 	return TMS;
 }
