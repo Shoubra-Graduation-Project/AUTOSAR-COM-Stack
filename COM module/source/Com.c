@@ -499,12 +499,11 @@ Com_StatusType Com_GetStatus(void)
  * 
  *********************************************************************************/
 
-
 uint8 Com_SendSignal (Com_SignalIdType SignalId, const void* SignalDataPtr)
 {
 	uint8 returnValue;
 	ComSignal_type* signalStruct =  GET_SIGNAL(SignalId);
-	if(is_com_initiated(config) == 0 || SignalDataPtr == NULL || signalStruct == NULL)
+	if(Com_GetStatus() == COM_UNINIT || SignalDataPtr == NULL || signalStruct == NULL)
 	{
 		returnValue = COM_SERVICE_NOT_AVAILABLE;
 	}
@@ -547,6 +546,7 @@ uint8 Com_SendSignal (Com_SignalIdType SignalId, const void* SignalDataPtr)
 							{
 								isSignalChanged = 1;
 							}
+							else{}
 							*(boolean*)(signalStruct->ComFGBuffer) = new_signalData_boolean;
 							break;
 						
@@ -559,6 +559,7 @@ uint8 Com_SendSignal (Com_SignalIdType SignalId, const void* SignalDataPtr)
 							{
 								isSignalChanged = 1;
 							}
+							else{}
 							*(float32*)(signalStruct->ComFGBuffer) = new_signalData_float32;
 							break;
 						
@@ -571,6 +572,7 @@ uint8 Com_SendSignal (Com_SignalIdType SignalId, const void* SignalDataPtr)
 							{
 								isSignalChanged = 1;
 							}
+							else{}
 							*(float64*)(signalStruct->ComFGBuffer) = new_signalData_float64;
 							break;
 						
@@ -583,6 +585,7 @@ uint8 Com_SendSignal (Com_SignalIdType SignalId, const void* SignalDataPtr)
 							{
 								isSignalChanged = 1;
 							}
+							else{}
 							*(sint16*)(signalStruct->ComFGBuffer) = new_signalData_sint16;
 							break;
 						
@@ -595,6 +598,7 @@ uint8 Com_SendSignal (Com_SignalIdType SignalId, const void* SignalDataPtr)
 							{
 								isSignalChanged = 1;
 							}
+							else{}
 							*(sint32*)(signalStruct->ComFGBuffer) = new_signalData_sint32;
 							break;
 						
@@ -607,6 +611,7 @@ uint8 Com_SendSignal (Com_SignalIdType SignalId, const void* SignalDataPtr)
 							{
 								isSignalChanged = 1;
 							}
+							else{}
 							*(sint64*)(signalStruct->ComFGBuffer) = new_signalData_sint64;
 							break;
 						
@@ -619,6 +624,7 @@ uint8 Com_SendSignal (Com_SignalIdType SignalId, const void* SignalDataPtr)
 							{
 								isSignalChanged = 1;
 							}
+							else{}
 							*(sint8*)(signalStruct->ComFGBuffer) = new_signalData_sint8;
 							break;
 						
@@ -631,6 +637,7 @@ uint8 Com_SendSignal (Com_SignalIdType SignalId, const void* SignalDataPtr)
 							{
 								isSignalChanged = 1;
 							}
+							else{}
 							*(uint16*)(signalStruct->ComFGBuffer) = new_signalData_uint16;
 							break;
 						
@@ -643,6 +650,7 @@ uint8 Com_SendSignal (Com_SignalIdType SignalId, const void* SignalDataPtr)
 							{
 								isSignalChanged = 1;
 							}
+							else{}
 							*(uint32*)(signalStruct->ComFGBuffer) = new_signalData_uint32;
 							break;
 						
@@ -655,6 +663,7 @@ uint8 Com_SendSignal (Com_SignalIdType SignalId, const void* SignalDataPtr)
 							{
 								isSignalChanged = 1;
 							}
+							else{}
 							*(uint64*)(signalStruct->ComFGBuffer) = new_signalData_uint64;
 							break;
 						
@@ -667,6 +676,7 @@ uint8 Com_SendSignal (Com_SignalIdType SignalId, const void* SignalDataPtr)
 							{
 								isSignalChanged = 1;
 							}
+							else{}
 							*(uint8*)(signalStruct->ComFGBuffer) = new_signalData_uint8;
 							break;
 					}
@@ -680,9 +690,13 @@ uint8 Com_SendSignal (Com_SignalIdType SignalId, const void* SignalDataPtr)
 					[SWS_Com_00061] ⌈If the RTE updates the value of a signal by calling Com_SendSignal, the AUTOSAR COM module shall set the update-bit of this signal.⌋ 
 					(SRS_Com_02030)
 					---------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-					uint64 updatebitMask = 1u << (signalStruct->ComUpdateBitPosition);
-					*(uint64*)(Ipdu->ComIPduDataPtr) = *(uint64*)(Ipdu->ComIPduDataPtr) | updatebitMask;
+					uint8 byteOffset = signalStruct->ComUpdateBitPosition /8;
+					uint8 bitOffset = signalStruct->ComUpdateBitPosition %8 ;
 					
+					uint8* pduBufferPointer = (uint8*)Ipdu->ComIPduDataPtr;
+					pduBufferPointer += byteOffset;
+					uint8 updatebitMask = 1u << (bitOffset);
+					*pduBufferPointer = *pduBufferPointer | updatebitMask;
 					/*-----------------------------------------------IPDU Transmission Mode Selection---------------------------------------------------------*/
 					Ipdu->ComTxIPdu.ComCurrentTransmissionSelection = com_pdu_transmissionsModeSelection(Ipdu);
 					/*--------------------------Handle required number of transmissions of IPDU according to this signal--------------------------------------*/
@@ -694,12 +708,16 @@ uint8 Com_SendSignal (Com_SignalIdType SignalId, const void* SignalDataPtr)
 					{
 						returnValue = E_OK;
 					}
+					
+				
 				}
 			}
 		}			
-	}
-	return returnValue; 
+			
+	return returnValue;
+			 
 }
+
 
 
 /***********************************************************************************
@@ -723,6 +741,7 @@ uint8 Com_SendSignal (Com_SignalIdType SignalId, const void* SignalDataPtr)
                      associated shadow buffer to the foreground buffer.  
  * 
  *********************************************************************************/
+
 uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 {
 	/* 1- copy all group signal data from shadow buffer to foreground buffer
@@ -731,7 +750,7 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 	   4- set update bit of signal group
 	*/
 	uint8 returnValue;
-	if(is_com_initiated(config)==0)
+	if(Com_GetStatus() == COM_UNINIT)
 	{
 		returnValue = COM_SERVICE_NOT_AVAILABLE;
 	}
@@ -773,6 +792,7 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 							{
 								isSignalGroupChanged = 1;
 							}
+							else{}
 							*(boolean*)(groupSignal->ComFGBuffer) = new_signalData_boolean;
 							break;
 					
@@ -786,6 +806,7 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 							{
 								isSignalGroupChanged = 1;
 							}
+							else{}
 							*(float32*)(groupSignal->ComFGBuffer) = new_signalData_float32;
 							break;
 					
@@ -799,6 +820,7 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 							{
 								isSignalGroupChanged = 1;
 							}
+							else{}
 							*(float64*)(groupSignal->ComFGBuffer) = new_signalData_float64;
 							break;
 					
@@ -812,6 +834,7 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 							{
 								isSignalGroupChanged = 1;
 							}
+							else{}
 							*(sint16*)(groupSignal->ComFGBuffer) = new_signalData_sint16;
 							break;
 					
@@ -825,6 +848,7 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 							{
 								isSignalGroupChanged = 1;
 							}
+							else{}
 							*(sint32*)(groupSignal->ComFGBuffer) = new_signalData_sint32;
 							break;
 					
@@ -838,6 +862,7 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 							{
 								isSignalGroupChanged = 1;
 							}
+							else{}
 							*(sint64*)(groupSignal->ComFGBuffer) = new_signalData_sint64;
 							break;
 					
@@ -851,6 +876,7 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 							{
 								isSignalGroupChanged = 1;
 							}
+							else{}
 							*(sint8*)(groupSignal->ComFGBuffer) = new_signalData_sint8;
 							break;
 					
@@ -864,6 +890,7 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 							{
 								isSignalGroupChanged = 1;
 							}
+							else{}
 							*(uint16*)(groupSignal->ComFGBuffer) = new_signalData_uint16;
 							break;
 					
@@ -877,6 +904,7 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 							{
 								isSignalGroupChanged = 1;
 							}
+							else{}
 							*(uint32*)(groupSignal->ComFGBuffer) = new_signalData_uint32;
 							break;
 					
@@ -890,6 +918,7 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 							{
 								isSignalGroupChanged = 1;
 							}
+							else{}
 							*(uint64*)(groupSignal->ComFGBuffer) = new_signalData_uint64;
 							break;
 					
@@ -903,6 +932,7 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 							{
 								isSignalGroupChanged = 1;
 							}
+							else{}
 							*(uint8*)(groupSignal->ComFGBuffer) = new_signalData_uint8;
 							break;
 					}
@@ -918,8 +948,13 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 					[SWS_Com_00801] ⌈If the RTE updates a signal group by calling Com_SendSignalGroup, the AUTOSAR COM module shall set the update-bit of this signal
 					group.⌋ (SRS_Com_02030)
 					----------------------------------------------------------------------------------------------------------------------------------------------------------*/
-					uint64 updatebitMask = 1u << (signalGroup->ComUpdateBitPosition);
-					*(uint64*)(Ipdu->ComIPduDataPtr) = *(uint64*)(Ipdu->ComIPduDataPtr) | updatebitMask;
+					uint8 byteOffset = signalGroup->ComUpdateBitPosition /8;
+					uint8 bitOffset = signalGroup->ComUpdateBitPosition %8 ;
+					
+					uint8* pduBufferPointer = (uint8*)Ipdu->ComIPduDataPtr;
+					pduBufferPointer += byteOffset;
+					uint8 updatebitMask = 1u << (bitOffset);
+					*pduBufferPointer = *pduBufferPointer | updatebitMask;
 				
 					/*-----------------------------------------------IPDU Transmission Mode Selection---------------------------------------------------------*/
 					Ipdu->ComTxIPdu.ComCurrentTransmissionSelection = com_pdu_transmissionsModeSelection(Ipdu);
@@ -933,8 +968,9 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 						returnValue = E_OK;
 					}
 			}
-		}			
-	}	
+		}		
+			
+	}
 	return returnValue;
 }
 
@@ -966,9 +1002,13 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 	}
     
  }
+  Com_StatusType  Com_GetStatus(void)
+  {
+	return initStatus;
+  }
  void Com_RxIndication (PduIdType RxPduId, const PduInfoType* PduInfoPtr)
  {
-	if(initStatus != COM_INIT)
+	if(Com_GetStatus()!= COM_INIT)
 	{
 		return;
 	}
@@ -976,6 +1016,7 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 	{
       const ComIPdu_type *Ipdu=GET_IPDU(RxPduId);
 	  const ComIPdu_type *Ipdu_Rx=(ComIPdu_type *)PduInfoPtr->SduDataPtr;
+	  
 	if(Ipdu->ComIPduGroupRef->IpduGroupFlag==STOPPED)
 	{
 		return;
@@ -991,19 +1032,28 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 
 		}
 		/*data sequence check*/
-		//if()
+		if(!check_Data_Sequence())
+		{
+			return;
+		}
+		else
+		{
+
+		}
+		
+		
 	}
 	for(uint16 signalid=0;Ipdu_Rx->ComIPduSignalRef[signalid]!=NULL;signalid++)
 	{
 	
-			memcpy(Ipdu->ComIPduSignalRef[signalid]->ComBGBuffer,Ipdu_Rx->ComIPduSignalRef[signalid]->ComSignalDataPtr,(Ipdu_Rx->ComIPduSignalRef[signalid]->ComBitSize)/8);
+			memcpy((uint8 *)Ipdu->ComIPduSignalRef[signalid]->ComBGBuffer,(uint8 *)Ipdu_Rx->ComIPduSignalRef[signalid]->ComSignalDataPtr,(Ipdu_Rx->ComIPduSignalRef[signalid]->ComBitSize)/8);
 		
 
 	}
 	for(uint16 signalgroupid=0;Ipdu_Rx->ComIPduSignalGroupRef[signalgroupid]!=NULL;signalgroupid++)
 	{
 		
-			memcpy(Ipdu->ComIPduSignalGroupRef[signalgroupid]->ComBGBuffer,Ipdu_Rx->ComIPduSignalGroupRef[signalgroupid]->SignalGroupDataPtr,Ipdu_Rx->ComIPduSignalGroupRef[signalgroupid]->signalGroupSize);
+			memcpy((uint8 *)Ipdu->ComIPduSignalGroupRef[signalgroupid]->ComBGBuffer,(uint8 *)Ipdu_Rx->ComIPduSignalGroupRef[signalgroupid]->SignalGroupDataPtr,Ipdu_Rx->ComIPduSignalGroupRef[signalgroupid]->signalGroupSize);
 
 	
 		
@@ -1071,104 +1121,122 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 
 void Com_TxConfirmation(PduIdType TxPduId, Std_ReturnType result)
 {
-	ComIPdu_type* IPdu = GET_IPDU(TxPduId);
-	ComIPduGroup_type* IPduGroup =  IPdu->ComIPduGroupRef;
-	if(IPduGroup!=NULL && IPduGroup->IpduGroupFlag == STOPPED)
+	if(Com_GetStatus() == COM_INIT)
 	{
-		if(IPdu->ComIPduSignalProcessing == DEFERRED)
+		ComIPdu_type* IPdu = GET_IPDU(TxPduId);
+		ComIPduGroup_type* IPduGroup =  IPdu->ComIPduGroupRef;
+		if(IPduGroup==NULL || IPduGroup->IpduGroupFlag == STARTED)
 		{
-			(IPdu->ComTxIPdu).ComIsIPduDeferred = 1;
-		}
-		else(IPdu->ComIPduSignalProcessing == IMMEDIATE)
-		{
-			if(/*deadline monitor timeout*/)
+			if(IPdu->ComIPduSignalProcessing == DEFERRED)
 			{
-				for(uint16 signalID=0; (IPdu->ComIPduSignalRef[signalID] != NULL); signalID++)
-				{
-					if(IPdu->ComIPduSignalRef[signalID]->ComTimeoutNotification != NULL)
-					{
-						IPdu->ComIPduSignalRef[signalID]->ComTimeoutNotification();
-					}
-				}
-				for(uint16 signalGroupID=0; (IPdu->ComIPduSignalGroupRef[signalGroupID] != NULL); signalGroupID++)
-				{
-					if(IPdu->ComIPduSignalGroupRef[signalGroupID]->ComTimeoutNotification != NULL)
-					{
-						IPdu->ComIPduSignalGroupRef[signalGroupID]->ComTimeoutNotification();
-					}
-				}
+				(IPdu->ComTxIPdu).ComIsIPduDeferred = 1;
 			}
-			else if(result == E_OK)
+			else if(IPdu->ComIPduSignalProcessing == IMMEDIATE)
 			{
-				for(uint16 signalID=0; (IPdu->ComIPduSignalRef[signalID] != NULL); signalID++)
-				{
-					if(IPdu->ComIPduSignalRef[signalID]->ComNotification != NULL)
-					{
-						IPdu->ComIPduSignalRef[signalID]->ComNotification();
-					}
-				}
-				for(uint16 signalGroupID=0; (IPdu->ComIPduSignalGroupRef[signalGroupID] != NULL); signalGroupID++)
-				{
-					if(IPdu->ComIPduSignalGroupRef[signalGroupID]->ComNotification != NULL)
-					{
-						IPdu->ComIPduSignalGroupRef[signalGroupID]->ComNotification();
-					}
-				}
-			}
-			else if(result == E_NOT_OK)
-			{
-				if(IPduGroup != NULL && IPduGroup->IpduGroupFlag == STOPPED)
+				if(/*deadline monitor timeout*/)
 				{
 					for(uint16 signalID=0; (IPdu->ComIPduSignalRef[signalID] != NULL); signalID++)
 					{
-						if(IPdu->ComIPduSignalRef[signalID]->ComErrorNotification != NULL)
+						if(IPdu->ComIPduSignalRef[signalID]->ComTimeoutNotification != NULL)
 						{
-							IPdu->ComIPduSignalRef[signalID]->ComErrorNotification();
+							IPdu->ComIPduSignalRef[signalID]->ComTimeoutNotification();
 						}
+						else{}
 					}
 					for(uint16 signalGroupID=0; (IPdu->ComIPduSignalGroupRef[signalGroupID] != NULL); signalGroupID++)
 					{
-						if(IPdu->ComIPduSignalGroupRef[signalGroupID]->ComErrorNotification != NULL)
+						if(IPdu->ComIPduSignalGroupRef[signalGroupID]->ComTimeoutNotification != NULL)
 						{
-							IPdu->ComIPduSignalGroupRef[signalGroupID]->ComErrorNotification();
+							IPdu->ComIPduSignalGroupRef[signalGroupID]->ComTimeoutNotification();
 						}
+						else{}
 					}
 				}
+				else if(result == E_OK)
+				{
+					for(uint16 signalID=0; (IPdu->ComIPduSignalRef[signalID] != NULL); signalID++)
+					{
+						if(IPdu->ComIPduSignalRef[signalID]->ComNotification != NULL)
+						{
+							IPdu->ComIPduSignalRef[signalID]->ComNotification();
+						}
+						else{}
+					}
+					for(uint16 signalGroupID=0; (IPdu->ComIPduSignalGroupRef[signalGroupID] != NULL); signalGroupID++)
+					{
+						if(IPdu->ComIPduSignalGroupRef[signalGroupID]->ComNotification != NULL)
+						{
+							IPdu->ComIPduSignalGroupRef[signalGroupID]->ComNotification();
+						}
+						else{}
+					}
+				}
+				else if(result == E_NOT_OK)
+				{
+					if(IPduGroup != NULL && IPduGroup->IpduGroupFlag == STOPPED)
+					{
+						for(uint16 signalID=0; (IPdu->ComIPduSignalRef[signalID] != NULL); signalID++)
+						{
+							if(IPdu->ComIPduSignalRef[signalID]->ComErrorNotification != NULL)
+							{
+								IPdu->ComIPduSignalRef[signalID]->ComErrorNotification();
+							}
+							else{}
+						}
+						for(uint16 signalGroupID=0; (IPdu->ComIPduSignalGroupRef[signalGroupID] != NULL); signalGroupID++)
+						{
+							if(IPdu->ComIPduSignalGroupRef[signalGroupID]->ComErrorNotification != NULL)
+							{
+								IPdu->ComIPduSignalGroupRef[signalGroupID]->ComErrorNotification();
+							}
+							else{}
+						}
+					}
+					else{}
+				}
+				else{}
 			}
+			else{}
 		}
+		else{}
 	}
+	else{}
 }
 
 uint8 Com_InvalidateSignal(Com_SignalIdType SignalId)
 {
 	uint8 returnValue;
-	if(is_com_initiated(config) == 0)
+	if(Com_GetStatus() == COM_UNINIT)
 	{
 		returnValue = COM_SERVICE_NOT_AVAILABLE;
 	}
 	else
 	{
 		ComSignal_type* signal = GET_SIGNAL(SignalId);
-		ComIPdu_type* IPdu = GET_IPDU(signal->ComIPduHandleId);
-		if(signal->ComSignalDataInvalidValue == NULL || (IPdu->ComIPduGroupRef)->IpduGroupFlag == STOPPED)
+		if(signal != NULL)
 		{
-			returnValue = COM_SERVICE_NOT_AVAILABLE;
-		}
-		else
-		{
-			if(Com_SendSignal(SignalId, signal->ComSignalDataInvalidValue) == E_OK)
-			{
-				returnValue = E_OK;
-			}
-			else
+			ComIPdu_type* IPdu = GET_IPDU(signal->ComIPduHandleId);
+			if(IPdu == NULL || signal->ComSignalDataInvalidValue == NULL || (IPdu->ComIPduGroupRef)->IpduGroupFlag == STOPPED)
 			{
 				returnValue = COM_SERVICE_NOT_AVAILABLE;
 			}
+			else
+			{
+				if(Com_SendSignal(SignalId, signal->ComSignalDataInvalidValue) == E_OK)
+				{
+					returnValue = E_OK;
+				}
+				else
+				{
+					returnValue = COM_SERVICE_NOT_AVAILABLE;
+				}
+			}
 		}
+		else{}
 	}
-	
 	return returnValue;		
 }
+
 
 uint8 Com_InvalidateSignalGroup (Com_SignalGroupIdType SignalGroupId)
 {   uint8 flag=0;
@@ -1217,7 +1285,7 @@ uint8 Com_InvalidateSignalGroup (Com_SignalGroupIdType SignalGroupId)
 
 void Com_SwitchIpduTxMode (PduIdType PduId, boolean Mode)
 {
-	if(is_com_initiated(config) == 1)
+	if(Com_GetStatus() == COM_INIT)
 	{
 		ComIPdu_type* IPdu = GET_IPDU(PduId);
 		if(IPdu != NULL)
@@ -1229,9 +1297,14 @@ void Com_SwitchIpduTxMode (PduIdType PduId, boolean Mode)
 			or MIXED, then the AUTOSAR COM module shall start the new transmission cycle with a call to PduR_ComTransmit within the next main function at the latest.
 			--------------------------------------------------------------------------------------------------------------------------------------------------------*/
 			if((oldTMS == 0 && Mode == 1 && IPdu->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeMode == DIRECT && IPdu->ComTxIPdu.ComTxModeTrue.ComTxMode.ComTxModeMode != DIRECT)
-			||(oldTMS == 1 && Mode == 0 && IPdu->ComTxIPdu.ComTxModeTrue.ComTxMode.ComTxModeMode == DIRECT && IPdu->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeMode != DIRECT))
+				||(oldTMS == 1 && Mode == 0 && IPdu->ComTxIPdu.ComTxModeTrue.ComTxMode.ComTxModeMode == DIRECT && IPdu->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeMode != DIRECT))
 			{
 				 IPdu->ComTxIPdu.ComFirstPeriodicModeEntry = 1;
+			}
+			else if((oldTMS == 0 && Mode == 1 && IPdu->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeMode != DIRECT && IPdu->ComTxIPdu.ComTxModeTrue.ComTxMode.ComTxModeMode == DIRECT)
+					||(oldTMS == 1 && Mode == 0 && IPdu->ComTxIPdu.ComTxModeTrue.ComTxMode.ComTxModeMode != DIRECT && IPdu->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeMode == DIRECT))
+			{
+				IPdu->ComTxIPdu.ComFirstDirectModeEntry = 1;
 			}
 			else{}
 		}

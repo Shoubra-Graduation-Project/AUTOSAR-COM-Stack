@@ -4,6 +4,15 @@
 
 #include "libraries/Std_Types.h"
 
+
+
+/***************************************************************************************************
+Name: state_type
+
+Type: EcucEnumerationParamDef
+
+Description: Possible IPdu group statues
+****************************************************************************************************/
 typedef enum
 {
 	STOPPED,
@@ -298,6 +307,8 @@ typedef struct
 
 	boolean ComFirstPeriodicModeEntry;
 
+	boolean ComFirstDirectModeEntry;
+
 } ComTxIPdu_type;
 
 
@@ -309,7 +320,7 @@ typedef struct {
        Defines for I-PDUs with ComIPduType TP: If the underlying TP-module supports RX and TX cancellation of ongoing requests.
     */
     const boolean ComIPduCancellationSupport;
-
+    ComIPduCounter_type* ComIPduCounter;
     /* sent or received */
     ComIPduDirection_type ComIPduDirection;
 
