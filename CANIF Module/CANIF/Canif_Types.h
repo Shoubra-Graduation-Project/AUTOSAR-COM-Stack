@@ -6,6 +6,9 @@
 #include "CanIf_Cfg.h"
 #include "Platform_Types.h"
 #include "Commonn_Macros.h"
+#include "ComStack_Types.h"
+#include "include/Can_GeneralTypes.h"
+#include "include/Can_Cfg.h"
 
 
 
