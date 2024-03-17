@@ -38,5 +38,6 @@
 void CanIf_Init(const CanIf_ConfigType* ConfigPtr);
 FUNC(Std_ReturnType,CANIF_CODE) CanIf_SetControllerMode(VAR(uint8_t,AUTOMATIC) ControllerId,VAR(Can_ControllerStateType , AUTOMATIC) ControllerMode);
 FUNC(Std_ReturnType,CANIF_CODE) CanIf_GetControllerMode(VAR(uint8_t ,AUTOMATIC) ControllerId, P2VAR(Can_ControllerStateType,CANIF_CODE,AUTOMATIC) ControllerModePtr);
-FUNC(Std_ReturnType,CANIF_CODE) CanIf_ControllerBusOff(VAR(uint8_t ,AUTOMATIC) ControllerId) ;
+FUNC(Std_ReturnType,CANIF_CODE) CanIf_ControllerBusOff(VAR(uint8_t ,AUTOMATIC) ControllerId);
+FUNC(void,CANIF_CODE) CanIf_DeInit(void);
 
