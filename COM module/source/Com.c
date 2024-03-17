@@ -74,6 +74,12 @@ void Com_Init (const Com_ConfigType* config)
 			{
 
 			}
+			/*[SWS_Com_00444] ⌈By default, all I-PDU groups shall be in the state stopped and
+               they shall not be started automatically by a call to Com_Init*/
+			if (IPdu->ComIPduGroupRef != NULL)
+			{
+				IPdu->ComIPduGroupRef->IpduGroupFlag = STOPPED;
+			}
             // For each signal at the I-PDU
 			for ( ComInitSignalId = 0; (IPdu->ComIPduSignalRef[ComInitSignalId] != NULL); ComInitSignalId++)
 			{
@@ -108,7 +114,8 @@ void Com_Init (const Com_ConfigType* config)
                 //[SWS_Com_00117] The AUTOSAR COM module shall clear all update-bits during initialization
                 CLEARBIT(IPdu->ComIPduDataPtr, SignalGroup->ComUpdateBitPosition);
                 
-				// Set pointer to shadow buffer
+				/*[SWS_Com_00484] By a call to Com_Init, the AUTOSAR COM module shall initialize 
+				  the shadow buffer of a signal group on sender-side*/
 	            ComShadowBuffer = (uint8*)SignalGroup->ComShadowBuffer;
             
 
@@ -224,7 +231,7 @@ void Com_IpduGroupStart(Com_IpduGroupIdType IpduGroupId , boolean Initialize)
 	uint8 IpduId;
 	uint8 ComSignalId;
 
-	float mdt;
+	float MDT;
 
 
 	IPduGroup = GET_IpduGroup(IpduGroupId);
@@ -252,7 +259,7 @@ void Com_IpduGroupStart(Com_IpduGroupIdType IpduGroupId , boolean Initialize)
 				if(IPdu->ComIPduGroupRef->ComIPduGroupHandleId == IpduGroupId)
 				{
 					//1) ComMinimumDelayTime of I-PDUs in transmission mode DIRECT or MIXED
-					IPdu->ComTxIPdu->ComMinimumDelayTime = mdt;
+					IPdu->ComTxIPdu->ComMinimumDelayTime = MDT;
 
 					for (ComSignalId = 0; (IPdu->ComIPduSignalRef[ComSignalId] != NULL); ComSignalId++)
                     {
@@ -522,7 +529,7 @@ uint8 Com_SendSignal (Com_SignalIdType SignalId, const void* SignalDataPtr)
 					If Com_SendSignal or Com_InvalidateSignal is called for a signal that belongs to a signal group, then the AUTOSAR COM will only update the shadow buffer of this
 					signal group. There is no need for any further I-PDU processing like TMS evaluation, unless the I-PDU contents changed.
 					[SWS_Com_00050] ⌈If Com_SendSignalGroup is called for the signal group, the AUTOSAR COM module shall copy the shadow buffer atomically to the 
-					I-PDU buffer.⌋ (SRS_Com_02041)
+					I-PDU buffer.⌋ (SRS_Com_02041)
 					--------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 					Com_WriteSignalDataToShadowBuffer(signalStruct->SignalGroupId, signalStruct->ComHandleId, SignalDataPtr);
 					returnValue = E_OK;
