@@ -20,9 +20,14 @@
 #include "Det.h"
 #endif
 
+#if defined(USE_COM)
+#include "Com.h"
+#endif
+
 #include "Canif_Types.h"
 #include "CanIf_Cfg.h"
 #include "Compiler.h"
+#include "Modules.h"
 
 
 
@@ -32,3 +37,4 @@
 
 void CanIf_Init(const CanIf_ConfigType* ConfigPtr);
 FUNC(Std_ReturnType,CANIF_CODE) CanIf_SetControllerMode(VAR(uint8_t,AUTOMATIC) ControllerId,VAR(Can_ControllerStateType , AUTOMATIC) ControllerMode);
+
