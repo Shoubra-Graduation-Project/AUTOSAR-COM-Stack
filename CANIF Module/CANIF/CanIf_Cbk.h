@@ -13,7 +13,7 @@
 #include "CanIf_Cfg.h"
 #include "ComStack_types.h"
 #include "Std_Types.h"
-#include "Can_GeneralTypes.h"
+#include "include/Can_GeneralTypes.h"
 #include "PduR.h"
 void CanIf_TxConfirmation(PduIdType CanTxPduId);
 extern void CanIf_RxIndication(const Can_HwType* Mailbox,const PduInfoType* PduInfoPtr);
