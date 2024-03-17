@@ -4,6 +4,8 @@
 #include "Canif_Types.h"
 #include "CanIf_Cfg.h"
 #include "Det.h"
+#include "ComStack_types.h"
+#include "Can.h"
 
 
 
