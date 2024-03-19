@@ -14,22 +14,18 @@
  **********************************************************************************/
  
 
-boolean check_Data_Sequence(ComIPdu_type *Ipdu,ComIPdu_type *Ipdu_Rx)
-{
-	uint8 excounter,recounter;
-	void * data=NULL;
-	Ipdu->ComIPduCounter->ComIPduCounterSize
-    Ipdu->ComIPduCounter->ComIPduCounterStartPosition
-
-    unit64 mask = 0;
-	for(uint8 i = 0; i<Ipdu->ComIPduCounter->ComIPduCounterSize; i++)
-	{
-		uint64 currentmask = 1u<< (ComIPduCounter->ComIPduCounterStartPosition+i);
-		mask = mask | currentmask;
-	}
-    memcpy((uint8 *)data,(uint8 *)Ipdu->ComIPduDataPtr,Ipdu->ComIPduLength)
-	mask = data & mask
-}
+uint8 power(unsigned n) 
+{ 
+    // Initialize result to 1 
+    uint8 pow = 1; 
+  
+    // Multiply x for n times 
+    for (int i = 0; i < n; i++) { 
+        pow = pow * 2; 
+    } 
+    
+    return pow; 
+} 
 
 boolean Com_ProcessTxSignalFilter(ComSignal_type* signalStruct, uint64 oldData, uint64 newData)
 {
@@ -346,11 +342,11 @@ com_packSignalsToPdu(ComIPdu_type* IPdu)
 
 
 
-Std_ReturnType Com_writeCounterValueToPduBuffer(uint32 PduHandleId, uint8 counterdata)
+Std_ReturnType Com_writeCounterValueToPduBuffer(ComIPdu_type *IPdu, uint8 counterdata)
 {
 	Std_ReturnType returnValue = E_OK;
 	// Get PDU
-	const ComIPdu_type *IPdu = GET_IPDU(PduHandleId);
+	
 	if(IPdu != NULL)
 	{
 		const ComIPduCounter_type* PduCounter = IPdu->ComIPduCounter;
@@ -430,53 +426,57 @@ Std_ReturnType Com_writeCounterValueToPduBuffer(uint32 PduHandleId, uint8 counte
 }
 
 
-uint8 Com_readCounterValueFromPduBuffer(uint32 PduHandleId)
+uint8 check_Data_Sequence(ComIPdu_type *Ipdu)
 {
 	// Get PDU
-	const ComIPdu_type *IPdu = GET_IPDU(PduHandleId);
-	const ComIPduCounter_type* PduCounter = IPdu->ComIPduCounter;
 	
-	uint8 counterValue = 0;
-	uint8 mask;
-	uint32 BitPosition = PduCounter->ComIPduCounterStartPosition;;
-	pduStartByte = BitPosition / 8;
-	BitOffsetInByte = BitPosition % 8;
-	uint8 *pduBufferBytesptr = (uint8 *)(IPdu->ComIPduDataPtr);
-	uint8 counterLength = PduCounter->ComIPduCounterSize;
+	const ComIPduCounter_type* PduCounter1 = Ipdu->ComIPduCounter;
+	
+	uint8 counterValue1 = 0;
+	uint8 mask1;
+	uint32 BitPosition1 = PduCounter1->ComIPduCounterStartPosition;
 
-	pduBufferBytesPtr += pduStartByte;
-
-	if(8-BitOffsetInByte >= counterLength)
+	uint32 pduStartByte1 = BitPosition1 / 8;
+	
+	uint32 BitOffsetInByte1 = BitPosition1 % 8;
+	
+	uint8 *pduBufferBytesptr1 = (uint8 *)(Ipdu->ComIPduDataPtr);
+	
+	uint8 counterLength1 = PduCounter1->ComIPduCounterSize;
+   
+	*pduBufferBytesptr1 += pduStartByte1;
+  
+	if(8-BitOffsetInByte1 >= counterLength1)
 	{
 		// if whole counter is contained in one byte
-		mask = 0;
-		for(uint8 i = 0; i<counterLength; i++)
+		mask1 = 0;
+		for(uint8 i = 0; i<counterLength1; i++)
 		{
-			mask = mask | (1u << (BitOffsetInByte+i) )
+			mask1 = mask1 | (1u << (BitOffsetInByte1+i) )
 		}
-		mask = (*pduBufferBytesptr) & mask;
-		mask = mask >> BitOffsetInByte;
-		counterValue = mask;
+		mask1 = (*pduBufferBytesptr1) & mask1;
+		mask1 = mask1 >> BitOffsetInByte1;
+		counterValue1 = mask1;
 	}
 	else
 	{
 		// if counter is divided on two bytes
 		// for first byte
-		mask = 255;
-		mask = mask << BitOffsetInByte;
-		mask = (*pduBufferBytesptr) & mask;
-		mask = mask >> BitOffsetInByte;
-		counterValue = mask;
+		mask1 = 255;
+		mask1 = mask1 << BitOffsetInByte1;
+		mask1 = (*pduBufferBytesptr1) & mask1;
+		mask1 = mask1 >> BitOffsetInByte1;
+		counterValue1 = mask1;
 
 		//for second byte
-		pduBufferBytesptr += 1;
-		bitsNumberInSecondByte = counterLength - (8 - BitOffsetInByte);
-		mask = 255;
-		mask = mask >> (8 - bitsNumberInSecondByte)
-		mask = (*pduBufferBytesptr) & mask;
-		mask = mask << (8-BitOffsetInByte);
-		counterdata = mask | counterdata;
+		pduBufferBytesptr1 += 1;
+		uint32 bitsNumberInSecondByte1 = counterLength1 - (8 - BitOffsetInByte1);
+		mask1 = 255;
+		mask1 = mask1 >> (8 - bitsNumberInSecondByte1)
+		mask1 = (*pduBufferBytesptr1) & mask1;
+		mask1 = mask1 << (8-BitOffsetInByte1);
+		counterValue1 = mask1 | counterValue1;
 	}
 
-	return counterdata;
+	return counterValue1;
 }

@@ -4,6 +4,7 @@
 
 
 #include "include/Com.h"
+#include "include/Com_HelpingFunctions.h"
 #include "include/com_buffers.h"
 #include "include/Com_Types.h"
 #include "include/Com_Cfg.h"
@@ -458,28 +459,7 @@ void Com_DisableReceptionDM (Com_IpduGroupIdType IpduGroupId)
 
 }
 
-/***********************************************************************************
- *                                                                                 *
- *    Service Name: Com_GetStatus    
- *    
- *    Service Id: 0x07                                                            *
- * 
- *    Parameters (in): None.
- * 
- *    Parameters (out): None 
- * 
- *    Return Value: COM_UNINIT: the AUTOSAR COM module is not initialized
- *                  and not usable
- *                  COM_INIT: the AUTOSAR COM module is initialized and
- *                  usable
- * 
- *    Description:  Returns the status of the AUTOSAR COM module.  
- * 
- *********************************************************************************/
-Com_StatusType Com_GetStatus(void)
-{
-    return initStatus;
-}
+
 
 
 
@@ -1039,13 +1019,16 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 
 		}
 		/*data sequence check*/
-		if(!check_Data_Sequence())
+		uint8 excounter=check_Data_Sequence(Ipdu);
+        uint8 recounter=check_Data_Sequence(Ipdu_Rx);
+		if(recounter>((excounter+(Ipdu->ComIPduCounter->ComIPduCounterThreshold))%power(Ipdu->ComIPduCounter->ComIPduCounterSize)))
 		{
 			return;
 		}
 		else
 		{
-
+          excounter=(excounter+1)%power(Ipdu->ComIPduCounter->ComIPduCounterSize);
+		  Std_ReturnType return1 =Com_writeCounterValueToPduBuffer(Ipdu, excounter);
 		}
 		
 		
