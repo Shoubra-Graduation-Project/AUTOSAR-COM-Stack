@@ -343,3 +343,140 @@ com_packSignalsToPdu(ComIPdu_type* IPdu)
 		
 	}
 }
+
+
+
+Std_ReturnType Com_writeCounterValueToPduBuffer(uint32 PduHandleId, uint8 counterdata)
+{
+	Std_ReturnType returnValue = E_OK;
+	// Get PDU
+	const ComIPdu_type *IPdu = GET_IPDU(PduHandleId);
+	if(IPdu != NULL)
+	{
+		const ComIPduCounter_type* PduCounter = IPdu->ComIPduCounter;
+		if(PduCounter != NULL)
+		{
+			uint8 mask;
+			uint32 BitPosition = PduCounter->ComIPduCounterStartPosition;;
+			pduStartByte = BitPosition / 8;
+			BitOffsetInByte = BitPosition % 8;
+			uint8 *pduBufferBytesptr = (uint8 *)(IPdu->ComIPduDataPtr);
+			uint8 counterLength = PduCounter->ComIPduCounterSize;
+
+			pduBufferBytesPtr += pduStartByte;
+
+			// clear unused bits in counter data
+			mask = 255;
+			mask = mask >> (8 - counterLength);
+			counterdata = counterdata & mask
+
+
+			if(8-BitOffsetInByte >= counterLength)
+			{
+				// if whole counter is contained in one byte
+				mask = 0;
+				for(uint8 i = 0; i<counterLength; i++)
+				{
+					mask = mask | (1u << (BitOffsetInByte+i) )
+				}
+				mask = ~mask
+				*pduBufferBytesptr = (*pduBufferBytesptr) & mask
+
+				counterdata = counterdata << BitOffsetInByte
+				*pduBufferBytesptr = (*pduBufferBytesptr) | counterdata
+			}
+			else
+			{
+				// if counter is divided on two bytes
+				// for first byte
+				mask = 255;
+				mask = ~(mask << BitOffsetInByte)
+				*pduBufferBytesptr = (*pduBufferBytesptr) & mask
+
+				mask = 255;
+				mask = mask >> BitOffsetInByte;
+				mask = mask & counterdata;
+				mask = mask << BitOffsetInByte;
+				*pduBufferBytesptr = (*pduBufferBytesptr) | mask;
+
+				//for second byte
+				pduBufferBytesptr += 1;
+				bitsNumberInSecondByte = counterLength - (8 - BitOffsetInByte);
+				mask = 255;
+				mask = ~( mask >> (8 - bitsNumberInSecondByte) )
+				*pduBufferBytesptr = (*pduBufferBytesptr) & mask;
+
+				mask = 0;
+				for(uint8 i = 0; i<bitsNumberInSecondByte; i++)
+				{
+					mask = mask | (1u << ((8 - BitOffsetInByte) + i));
+				}
+				mask = mask & counterdata;
+				mask = mask >> (8 - BitOffsetInByte);
+				*pduBufferBytesptr = (*pduBufferBytesptr) | mask;
+			}
+		}
+		else
+		{
+			returnValue = E_NOT_OK;
+		}
+	}
+	else
+	{
+		returnValue = E_NOT_OK;
+	}
+	
+	return returnValue;
+}
+
+
+uint8 Com_readCounterValueFromPduBuffer(uint32 PduHandleId)
+{
+	// Get PDU
+	const ComIPdu_type *IPdu = GET_IPDU(PduHandleId);
+	const ComIPduCounter_type* PduCounter = IPdu->ComIPduCounter;
+	
+	uint8 counterValue = 0;
+	uint8 mask;
+	uint32 BitPosition = PduCounter->ComIPduCounterStartPosition;;
+	pduStartByte = BitPosition / 8;
+	BitOffsetInByte = BitPosition % 8;
+	uint8 *pduBufferBytesptr = (uint8 *)(IPdu->ComIPduDataPtr);
+	uint8 counterLength = PduCounter->ComIPduCounterSize;
+
+	pduBufferBytesPtr += pduStartByte;
+
+	if(8-BitOffsetInByte >= counterLength)
+	{
+		// if whole counter is contained in one byte
+		mask = 0;
+		for(uint8 i = 0; i<counterLength; i++)
+		{
+			mask = mask | (1u << (BitOffsetInByte+i) )
+		}
+		mask = (*pduBufferBytesptr) & mask;
+		mask = mask >> BitOffsetInByte;
+		counterValue = mask;
+	}
+	else
+	{
+		// if counter is divided on two bytes
+		// for first byte
+		mask = 255;
+		mask = mask << BitOffsetInByte;
+		mask = (*pduBufferBytesptr) & mask;
+		mask = mask >> BitOffsetInByte;
+		counterValue = mask;
+
+		//for second byte
+		pduBufferBytesptr += 1;
+		bitsNumberInSecondByte = counterLength - (8 - BitOffsetInByte);
+		mask = 255;
+		mask = mask >> (8 - bitsNumberInSecondByte)
+		mask = (*pduBufferBytesptr) & mask;
+		mask = mask << (8-BitOffsetInByte);
+		counterdata = mask | counterdata;
+	}
+
+	return counterdata;
+}
