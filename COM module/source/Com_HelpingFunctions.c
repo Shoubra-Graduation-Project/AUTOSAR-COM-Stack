@@ -444,7 +444,7 @@ uint8 check_Data_Sequence(ComIPdu_type *Ipdu)
 	
 	uint8 counterLength1 = PduCounter1->ComIPduCounterSize;
    
-	*pduBufferBytesptr1 += pduStartByte1;
+	pduBufferBytesptr1 += pduStartByte1;
   
 	if(8-BitOffsetInByte1 >= counterLength1)
 	{
