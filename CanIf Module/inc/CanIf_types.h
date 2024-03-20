@@ -16,9 +16,9 @@
 #define CANIF_INSTANCE_ID          1
 
 /****************************   Types Not in SWS    *************************************/
-#define  NUMBER_OF_CONTROLLERS        (uint8)2
-#define NUMBER_OF_CANDRIVERS 1
-#define NUMBER_OF_BUFFERS    1
+#define NUMBER_OF_CONTROLLERS    (uint8)2
+#define NUMBER_OF_CANDRIVERS	 1
+#define NUMBER_OF_BUFFERS	 1
 #define SDU_LENGTH               8
 #define CANID_EXPECTED_MAX       10
 #define CANID_EXPECTED_MIN       1
@@ -297,7 +297,7 @@ typedef struct{
     ... 29 Bit For Extended CAN identifier
     The CAN Identifier may be omitted for dynamic transmit L-PDUs.
     */
-	uint32 CanIfTxPduCanId;
+    uint32 CanIfTxPduCanId;
 
     /*
     Identifier mask which denotes relevant bits in the CAN Identifier. This
@@ -334,7 +334,7 @@ typedef struct{
     /* 
     Configurable reference to a CanIf buffer configuration. 
     */
-	CanIfBufferCfg* CanIfTxPduBufferRef;
+    CanIfBufferCfg*     CanIfTxPduBufferRef;
 
     /* 
     This parameter defines the upper layer (UL) module to which the
@@ -346,7 +346,7 @@ typedef struct{
 	<User_TxConfirmation> has to be called in case of a Tx confirmation
 	event of the CANTXPDUID from the CAN Driver module. 
     */
-	CanIfPduUserUL	CanIfTxPduUserTxConfirmationUL;
+     CanIfPduUserUL   CanIfTxPduUserTxConfirmationUL;
 
 }CanIfTxPduCfg;
 
@@ -425,24 +425,24 @@ typedef struct{
 	fulfill ANSI/AUTOSAR definitions for constant defines.
 	Range: 0..max. number of defined CanRxPduIds 
     */
-	uint32 CanIfRxPduId;
+    uint32 CanIfRxPduId;
 
     /* 
     Enables and disables the Rx buffering for reading of received L-SDU data.
 	True: Enabled False: Disabled 
     */
-	boolean CanIfRxPduReadData;
+    boolean CanIfRxPduReadData;
 	
 	/* 
     Enables and disables receive indication for each receive CAN L-SDU
 	for reading its notification status.
 	True: Enabled False: Disabled 
     */
-	boolean CanIfRxPduReadNotifyStatus;
+     boolean CanIfRxPduReadNotifyStatus;
 	
 	/* The HRH to which Rx L-PDU belongs to, is referred through this
 	parameter. */
-	CanIfHrhCfg *CanIfRxPduHrhIdRef;
+     CanIfHrhCfg *CanIfRxPduHrhIdRef;
 	
 	/* 
     This parameter defines the upper layer (UL) module to which the
