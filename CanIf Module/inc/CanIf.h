@@ -13,6 +13,14 @@
 #include "../COM module/include/ComStack_Types.h"
 #include "./CanIf_types.h"
 
+#if defined(USE_PDUR)
+#include "PduR.h"
+#endif
+
+#if defined(USE_COM)
+#include "Com.h"
+#endif
+
  /* Section : Macros Definition */
 #define CANIF_VENDOR_ID          (VENDOR_ID_ARCCORE)
 #define CANIF_MODULE_ID          (1)
