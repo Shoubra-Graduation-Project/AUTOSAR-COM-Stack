@@ -1,13 +1,32 @@
 #include "../inc/CanIf.h"
-#include "../inc/CanIf_cfg.h"
-#include "../inc/CanIf_types.h"
+#include "../../CanDrv/Inc/Can.h"
 #include "../../Det/inc/Det.h"
-#include "../../Common/Compiler.h"
 
+extern CanIf_ConfigType CanIf;
 
+static CanIf_ControllerModeType CanIfControllerMode[NUMBER_OF_CONTROLLERS] = {
+        CANIF_CS_UNINIT, CANIF_CS_UNINIT };
+
+static CanIf_PduModeType CanIfPduMode[NUMBER_OF_CONTROLLERS];
+
+#if(CanIfPublicReadRxPduDataApi == true)
+static PduInfoType RxBuffer[CanIfMaxRxPduCfg];
+#endif
 
 #if(CanIfPublicReadTxPduNotifyStatusApi==true)
-    CanIf_NotifStatusType TxPduState[CanIfMaxTxPduCfg];
+CanIf_NotifStatusType TxPduState[CanIfMaxTxPduCfg];
+#endif
+
+#if(CanIfPublicReadRxPduNotifyStatusApi == true)
+static CanIf_NotifStatusType RxPduState[CanIfMaxRxPduCfg];
+#endif
+
+#if(CanIfPublicTxBuffering == false)
+static CanIf_TxBufferType CanIfTxBuffer[NUMBER_OF_BUFFERS] = { {
+        .CanIfBufferCfgRef = &CanIf.CanIfInitCfg.CanIfBufferCfg[0U],
+        .CanIfTxBufferFront = -1, .CanIfTxBufferRear = -1, .CanIfTxBufferSize =
+                -1,
+        .CanIfTxBufferPduAvailable = { false } } };
 #endif
 
 static enum CanIfStateType
@@ -21,7 +40,7 @@ static CanIf_ControllerModeType CanIfControllerMode[NUMBER_OF_CONTROLLERS] = {
 static CanIf_PduModeType CanIfPduMode[NUMBER_OF_CONTROLLERS];
 
 static const CanIf_ConfigType* CanIf_ConfigPtr;
-static CanIf_LPduDataType lPduData;
+// static CanIf_LPduDataType lPduData;
 
 /******************************************* CanIf_SetControllerMode ***********************************************/
 LOCAL VAR(CanIf_GlobalType ,AUTOMATIC) CanIf_Global;
@@ -261,6 +280,18 @@ void CanIf_Init(const CanIf_ConfigType* ConfigPtr)
             CanIfControllerMode[Iterator_1] = CANIF_CS_STOPPED;
             CanIfPduMode[Iterator_1] = CANIF_OFFLINE;
         }
+        #if(CanIfPublicReadTxPduNotifyStatusApi == true)
+        for(Iterator_1 = 0; Iterator_1 < CanIfMaxTxPduCfg; Iterator_1++)
+        {
+            TxPduState[Iterator_1] = CANIF_NO_NOTIFICATION;
+        }
+        #endif
+        #if(CanIfPublicReadRxPduNotifyStatusApi == true)
+                for(Iterator_1 = 0; Iterator_1 < CanIfMaxRxPduCfg; Iterator_1++)
+                {
+                    RxPduState[Iterator_1] = CANIF_NO_NOTIFICATION;
+                }
+        #endif
 
         CanIfState = CANIF_READY;/*Initialization is done*/
     }
@@ -289,6 +320,9 @@ Std_ReturnType CanIf_SetPduMode(uint8 ControllerId,
                                 CanIf_PduModeType PduModeRequest)
 {
     CanIf_ControllerModeType CanIfControllerModeLocal;
+    /*
+     [SWS_CANIF_00344] d Caveats of CanIf_SetPduMode(): CanIf must be initialized after Power ON.
+     */
     if (CanIfState == CANIF_UNINIT)
     {
         #if(CanIfPublicDevErrorDetect == true)
@@ -315,7 +349,7 @@ Std_ReturnType CanIf_SetPduMode(uint8 ControllerId,
              * [SWS_CANIF_00874] The service CanIf_SetPduMode() shall not accept any request and shall return E_NOT_OK,
              *  if the CCMSM referenced by ControllerId is notin state CANIF_CS_STARTED.
              */
-
+            Can_MainFunction_Mode();
             if (CanIf_GetControllerMode(ControllerId,
                                         &CanIfControllerModeLocal) == E_NOT_OK)
             {
@@ -414,10 +448,10 @@ CanIfTxPduCfg* CanIf_GetTxPdu(PduIdType CanIfTxSduId)
         for (TxPduIndex = 0; TxPduIndex < CanIfMaxTxPduCfg ; TxPduIndex++)
         {
             // Will be edited when creating the config.c file 
-            if (CanIfTxPduCfg[TxPduIndex].CanIfTxPduId
-                    == CanIfTxSduId)
+            if (CanIf.CanIfInitCfg.CanIfTxPduCfg[TxPduIndex].CanIfTxPduId
+                                        == CanIfTxSduId)
             {
-                return &CanIfTxPduCfg[TxPduIndex];
+                return &CanIf.CanIfInitCfg.CanIfTxPduCfg[TxPduIndex];
             }
             else
             {
@@ -451,6 +485,8 @@ CanIfTxPduCfg* CanIf_GetTxPdu(PduIdType CanIfTxSduId)
 void CanIf_TxConfirmation (PduIdType CanTxPduId)
 {
     CanIfTxPduCfg *TxPduPtr = NULL;
+    CanIf_ControllerModeType CanIfControllerModeLocal;
+    Can_PduType PduInfoPtr;
     /*[SWS_CANIF_00412] If CanIf was not initialized before calling CanIf_TxConfir-
     mation(), CanIf shall not call the service <User_TxConfirmation>() and shall
     not set the Tx confirmation status, when CanIf_TxConfirmation() is called.*/
@@ -480,6 +516,65 @@ void CanIf_TxConfirmation (PduIdType CanTxPduId)
             }
             else
             {
+                /*[SWS_CANIF_00740] d If CANIF_PUBLIC_TXCONFIRM_POLLING_SUPPORT (see ECUC_CanIf_00
+                 is enabled, CanIf shall buffer the information about a received TxConfirmation per
+                 CAN Controller, if the CCMSM of that controller is in state CANIF_CS_STARTED.*/
+                #if(CanIfPublicTxConfirmPollingSupport == true)
+                                if(CanIf_GetControllerMode(txpduptr_0x13->CanIfTxPduBufferRef->CanIfBufferHthRef->CanIfHthCanCtrlIdRef->CanIfCtrlId, &CanIfControllerModeLocal) == E_NOT_OK)
+                                {
+
+                                }
+                                else
+                                {
+                                    if(CanIfControllerModeLocal != CANIF_CS_STARTED)
+                                    {
+
+                                    }
+                                    else
+                                    {
+                                        TxPduState[CanTxPduId]= CANIF_TX_RX_NOTIFICATION;
+                                    }
+                                }
+                #endif
+                #if(CanIfPublicTxBuffering == true)
+                                Can_ReturnType transmitcheck_0x13;
+                                if (CanIf_TxBufferPeek(txpduptr_0x13, &PduInfoPtr) == E_NOT_OK)
+                                {
+
+                                }
+                                else
+                                {
+                                    /* Attempt to transmit a PDU from the buffer */
+                                    transmitcheck_0x13 =
+                                            Can_Write(
+                                                    txpduptr_0x13->CanIfTxPduBufferRef->CanIfBufferHthRef->CanIfHthIdSymRef->CanObjectId,
+                                                    &PduInfoPtr);
+                                    if (transmitcheck_0x13 == CAN_OK)
+                                    {
+                                        CanIf_TxBufferDequeue(txpduptr_0x13, &PduInfoPtr);
+                                    }
+                                    else
+                                    {
+
+                                    }
+                                }
+                #endif
+                #if(CanIfPublicReadTxPduNotifyStatusApi == true)
+                                /*
+                                * [SWS_CANIF_00391] d If configuration parameters CANIF_PUBLIC_READTXPDU_NOTIFY_STATUS
+                                (ECUC_CanIf_00609) and CANIF_TXPDU_READ_NOTIFYSTATUS (ECUC_CanIf_00589)
+                                for the Transmitted L-PDU are set to TRUE, and if CanIf_TxConfirmation() is
+                                called, CanIf shall set the notification status for the Transmitted L-PDU.
+                                */
+                                if(txpduptr_0x13->CanIfTxPduReadNotifyStatus == true)
+                                {
+                                    TxPduState[CanTxPduId]= CANIF_TX_RX_NOTIFICATION;
+                                }
+                                else
+                                {
+
+                                }
+                #endif
                 /*[SWS_CANIF_00391] If configuration parameters CanIfPublicReadTxPduNoti-
                 fyStatusApi and CanIfTxPduReadNotifyStatus for the Transmitted L-PDU
                 are set to TRUE, and if CanIf_TxConfirmation() is called, CanIf shall set the
@@ -528,7 +623,7 @@ const CanIfTxPduCfg* CanIf_FindTxPduEntry(PduIdType TxPduId) {
             break;
         }
     }
-    return &CanIf_ConfigPtr->CanIfInitCfg.CanIfTxPduCfg[index];
+    return &CanIf_ConfigPtr->CanIfInitCfg.CanIfTxPduCfg[Index];
 }
 
 Std_ReturnType CanIf_Transmit(PduIdType TxPduId, const PduInfoType* PduInfoPtr) 
@@ -541,7 +636,7 @@ Std_ReturnType CanIf_Transmit(PduIdType TxPduId, const PduInfoType* PduInfoPtr)
     CanIf_PduModeType PduMode = (CanIf_PduModeType)0;
 
     //Check CAN is INITIATE or Not
-    if (CanIfState != CANIF_INIT) {
+    if (CanIfState != CANIF_READY) {
         Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, CANIF_INIT_ID, CANIF_E_UNINIT);
         return E_NOT_OK;
     }
@@ -575,7 +670,7 @@ Std_ReturnType CanIf_Transmit(PduIdType TxPduId, const PduInfoType* PduInfoPtr)
 
     // channel not started, report to Det and return
     /* SWS_CANIF_00317 */
-    if (ControllerMode != CAN_CS_STARTED) {
+    if (ControllerMode != CANIF_CS_STARTED) {
         Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, CANIF_SET_CONTROLLER_MODE_ID, CANIF_E_PARAM_CTRLMODE);
         return E_NOT_OK;
     }
@@ -607,7 +702,7 @@ Std_ReturnType CanIf_RxIndication(const Can_HwType* MailBox, const PduInfoType* 
     const CanIfRxPduCfg* TxEntry;
  
     //Check CAN is INITIATE or Not
-    if (CanIfState != CANIF_INIT) {
+    if (CanIfState != CANIF_READY) {
         Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, CANIF_INIT_ID, CANIF_E_UNINIT);
         return E_NOT_OK;
     }
@@ -621,7 +716,7 @@ Std_ReturnType CanIf_RxIndication(const Can_HwType* MailBox, const PduInfoType* 
 
     // Check if MailBox->HOH has Invalid Value
     /* SWS_CANIF_00416 */
-    if ((MailBox->HOH) > NUM_OF_HOHS) {
+    if ((MailBox->Hoh) > NUMBER_OF_HOH) {
         Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, CANIF_RX_INDICATION_ID, CANIF_E_PARAM_HRH);
         return E_NOT_OK;
     }
@@ -669,7 +764,7 @@ Std_ReturnType CanIf_ReadRxPduData(PduIdType CanIfRxSduId, PduInfoType* CanIfRxI
     CanIf_ControllerModeType ControllerMode = (CanIf_ControllerModeType)0;
 
     //Check CAN is INITIATE or Not
-    if (CanIfState != CANIF_INIT) {
+    if (CanIfState != CANIF_READY) {
         Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, CANIF_INIT_ID, CANIF_E_UNINIT);
         return E_NOT_OK;
     }
@@ -698,7 +793,7 @@ Std_ReturnType CanIf_ReadRxPduData(PduIdType CanIfRxSduId, PduInfoType* CanIfRxI
 
     // channel not started, report to Det and return
     /* SWS_CANIF_00324 */
-    if (ControllerMode != CAN_CS_STARTED) {
+    if (ControllerMode != CANIF_CS_STARTED) {
         Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, CANIF_SET_CONTROLLER_MODE_ID, CANIF_E_PARAM_CTRLMODE);
         return E_NOT_OK;
     }

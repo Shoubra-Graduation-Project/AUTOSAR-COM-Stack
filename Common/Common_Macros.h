@@ -76,9 +76,9 @@
 #define CANIF_E_INVALID_RXPDUID             (uint8) 60
 #define CANIF_E_INIT_FAILED                 (uint8) 80
 #define CANIF_E_INVALID_DATA_LENGTH         (uint8) 61   
-   
-   
-   
+#define CANIF_E_PARAM_HRH                           0   
+#define CANIF_E_PARAM_DLC                           1   
+    
    
 #define CANIF_INIT_ID                        (uint8)0x01
 #define CANIF_INIT_CONTROLLER_ID             (uint8)0x02

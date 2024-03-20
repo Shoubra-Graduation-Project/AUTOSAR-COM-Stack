@@ -13,6 +13,30 @@
 #ifndef _PLATFORM_TYPES_H_
 #define _PLATFORM_TYPES_H_
 
+/***************************************************************************************************
+**                                          Includes                                              **
+****************************************************************************************************/
+#include <stdint.h>
+#include <stdbool.h>
+#include <stddef.h>
+#include <string.h>
+
+#include <inc/hw_ints.h>
+#include <inc/hw_types.h>
+#include <inc/hw_memmap.h>
+#include <inc/hw_can.h>
+#include <inc/hw_timer.h>
+
+#include <driverlib/pin_map.h>
+#include <driverlib/can.h>
+#include <driverlib/interrupt.h>
+#include <driverlib/sysctl.h>
+#include <driverlib/gpio.h>
+#include <driverlib/debug.h>
+#include <utils/uartstdio.h>
+#include <driverlib/uart.h>
+#include <driverlib/timer.h>
+
 /*****************************************************************************/
 /* AUTOSAR Release: 4.3.1                                                      */
 /*****************************************************************************/
