@@ -6,6 +6,10 @@
 #include "../CanDrv/include/Can_GeneralTypes.h"
 #include "../../CanDrv/Inc/Can.h"
 #include "../../Det/inc/Det.h"
+#include "../../Common/Lip/driverlip/pin_map.h"
+#include "../../Common/Lip/driverlib/gpio.h"
+#include "../../Common/Lip/driverlib/sysctl.h"
+#include "../../Common/Lip/driverlib/uart.h"
 
 extern CanIf_ConfigType CanIf;
 
