@@ -12,6 +12,7 @@
 #include "../../Common/Std_Types.h"
 #include "../COM module/include/ComStack_Types.h"
 #include "./CanIf_types.h"
+#include "./CanIf_cfg.h"
 
 #if defined(USE_PDUR)
 #include "PduR.h"
