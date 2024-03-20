@@ -679,7 +679,14 @@ typedef struct{
 	sint64 ComFilterX;
 }ComFilter_type;
 
+typedef struct{
+	const float64 ComMainTxTimeBase;
+	void (*ComPreparationNotification) (void);
+}ComMainFunctionTx_type;
 
+typedef struct{
+	const float64 ComMainRxTimeBase;
+}ComMainFunctionRx_type;
 #endif
 
 
