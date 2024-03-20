@@ -2,6 +2,7 @@
 #include "../inc/CanIf_types.h"
 #include "../inc/CanIf_Cfg.h"
 #include "../COM module/include/ComStack_Types.h"
+#include "../../Common/Std_Types.h"
 #include "../../CanDrv/Inc/Can.h"
 #include "../../Det/inc/Det.h"
 
