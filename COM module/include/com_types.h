@@ -397,7 +397,7 @@ typedef struct{
 	boolean RxDeadlineMonitoringEnabled;
 
     /*-------> not in SWS */
-	ComIPdu_type *IPDU;
+	ComIPdu_type **IPDU;
 
 	/*
 	   Number of IPDUs within this group
