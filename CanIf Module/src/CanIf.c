@@ -696,7 +696,7 @@ Std_ReturnType CanIf_Transmit(PduIdType TxPduId, const PduInfoType* PduInfoPtr)
     CanPdu.swPduHandle = TxPduId;
 
     /* SWS_CANIF_00162 */
-    //RET = Can_Write(TxEntry->CanIfTxPduBufferRef->CanIfBufferHthRef->CanIfHthIdSymRef->CanObjectId, &CanPdu);
+    RET = Can_Write(TxEntry->CanIfTxPduBufferRef->CanIfBufferHthRef->CanIfHthIdSymRef->CanObjectId, &CanPdu);
 
     return RET;
 }
@@ -707,7 +707,7 @@ Std_ReturnType CanIf_Transmit(PduIdType TxPduId, const PduInfoType* PduInfoPtr)
 const CanIfRxPduCfg* CanIf_FindRxPduEntry(Can_HwHandleType Hoh)
 {
     for (uint8 i = 0; i < CanIfMaxRxPduCfg; i++) {
-        if (Hoh == (CanIf_ConfigPtr)->CanIfInitCfg->CanIfRxPduCfg[i].CanIfRxPduHrhIdRef->CanIfHrhIdSymRef->CanObjectId) {
+        if (Hoh == (CanIf_ConfigPtr)->CanIfInitCfg.CanIfRxPduCfg[i].CanIfRxPduHrhIdRef->CanIfHrhIdSymRef->CanObjectId) {
             return (CanIfRxPduCfg* const)(&CanIf_ConfigPtr->CanIfInitCfg.CanIfRxPduCfg[i]);
         }
     }
