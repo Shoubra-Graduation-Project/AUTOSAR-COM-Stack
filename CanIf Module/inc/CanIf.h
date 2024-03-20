@@ -18,7 +18,7 @@
 #endif
 
 #if defined(USE_COM)
-#include "Com.h"
+#include "#include "../COM module/include/Com.h"
 #endif
 
  /* Section : Macros Definition */
