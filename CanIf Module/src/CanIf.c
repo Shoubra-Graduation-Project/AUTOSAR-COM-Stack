@@ -1,4 +1,6 @@
 #include "../inc/CanIf.h"
+#include "../inc/CanIf_types.h"
+#include "../inc/CanIf_Cfg.h"
 #include "../../CanDrv/Inc/Can.h"
 #include "../../Det/inc/Det.h"
 
