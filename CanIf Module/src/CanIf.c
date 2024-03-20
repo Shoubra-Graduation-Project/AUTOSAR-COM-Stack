@@ -836,8 +836,8 @@ Std_ReturnType CanIf_ReadRxPduData(PduIdType CanIfRxSduId, PduInfoType* CanIfRxI
     }
 
     // Copy Data from CanIf Buffer
-    CanIfRxInfoPtr->SduLength = CanifBuffer.SduLength;
-    CanIfRxInfoPtr->SduDataPtr = CanifBuffer.SduDataPtr;
+    CanIfRxInfoPtr->SduLength = CanifBuffer->SduLength;
+    CanIfRxInfoPtr->SduDataPtr = CanifBuffer->SduDataPtr;
 
     return RET;
 }
