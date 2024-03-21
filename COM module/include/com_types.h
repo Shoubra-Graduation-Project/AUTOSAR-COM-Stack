@@ -653,6 +653,8 @@ typedef struct{
    /* Threshold value of I-PDU counter algorithm*/
    const uint8 ComIPduCounterThreshold;
 
+   uint8 ComCurrentCounterValue;
+
 }ComIPduCounter_type;
 
 /*This optional container contains the information needed for each I-PDU replicated.*/
