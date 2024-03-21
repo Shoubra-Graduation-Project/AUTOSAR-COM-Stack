@@ -242,13 +242,15 @@ const ComIPduCounter_type ComIPduCounter[]
 		.ComIPduCounterErrorNotification = NULL,
 		.ComIPduCounterSize = 8,
 		.ComIPduCounterStartPosition = 16,
-		.ComIPduCounterThreshold = 1
+		.ComIPduCounterThreshold = 1,
+		.ComCurrentCounterValue = 0
 	},
 	{
 		.ComIPduCounterErrorNotification = NULL,
 		.ComIPduCounterSize = 8,
 		.ComIPduCounterStartPosition = 8,
-		.ComIPduCounterThreshold = 1
+		.ComIPduCounterThreshold = 1,
+		.ComCurrentCounterValue = 0
 	}	
 };
 
