@@ -3,8 +3,6 @@
 
 
 
- #define E_OK 0x00
- #define E_NOT_OK 0x01
 
 typedef unsigned char			boolean;
 typedef unsigned char         	uint8;         

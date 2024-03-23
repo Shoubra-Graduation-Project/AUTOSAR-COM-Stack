@@ -2,7 +2,8 @@
 #ifndef _COM_TYPES_H_
 #define _COM_TYPES_H_
 
-#include "libraries/Std_Types.h"
+#include "../libraries/Std_Types.h"
+#include "../include/ComStack_Types.h"
 
 
 
@@ -41,8 +42,8 @@ Description: Transmission modes for I-PDU
 typedef enum {
 	DIRECT,
 	MIXED,
-	NONE,
-    PERIODIC
+	MODE_NONE,
+  PERIODIC
 } ComTxModeMode_type;
 
 /***************************************************************************************************
@@ -161,7 +162,7 @@ Description:
 ****************************************************************************************************/
 typedef enum{
 	NOTIFY,
-    REPLACE 
+  ComDataInvalidateAction_REPLACE
 }ComDataInvalidAction_type;
 
 /***************************************************************************************************
@@ -173,7 +174,7 @@ Description:
 ****************************************************************************************************/
 typedef enum{
 	NONE,
-	REPLACE,
+	ComRxDataTimeoutAction_REPLACE,
 	SUBSTITUTE
 }ComRxDataTimeoutAction_type;
 
@@ -186,8 +187,8 @@ Description:
 ****************************************************************************************************/
 typedef enum{
  	BIG_ENDIAN,
-    LITTLE_ENDIAN,
-    OPAQUE 
+  LITTLE_ENDIAN,
+  OPAQUE 
 
 }ComSignalEndianness_type;
 
@@ -312,68 +313,6 @@ typedef struct
 } ComTxIPdu_type;
 
 
-/* This container contains the configuration parameters of the AUTOSAR COM module's IPDUs */
-typedef struct {
-	
-	/*
-	   Defines for I-PDUs with ComIPduType NORMAL: If the underlying IF module supports cancellation of transmit requests.
-       Defines for I-PDUs with ComIPduType TP: If the underlying TP-module supports RX and TX cancellation of ongoing requests.
-    */
-    const boolean ComIPduCancellationSupport;
-    ComIPduCounter_type* ComIPduCounter;
-    /* sent or received */
-    ComIPduDirection_type ComIPduDirection;
-
-    /* The numerical value used as the ID of the I-PDU */
-    uint16 ComIPduHandleId ;
-
-	/* Immediate or Deferred*/
-	ComIPduSignalProcessing_type ComIPduSignalProcessing;
-
-    /* 
-	   If there is a trigger transmit callout defined for this I-PDU this parameter
-       contains the name of the callout function 
-	*/
-	void (*ComIPduTriggerTransmitCallout) (void);
-
-    /*Normal or TP*/
-	ComIPduType_type ComIPduType;
-	
-	
-	 /*This parameter defines the existence and the name of a callout function for the corresponding I-PDU*/
-	 boolean (* ComIPduCallout)  ( PduIdType PduId,const PduInfoType* PduInfoPtr);
-
-	 /*Reference to the Com_MainFunctionRx/Com_MainFunctionTx this I-PDU
-	 belongs to.*/
-	 void (*ComIPduMainFunctionRef)(void);
-
-	  /*Reference to the I-PDU groups this I-PDU belongs to*/
-	 ComIPduGroup_type * ComIPduGroupRef;
-
-	 /*References to all signal groups contained in this I-Pdu*/
-	 ComSignalGroup_type ** ComIPduSignalGroupRef;
-
-	 /* References to all signals contained in this I-PDU.*/
-	 ComSignal_type** ComIPduSignalRef;
-
-	 /*Reference to the "global" Pdu structure to allow harmonization of handle
-	 IDs in the COM-Stack.*/
-	 Pdu* ComPduIdRef;
-
-	 ComTxIPdu_type *ComTxIPdu;
-    
-	/*Pointer to IPDU data ---->  Not in SWS*/
-    void const * ComIPduDataPtr;
-
-	/*Size of IPDU ---->  Not in SWS*/
-	const uint8 ComIPduLength;
-    
-	/* ----> Not in SWS */
-	boolean ReceptionDMEnabled;
-   
-} ComIPdu_type;
-
-
 /********************************************************************************************
 Name: ComIPduGroup
 
@@ -386,9 +325,6 @@ typedef struct{
 	const uint16 ComIPduGroupHandleId;
 
 	state_type IpduGroupFlag;
-    
-	/* References to all I-PDU groups that includes this I-PDU group. I */
-	ComIPduGroup_type const * ComIPduGroupGroupRef;
 
     /* 
 	 Check if Reception deadline monitoring for this IpduGruop is enabled or not
@@ -396,8 +332,7 @@ typedef struct{
 	*/ 
 	boolean RxDeadlineMonitoringEnabled;
 
-    /*-------> not in SWS */
-	ComIPdu_type **IPDU;
+
 
 	/*
 	   Number of IPDUs within this group
@@ -407,8 +342,6 @@ typedef struct{
 	
 
 }ComIPduGroup_type;
-
-
 
 
 /********************************************************************************************
@@ -512,6 +445,71 @@ typedef struct {
 
 
 
+/* This container contains the configuration parameters of the AUTOSAR COM module's IPDUs */
+typedef struct {
+	
+	/*
+	   Defines for I-PDUs with ComIPduType NORMAL: If the underlying IF module supports cancellation of transmit requests.
+       Defines for I-PDUs with ComIPduType TP: If the underlying TP-module supports RX and TX cancellation of ongoing requests.
+    */
+    const boolean ComIPduCancellationSupport;
+    ComIPduCounter_type* ComIPduCounter;
+    /* sent or received */
+    ComIPduDirection_type ComIPduDirection;
+
+    /* The numerical value used as the ID of the I-PDU */
+    uint16 ComIPduHandleId ;
+
+	/* Immediate or Deferred*/
+	ComIPduSignalProcessing_type ComIPduSignalProcessing;
+
+    /* 
+	   If there is a trigger transmit callout defined for this I-PDU this parameter
+       contains the name of the callout function 
+	*/
+	void (*ComIPduTriggerTransmitCallout) (void);
+
+    /*Normal or TP*/
+	ComIPduType_type ComIPduType;
+	
+	
+	 /*This parameter defines the existence and the name of a callout function for the corresponding I-PDU*/
+	 boolean (* ComIPduCallout)  ( PduIdType PduId,const PduInfoType* PduInfoPtr);
+
+	 /*Reference to the Com_MainFunctionRx/Com_MainFunctionTx this I-PDU
+	 belongs to.*/
+	 void (*ComIPduMainFunctionRef)(void);
+
+	  /*Reference to the I-PDU groups this I-PDU belongs to*/
+	 ComIPduGroup_type * ComIPduGroupRef;
+
+	 /*References to all signal groups contained in this I-Pdu*/
+	 ComSignalGroup_type ** ComIPduSignalGroupRef;
+
+	 /* References to all signals contained in this I-PDU.*/
+	 ComSignal_type** ComIPduSignalRef;
+
+	 /*Reference to the "global" Pdu structure to allow harmonization of handle
+	 IDs in the COM-Stack.*/
+	 Pdu* ComPduIdRef;
+
+	 ComTxIPdu_type *ComTxIPdu;
+    
+	/*Pointer to IPDU data ---->  Not in SWS*/
+    void const * ComIPduDataPtr;
+
+	/*Size of IPDU ---->  Not in SWS*/
+	const uint8 ComIPduLength;
+    
+	/* ----> Not in SWS */
+	boolean ReceptionDMEnabled;
+   
+} ComIPdu_type;
+
+
+
+
+
 /********************************************************************************************
 Name: ComSignalGroup
 
@@ -593,6 +591,11 @@ typedef struct{
 	float32 DeadlineMonitoringTimer;
 
 }ComSignalGroup_type;
+
+
+
+
+
 
 
 
@@ -689,6 +692,10 @@ typedef struct{
 typedef struct{
 	const float64 ComMainRxTimeBase;
 }ComMainFunctionRx_type;
+
+
+
+
 #endif
 
 

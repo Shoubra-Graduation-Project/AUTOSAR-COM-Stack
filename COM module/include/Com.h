@@ -2,7 +2,7 @@
 #ifndef _COM_H_
 #define _COM_H_
 
-#include "libraries/Std_Types.h"
+#include "../libraries/Std_Types.h"
 #include "com_types.h"
 #include "ComStack_Types.h"
 

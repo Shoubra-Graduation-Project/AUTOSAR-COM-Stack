@@ -3,10 +3,10 @@
  ********************************************************************************/
 
 
-#include "include/Com.h"
-#include "include/Com_HelpingFunctions.h"
-#include "include/com_buffers.h"
-#include "include/Com_Types.h"
+#include "../include/Com.h"
+#include "../include/Com_HelpingFunctions.h"
+#include "../include/com_buffers.h"
+#include "../include/Com_Types.h"
 #include "include/Com_Cfg.h"
 #include "include/ComMacros.h"
 #include "Det/include/Det.h"

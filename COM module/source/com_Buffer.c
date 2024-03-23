@@ -4,10 +4,10 @@
  * 
 *****************************************************************/
 
-#include "include/Com_buffers.h"
-#include "include/Com_Types.h"
-#include "include/Com_Cfg.h"
-#include "include/ComMacros.h"
+#include "../include/Com_buffers.h"
+#include "../include/Com_Types.h"
+#include "../include/Com_Cfg.h"
+#include "../include/ComMacros.h"
 #include "include/Com.h"
 #include <string.h>
 #include <cstddef>
