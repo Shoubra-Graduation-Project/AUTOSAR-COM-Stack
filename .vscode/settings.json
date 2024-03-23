@@ -1,6 +1,15 @@
 {
   "files.associations": {
-    "com_types.h": "c"
+    "com_types.h": "c",
+    "canif_types.h": "c",
+    "det.h": "c",
+    "comstack_types.h": "c",
+    "canif_cfg.h": "c",
+    "canif.h": "c",
+    "can_cfg.h": "c",
+    "can_generaltypes.h": "c",
+    "std_types.h": "c",
+    "platform_types.h": "c"
   }
 } //{
   //  "C_Cpp.errorSquiggles": "disabled"
