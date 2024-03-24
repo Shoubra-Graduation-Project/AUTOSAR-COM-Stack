@@ -229,7 +229,7 @@ void Com_MainFunctionTx (void)
 										delay(IPdu->ComTxIPdu->ComTxModeFalse->ComTxMode->ComTxModeRepetitionPeriod);
 										if((IPdu->ComTxIPdu->ComNumberOfTransmissions) == 0)
 										{
-											if(ComTxIPdu->ComMinimumDelayTime != 0){delay(IPdu->ComTxIPdu->ComMinimumDelayTime);}
+											if(IPdu->ComTxIPdu->ComMinimumDelayTime != 0){delay(IPdu->ComTxIPdu->ComMinimumDelayTime);}
 											else{}
 										}
 										else{}
@@ -238,9 +238,9 @@ void Com_MainFunctionTx (void)
 								else{}
 									
 						case PERIODIC:
-								if(IPdu->ComTxIPdu.ComTxModeFalse.ComTxMode.comPeriodicTimeFired == 1)
+								if(IPdu->ComTxIPdu->ComTxModeFalse->ComTxMode->comPeriodicTimeFired == 1)
 								{
-									IPdu->ComTxIPdu.ComTxModeFalse.ComTxMode.comPeriodicTimeFired == 0;
+									IPdu->ComTxIPdu->ComTxModeFalse->ComTxMode->comPeriodicTimeFired == 0;
 									com_packSignalsToPdu(IPdu);
 									if(IPdu->ComIPduCallout != NULL) {IPdu->ComIPduCallout();}
 									else{}
@@ -250,7 +250,7 @@ void Com_MainFunctionTx (void)
 									{
 										(IPdu->ComIPduCounter)->ComCurrentCounterValue = ((IPdu->ComIPduCounter)->ComCurrentCounterValue - 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
 									}
-									if(ComTxIPdu.ComMinimumDelayTime != 0){delay(IPdu->ComTxIPdu.ComMinimumDelayTime);}
+									if(IPdu->ComTxIPdu->ComMinimumDelayTime != 0){delay(IPdu->ComTxIPdu->ComMinimumDelayTime);}
 									else{}
 								}
 								else{}
@@ -270,10 +270,10 @@ void Com_MainFunctionTx (void)
 											IPdu->ComIPduCounter->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue - 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
 										}
 										IPdu->ComTxIPdu->ComNumberOfTransmissions--;
-										delay(IPdu->ComTxIPdu->ComTxModeFalse.ComTxMode.ComTxModeRepetitionPeriod);
+										delay(IPdu->ComTxIPdu->ComTxModeFalse->ComTxMode->ComTxModeRepetitionPeriod);
 										if((IPdu->ComTxIPdu->ComNumberOfTransmissions) == 0)
 										{
-											if(ComTxIPdu->ComMinimumDelayTime != 0){delay(IPdu->ComTxIPdu->ComMinimumDelayTime);}
+											if(IPdu->ComTxIPdu->ComMinimumDelayTime != 0){delay(IPdu->ComTxIPdu->ComMinimumDelayTime);}
 											else{}
 										}
 										else{}
