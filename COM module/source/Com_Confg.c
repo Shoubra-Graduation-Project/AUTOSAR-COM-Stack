@@ -1,29 +1,103 @@
 
-#include "include/Std_Types.h"
+/*
+ * Copyright (c) 2018-2019 Faculty of Engineering Ain Shams University Dr.Sherif Hammad Email: Sherif.hammad@eng.asu.edu.eg Eng.Mohamed abdelhay Email: mhmd.a.elhay@gmail.com.
+ *
+ * This file is part of ASUSAR
+ * (see https://github.com/asusar/communication-stack).
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+#include <stdio.h>
+#include "libraries/Std_Types.h"
 #include "include/Com_Types.h"
 #include "include/Com_Cfg.h"
 
+/* signals Buffer */
+uint8 ComSignalBuffer_0 [2];
+uint8 ComSignalBuffer_1 [2];
+uint8 ComSignalBuffer_2 [2];
+uint8 ComSignalBuffer_3 [2];
+/* signal Groups Buffer */
+uint8 ComSignalGroupBuffer_0 [4];
+uint8 ComSignalGroupBuffer_1 [4];
 
-const ComGroupSignal_Type ComGSignals[]=
+/* signals' FG Buffer */
+uint8 ComSignalFGBuffer_0 [2];
+uint8 ComSignalFGBuffer_1 [2];
+uint8 ComSignalFGBuffer_2 [2];
+uint8 ComSignalFGBuffer_3 [2];
+/* signals' BG Buffer */
+uint8 ComSignalBGBuffer_0 [2];
+uint8 ComSignalBGBuffer_1 [2];
+uint8 ComSignalBGBuffer_2 [2];
+uint8 ComSignalBGBuffer_3 [2];
+/* Com Group Signal Buffer  */
+uint8 ComGSignalBuffer_0 [1];
+uint8 ComGSignalBuffer_1 [2];
+/* shadow buffers */
+uint8 ComShadowBuffer_0 [4];
+uint8 ComShadowBuffer_1 [4];
+/* signal Groups' FG Buffer */
+uint8 ComFGBuffer_0 [4];
+uint8 ComFGBuffer_1 [4];
+/* signal Groups' BG Buffer */
+uint8 ComBGBuffer_0 [4];
+uint8 ComBGBuffer_1 [4];
+/* IPdu buffers and signal */
+uint8 ComIPduBuffer_1[8];
+uint8 ComIPduBuffer_2[8];
+uint8 ComIPduBuffer_3[8];
+uint8 ComIPduBuffer_4[8];
+
+
+
+const ComGroupSignal_type ComGSignals[]=
 {
  {    // Group signal 1
-       .ComBitPosition= 0,
+       .ComBitPosition= 32,
+	   .ComBitSize= 8,
        .ComHandleId= 0 ,
-       .ComBitSize= 16,
-       .ComSignalGroupId=0,
-       .ComSignalType = UINT16,
-       .ComTransferProperty = TRIGGERED_ON_CHANGE,
-       .ComSignalDataPtr=ComGSignalBuffer_0
+	   .ComSignalDataInvalidValue = , //-------------------------------->??
+	   .ComSignalEndianness = LITTLE_ENDIAN,
+	   .ComSignalInitValue = , //-------------------------------->??
+	   .ComSignalType = UINT16,
+	   .ComTimeoutSubstitutionValue = , //-------------------------------->??
+	   .ComTransferProperty = TRIGGERED_ON_CHANGE ,
+	   .ComIPduHandleId = 0,
+	   .ComSignalDataPtr = ComGSignalBuffer_0,
+	   .SignalGroupId = 0,
+	   .IsGroupSignal = 1
    },
    //group signal 2
    {
-    .ComHandleId=1,
-    .ComBitPosition=0,
-    .ComSignalGroupId=0,
-    .ComBitSize=8,
-    .ComSignalType=UINT8,
-    .ComTransferProperty=TRIGGERED_ON_CHANGE,
-    .ComSignalDataPtr=ComGSignalBuffer_1
+    .ComBitPosition= 32,
+	   .ComBitSize= 8,
+       .ComHandleId= 0 ,
+	   .ComSignalDataInvalidValue = , //-------------------------------->??
+	   .ComSignalEndianness = LITTLE_ENDIAN,
+	   .ComSignalInitValue = , //-------------------------------->??
+	   .ComSignalType = UINT16,
+	   .ComTimeoutSubstitutionValue = , //-------------------------------->??
+	   .ComTransferProperty = TRIGGERED_ON_CHANGE ,
+	   .ComIPduHandleId = 0,
+	   .ComSignalDataPtr = ComGSignalBuffer_1,
+	   .SignalGroupId = 0,
+	   .IsGroupSignal = 1
    }
    
 };
@@ -33,51 +107,204 @@ const ComSignal_type ComSignal[] =
 {
 
     {	//signal1
-        .ComBitPosition= 17,
-        .ComUpdateBitPosition= 25,
-        .ComHandleId= 1 ,
-        .ComBitSize= 8,
-        .ComSignalType = BOOLEAN,
-        .ComTransferProperty = TRIGGERED_ON_CHANGE,
-        .ComIPduHandleId=0,
-		.ComNotification=NULL,
-		.ComSignalDataPtr = ComSignalBuffer_1
+       .ComBitPosition= 0,
+	   .ComBitSize= 16,
+	   .ComDataInvalidAction= REPLACE,
+	   .ComErrorNotification = NULL,
+	   .ComFirstTimeout = 0,
+       .ComHandleId= 0 ,
+	   .ComInitialValueOnly = 0,
+	   .ComInvalidNotification = NULL,
+	   .ComNotification = NULL,
+	   .ComRxDataTimeoutAction = REPLACE,
+	   .ComSignalDataInvalidValue = NULL, //-------------------------------->??
+	   .ComSignalEndianness = LITTLE_ENDIAN,
+	   .ComSignalInitValue = NULL, //-------------------------------->??
+	   .ComSignalLength = 1,
+	   .ComSignalType = UINT16,
+	   .ComTimeout = 0,
+	   .ComTimeoutNotification = NULL, 
+	   .ComTimeoutSubstitutionValue = NULL, //-------------------------------->??
+	   .ComTransferProperty = TRIGGERED ,
+	   .ComUpdateBitPosition = 16,
+       .ComSignalDataPtr= ComSignalBuffer_0,
+	   .ComFGBuffer = ComSignalFGBuffer_0, 
+	   .ComBGBuffer = ComSignalBGBuffer_0, 
+	   .ComIPduHandleId = 0,
+	   .IsGroupSignal = 0,
+	   .ComIsSignalChanged = 0,
+	   .ComSignalFilterResult = 1,
+	   .containingIPDU = &ComIPdu[0],
+	   .ComSignalUpdated = 0,
+	   .ComFilter = &Filters[0]
     },
 	{	//signal2
-		.ComBitPosition= 17,
-		.ComUpdateBitPosition= 25,
-		.ComHandleId= 1 ,
-		.ComBitSize= 8,
-		.ComSignalType = BOOLEAN,
-		.ComTransferProperty = TRIGGERED_ON_CHANGE,
-		.ComIPduHandleId=0,
-		.ComNotification=NULL,
-		.ComSignalDataPtr = ComSignalBuffer_1
+		.ComBitPosition= 0,
+	   .ComBitSize= 16,
+	   .ComDataInvalidAction= REPLACE,
+	   .ComErrorNotification = NULL,
+	   .ComFirstTimeout = 0,
+       .ComHandleId= 1 ,
+	   .ComInitialValueOnly = 0,
+	   .ComInvalidNotification = NULL,
+	   .ComNotification = NULL,
+	   .ComRxDataTimeoutAction = REPLACE,
+	   .ComSignalDataInvalidValue = NULL, //-------------------------------->??
+	   .ComSignalEndianness = LITTLE_ENDIAN,
+	   .ComSignalInitValue = NULL, //-------------------------------->??
+	   .ComSignalLength = 1,
+	   .ComSignalType = UINT16,
+	   .ComTimeout = 0,
+	   .ComTimeoutNotification = NULL, 
+	   .ComTimeoutSubstitutionValue = NULL, //-------------------------------->??
+	   .ComTransferProperty = TRIGGERED ,
+	   .ComUpdateBitPosition = 16,
+       .ComSignalDataPtr= ComSignalBuffer_1,
+	   .ComFGBuffer = ComSignalFGBuffer_1, 
+	   .ComBGBuffer = ComSignalBGBuffer_1, 
+	   .ComIPduHandleId = 0,
+	   .IsGroupSignal = 0,
+	   .ComIsSignalChanged = 0,
+	   .ComSignalFilterResult = 1,
+	   .containingIPDU = &ComIPdu[1],
+	   .ComSignalUpdated = 0,
+	   .ComFilter = &Filters[0]
 	},
 	{	//signal3
-		.ComBitPosition= 17,
-		.ComUpdateBitPosition= 25,
-		.ComHandleId= 1 ,
-		.ComBitSize= 8,
-		.ComSignalType = BOOLEAN,
-		.ComTransferProperty = TRIGGERED_ON_CHANGE,
-		.ComIPduHandleId=0,
-		.ComNotification=NULL,
-		.ComSignalDataPtr = ComSignalBuffer_1
+		.ComBitPosition= 0,
+	   .ComBitSize= 16,
+	   .ComDataInvalidAction= REPLACE,
+	   .ComErrorNotification = NULL,
+	   .ComFirstTimeout = 0,
+       .ComHandleId= 1,
+	   .ComInitialValueOnly = 0,
+	   .ComInvalidNotification = NULL,
+	   .ComNotification = NULL,
+	   .ComRxDataTimeoutAction = REPLACE,
+	   .ComSignalDataInvalidValue = NULL, //-------------------------------->??
+	   .ComSignalEndianness = LITTLE_ENDIAN,
+	   .ComSignalInitValue = NULL, //-------------------------------->??
+	   .ComSignalLength = 1,
+	   .ComSignalType = UINT16,
+	   .ComTimeout = 0,
+	   .ComTimeoutNotification = NULL, 
+	   .ComTimeoutSubstitutionValue = NULL, //-------------------------------->??
+	   .ComTransferProperty = TRIGGERED,
+	   .ComUpdateBitPosition = 16,
+       .ComSignalDataPtr= ComSignalBuffer_2,
+	   .ComFGBuffer = ComSignalFGBuffer_2, 
+	   .ComBGBuffer = ComSignalBGBuffer_2, 
+	   .ComIPduHandleId = 0,
+	   .IsGroupSignal = 0,
+	   .ComIsSignalChanged = 0,
+	   .ComSignalFilterResult = 1,
+	   .containingIPDU = &ComIPdu[2],
+	   .ComSignalUpdated = 0,
+	   .ComFilter = &Filters[0]
 	},
     {	//signal4
-        .ComBitPosition= 26,
-        .ComUpdateBitPosition= 58 ,
-        .ComHandleId= 2 ,
-        .ComBitSize= 32,
-        .ComSignalType = UINT32,
-        .ComTransferProperty = TRIGGERED_ON_CHANGE,
-        .ComIPduHandleId=0,
-		.ComNotification=NULL,
-		.ComSignalDataPtr = ComSignalBuffer_2
+        .ComBitPosition= 0,
+	   .ComBitSize= 16,
+	   .ComDataInvalidAction= REPLACE,
+	   .ComErrorNotification = NULL,
+	   .ComFirstTimeout = 0,
+       .ComHandleId= 3,
+	   .ComInitialValueOnly = 0,
+	   .ComInvalidNotification = NULL,
+	   .ComNotification = NULL,
+	   .ComRxDataTimeoutAction = REPLACE,
+	   .ComSignalDataInvalidValue = NULL, //-------------------------------->??
+	   .ComSignalEndianness = LITTLE_ENDIAN,
+	   .ComSignalInitValue = NULL, //-------------------------------->??
+	   .ComSignalLength = 1,
+	   .ComSignalType = UINT16,
+	   .ComTimeout = 0,
+	   .ComTimeoutNotification = NULL, 
+	   .ComTimeoutSubstitutionValue = NULL, //-------------------------------->??
+	   .ComTransferProperty = TRIGGERED ,
+	   .ComUpdateBitPosition = 16,
+       .ComSignalDataPtr= ComSignalBuffer_3,
+	   .ComFGBuffer = ComSignalFGBuffer_3, 
+	   .ComBGBuffer = ComSignalBGBuffer_3, 
+	   .ComIPduHandleId = 0,
+	   .IsGroupSignal = 0,
+	   .ComIsSignalChanged = 0,
+	   .ComSignalFilterResult = 1,
+	   .containingIPDU = &ComIPdu[3],
+	   .ComSignalUpdated = 0,
+	   .ComFilter = &Filters[0]
     }
 
 };
+
+
+const ComFilter_type Filters[]=
+{
+	{
+		.ComFilterAlgorithm = ALWAYS,
+		.ComFilterMax= 15,
+		.ComFilterMin= 5,
+		.ComFilterOffset= 0,
+		.ComFilterPeriod= 10,
+		.ComFilterOccurrence= 0,
+		.ComFilterX= 20
+	}
+};
+
+
+/* signal group list */
+const ComSignalGroup_type  ComSignalGroup[]=
+{
+    {
+	  .ComDataInvalidAction = REPLACE,
+	  .ComErrorNotification = NULL,
+	  .ComFirstTimeout = 0,
+	  .ComHandleId=0,
+	  .ComInitialValueOnly = 0,
+	  .ComInvalidNotification = NULL,
+	  .ComNotification = NULL,
+	  .ComRxDataTimeoutAction = REPLACE,
+	  .ComTimeout = 0,
+	  .ComTimeoutNotification = NULL,
+	  .signalGroupSize = 4,
+	  .ComTransferProperty=TRIGGERED_ON_CHANGE,
+      .ComUpdateBitPosition=17,
+      .ComGroupSignal = ComSignalGroup_1,
+      .ComShadowBuffer = ComShadowBuffer_0, 
+	  .ComFGBuffer = ComFGBuffer_0, 
+	  .ComBGBuffer = ComBGBuffer_0, 
+	  .ComIPduHandleId = 0,
+	  .SignalGroupDataPtr = ComSignalGroupBuffer_0, 
+	  .ComIsSignalGroupChanged = 0,
+	  .ComSignalGroupFilterResult = 1,
+	  .ComFilter = &Filters[0]
+     },
+     {
+      .ComDataInvalidAction = REPLACE,
+	  .ComErrorNotification = NULL,
+	  .ComFirstTimeout = 0,
+	  .ComHandleId=1,
+	  .ComInitialValueOnly = 0,
+	  .ComInvalidNotification = NULL,
+	  .ComNotification = NULL,
+	  .ComRxDataTimeoutAction = REPLACE,
+	  .ComTimeout = 0,
+	  .ComTimeoutNotification = NULL,
+	  .signalGroupSize = 4,
+	  .ComTransferProperty=TRIGGERED_ON_CHANGE,
+      .ComUpdateBitPosition=17,
+      .ComGroupSignal = ComSignalGroup_2,
+      .ComShadowBuffer = ComShadowBuffer_1, 
+	  .ComFGBuffer = ComFGBuffer_1, 
+	  .ComBGBuffer = ComBGBuffer_1, 
+	  .ComIPduHandleId = 2,
+	  .SignalGroupDataPtr = ComSignalGroupBuffer_0, 
+	  .ComIsSignalGroupChanged = 0,
+	  .ComSignalGroupFilterResult = 1,
+	  .ComFilter = &Filters[0]
+     }
+};
+
 /* group signal with different imagination :) */
 //const ComGroupSignal_Type * const groupS0[]={
 //       &ComSignal[0],
@@ -91,57 +318,35 @@ const ComSignal_type ComSignal[] =
 //};
 
 /* Group signals of signal groups */
-const ComGroupSignal_Type * const ComSignalGroup_GroupSignalsRefs1[]={
+const ComGroupSignal_type * const ComSignalGroup_1[]={
      &ComGSignals[ 0 ],
-     &ComGSignals[ 1 ],
      NULL
 };
 
-const ComGroupSignal_Type * const ComSignalGroup_GroupSignalsRefs2[]={
-     &ComGSignals[ 2 ],
-     &ComGSignals[ 3 ],
+const ComGroupSignal_type * const ComSignalGroup_2[]={
+     &ComGSignals[ 1 ],
      NULL
 };
 
 /* IPdu signal lists. */
 const ComSignal_type * const ComIPduSignalRefs_Can_Message_1[] = {
-    &ComSignal[ CanDB_Signal_32_21_BE_Tester ],
-    &ComSignal[ CanDB_Signal_1_4_LE_Tester ],
-    &ComSignal[ CanDB_Signal_45_12_LE_Tester ],
+    &ComSignal[ 0 ],
 	NULL
 };
 
 const ComSignal_type * const ComIPduSignalRefs_Can_Message_2[] = {
-    &ComSignal[ CanDB_Signal_32_21_BE ],
-    &ComSignal[ CanDB_Signal_29_12_BE_Tester],
-    &ComSignal[ CanDB_Signal_1_4_LE ],
+    &ComSignal[ 1 ],
 	NULL
 };
 const ComSignal_type * const ComIPduSignalRefs_Can_Message_3[] = {
-    &ComSignal[ CanDB_Signal_1_4_LE ],
+    &ComSignal[ 2 ],
     NULL
 };
 const ComSignal_type * const ComIPduSignalRefs_Can_Message_4[] = {
-	&ComSignal[ CanDB_Signal_1_4_LE ],
+	&ComSignal[ 3 ],
 	NULL
 };
-/* signal group list */
-const ComSignalGroup_Type  ComSignalGroup[]={
-    {
-      .ComHandleId=0,
-      .ComUpdateBitPosition=17,
-      .ComTransferProperty=TRIGGERED_ON_CHANGE,
-      .ComGroupSignal=ComSignalGroup_GroupSignalsRefs1,
-      .Com_Asu_ShadowBuffer=ComShadowBuffer_0
-     },
-     {
-      .ComHandleId=1,
-      .ComUpdateBitPosition=26,
-      .ComTransferProperty=TRIGGERED_ON_CHANGE,
-      .ComGroupSignal=ComSignalGroup_GroupSignalsRefs2,
-      .Com_Asu_ShadowBuffer=ComShadowBuffer_1
-     }
-};
+
 
 
 const ComTxMode_type ComTxMode[]
@@ -241,7 +446,8 @@ const ComMainFunctionTx_type ComMainFunctionTx[]{
 	}	
 };
 
-const ComMainFunctionRx_type ComMainFunctionRx[]{
+const ComMainFunctionRx_type ComMainFunctionRx[]
+{
 	{
 		.ComMainRxTimeBase = 0
 	},
@@ -250,17 +456,8 @@ const ComMainFunctionRx_type ComMainFunctionRx[]{
 	}		
 };
 
-/* IPdu buffers and signal */
-uint8 ComIPduBuffer_1[8];
-
-uint8 ComIPduBuffer_2[8];
-
-uint8 ComIPduBuffer_3[8];
-
-uint8 ComIPduBuffer_4[8];
-
 /* Com IPdu */
-const ComIPdu_type ComIPdu[] = 
+ComIPdu_type ComIPdu[] = 
 {
     { // IPdu 1
         .ComIPduDirection = SEND ,
@@ -321,7 +518,7 @@ const ComIPdu_type ComIPdu[] =
 		.ComIPduSignalGroupRef = NULL,
 		.ComIPduLength = 8,
 		.ReceptionDMEnabled = 0,
-		.ComTxIPdu = NULL
+		.ComTxIPdu = NULL,
 		.ComIPduCancellationSupport = 0
     }
     
