@@ -26,7 +26,6 @@ Type: EcucEnumerationParamDef
 Description: Possible return values of com APIs
 ****************************************************************************************************/
 typedef enum {
-	E_OK,
 	COM_SERVICE_NOT_AVAILABLE,
 	COM_BUSY
 } Com_ReturnType;
@@ -532,7 +531,7 @@ typedef struct{
 	const float32 ComFirstTimeout;
     
 	/*The numerical value used as the ID.*/
-	const Com_SignalGroupIdType ComHandleId;
+	const uint16 ComHandleId;
 
     /*
 	  This parameter defines that the respective signal's initial value shall be put
@@ -634,7 +633,7 @@ typedef struct {
     
 	void const * ComSignalDataPtr;
 
-	const Com_SignalGroupIdType SignalGroupId;
+	const uint16 SignalGroupId;
     
 	// ----> Not is SWS
 	const boolean IsGroupSignal ;
