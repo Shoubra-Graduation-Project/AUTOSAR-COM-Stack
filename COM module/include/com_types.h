@@ -2,8 +2,8 @@
 #ifndef _COM_TYPES_H_
 #define _COM_TYPES_H_
 
-#include "libraries/Std_Types.h"
-
+#include "../libraries/Std_Types.h"
+#include "../include/ComStack_Types.h"
 
 
 /***************************************************************************************************
@@ -172,8 +172,8 @@ Type: EcucEnumerationParamDef
 Description: 
 ****************************************************************************************************/
 typedef enum{
-	NONE,
-	REPLACE,
+	ComRxDataTimeoutAction_NONE,
+	ComRxDataTimeoutAction_REPLACE,
 	SUBSTITUTE
 }ComRxDataTimeoutAction_type;
 
@@ -511,7 +511,16 @@ typedef struct {
 }ComSignal_type;
 
 
-
+typedef struct{
+	ComFilterAlgorithm_type ComFilterAlgorithm;
+	sint64 ComFilterMask;
+	sint64 ComFilterMax;
+	sint64 ComFilterMin;
+	uint32 ComFilterOffset;
+	uint32 ComFilterPeriod;
+	uint32 ComFilterOccurrence;
+	sint64 ComFilterX;
+}ComFilter_type;
 
 /********************************************************************************************
 Name: ComSignalGroup
@@ -673,16 +682,7 @@ typedef struct{
 
 /*This container contains the configuration parameters and sub containers of the COM module.*/
 
-typedef struct{
-	ComFilterAlgorithm_type ComFilterAlgorithm;
-	sint64 ComFilterMask;
-	sint64 ComFilterMax;
-	sint64 ComFilterMin;
-	uint32 ComFilterOffset;
-	uint32 ComFilterPeriod;
-	uint32 ComFilterOccurrence;
-	sint64 ComFilterX;
-}ComFilter_type;
+
 
 typedef struct{
 	const float64 ComMainTxTimeBase;
