@@ -1,10 +1,10 @@
 #include "../inc/CanIf.h"
 #include "../inc/CanIf_types.h"
 #include "../inc/CanIf_Cfg.h"
-#include "../COM module/include/ComStack_Types.h"
+#include "../../CanDrv/Inc/ComStack_Types.h"
 #include "../../Common/Std_Types.h"
 #include "../../Common/Common_Macros.h"
-#include "../CanDrv/Inc/Can_GeneralTypes.h"
+#include "../../CanDrv/Inc/Can_GeneralTypes.h"
 #include "../../CanDrv/Inc/Can.h"
 #include "../../Det/inc/Det.h"
 #include "../../Common/Lib/driverlib/pin_map.h"
@@ -713,7 +713,7 @@ const CanIfRxPduCfg* CanIf_FindRxPduEntry(Can_HwHandleType Hoh)
             return (CanIfRxPduCfg* const)(&CanIf_ConfigPtr->CanIfInitCfg.CanIfRxPduCfg[i]);
         }
     }
-    return 0
+    return 0;
 }
 
 

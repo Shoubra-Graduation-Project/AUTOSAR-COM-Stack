@@ -10,7 +10,7 @@
 
  /* Section : Includes */
 #include "../../Common/Std_Types.h"
-#include "../COM module/include/ComStack_Types.h"
+#include "../../CanDrv/Inc/ComStack_Types.h"
 #include "./CanIf_types.h"
 #include "./CanIf_cfg.h"
 

@@ -1,6 +1,6 @@
-#include "Std_Types.h"
-#include "Det.h"
-#include "Platform_Types.h"
+#include "../../Common/Std_Types.h"
+#include "../inc/Det.h"
+#include "../../Common/Platform_Types.h"
 
 
 

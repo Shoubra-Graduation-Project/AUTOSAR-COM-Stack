@@ -11,7 +11,7 @@ AUTOSAR Version:            4.2.2
 *********************************************************************************************************************************/
 #include "Can_GeneralTypes.h"
 #include "ComStack_Types.h"
-#include "CanIf.h"
+#include "../../CanIf Module/inc/CanIf.h"
 #include "Can_Cfg.h"
 
 extern Can_ConfigType Can;

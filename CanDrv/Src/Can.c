@@ -6,7 +6,7 @@
 *********************************************************************************************************************************
  **                                                          Includes                                                          **
 *********************************************************************************************************************************/
-#include "Can.h"
+#include "../Inc/Can.h"
 /********************************************************************************************************************************
  **                                                       Global Variables                                                     **
  *******************************************************************************************************************************/
@@ -810,7 +810,7 @@ void Can_DisableControllerInterrupts(uint8 Controller)
         }
         else
         {
-            uint32 INT_CAN[NUMBER_OF_CONTROLLERS] = {INT_CAN0, INT_CAN1};
+            uint32 INT_CAN[NUMBER_OF_CONTROLLERS] = {INT_CAN0_TM4C123, INT_CAN1_TM4C123};
 
             if(Can.CanConfigSet.CanController[Controller].CanRxProcessing == INTERRUPT || Can.CanConfigSet.CanController[Controller].CanTxProcessing == INTERRUPT || Can.CanConfigSet.CanController[Controller].CanBusOffProcessing == INTERRUPT)
             {
@@ -885,7 +885,7 @@ void Can_EnableControllerInterrupts(uint8 Controller)
         }
         else
         {
-            uint32 INT_CAN[NUMBER_OF_CONTROLLERS] = {INT_CAN0, INT_CAN1};
+            uint32 INT_CAN[NUMBER_OF_CONTROLLERS] = {INT_CAN0_TM4C123, INT_CAN1_TM4C123};
             /* No errors found {the driver not yet initialized or parameter Controller is out of range}*/
             InterruptEnableCount[Controller]++; /* increase a counter to make enable*/
             if(Can.CanConfigSet.CanController[Controller].CanRxProcessing == INTERRUPT || Can.CanConfigSet.CanController[Controller].CanTxProcessing == INTERRUPT || Can.CanConfigSet.CanController[Controller].CanBusOffProcessing == INTERRUPT)

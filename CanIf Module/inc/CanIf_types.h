@@ -6,9 +6,9 @@
 #include "./CanIf_cfg.h"
 #include "../../Common/Platform_Types.h"
 #include "../../Common/Common_Macros.h"
-#include "../COM module/include/ComStack_Types.h"
-#include "../CanDrv/Inc/Can_GeneralTypes.h"
-#include "../CanDrv/Inc/Can_Cfg.h"
+#include "../../CanDrv/Inc/ComStack_Types.h"
+#include "../../CanDrv/Inc/Can_GeneralTypes.h"
+#include "../../CanDrv/Inc/Can_Cfg.h"
 
 
 
