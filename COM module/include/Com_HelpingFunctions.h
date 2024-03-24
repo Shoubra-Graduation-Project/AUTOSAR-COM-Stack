@@ -2,8 +2,8 @@
 #define _COM_HELPINGFUNCTIONS_H_
 
 
-#include "libraries/Std_Types.h"
-#include "include/com_types.h"
+#include "../libraries/Std_Types.h"
+#include "../include/com_types.h"
 
 uint8 power(unsigned n);
 boolean Com_ProcessTxSignalFilter(ComSignal_type* signalStruct, uint64 oldData, uint64 newData);

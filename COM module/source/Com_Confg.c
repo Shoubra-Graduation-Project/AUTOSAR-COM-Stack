@@ -23,9 +23,9 @@
  * under the License.
  */
 #include <stdio.h>
-#include "libraries/Std_Types.h"
-#include "include/Com_Types.h"
-#include "include/Com_Cfg.h"
+#include "../libraries/Std_Types.h"
+#include "../include/Com_Types.h"
+#include "../include/Com_Cfg.h"
 
 /* signals Buffer */
 uint8 ComSignalBuffer_0 [2];

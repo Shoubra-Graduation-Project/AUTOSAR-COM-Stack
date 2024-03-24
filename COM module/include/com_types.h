@@ -2,7 +2,7 @@
 #ifndef _COM_TYPES_H_
 #define _COM_TYPES_H_
 
-#include "libraries/Std_Types.h"
+#include "../libraries/Std_Types.h"
 
 
 
@@ -40,7 +40,7 @@ Description: Transmission modes for I-PDU
 typedef enum {
 	DIRECT,
 	MIXED,
-	NONE,
+	MODE_NONE,
     PERIODIC
 } ComTxModeMode_type;
 
@@ -160,7 +160,7 @@ Description:
 ****************************************************************************************************/
 typedef enum{
 	NOTIFY,
-    REPLACE 
+  INVALIDATE_REPLACE 
 }ComDataInvalidAction_type;
 
 /***************************************************************************************************
@@ -172,7 +172,7 @@ Description:
 ****************************************************************************************************/
 typedef enum{
 	NONE,
-	REPLACE,
+	TIMEOUT_REPLACE,
 	SUBSTITUTE
 }ComRxDataTimeoutAction_type;
 
@@ -225,8 +225,6 @@ typedef struct{
 	/*Activate/Deactivate the version information API (Com_GetVersionInfo).*/
 	const boolean ComVersionInfoApi;
 
-    //Defines the maximum number of supported I-PDU groups.
-	const uint16 ComSupportedIPduGroups;
 
 }ComGeneral_type;
 
@@ -310,6 +308,52 @@ typedef struct
 
 } ComTxIPdu_type;
 
+typedef struct{
+
+   /*Name of Com_CbkCounterErr callback function to be called. */
+   void (*ComIPduCounterErrorNotification) (void);
+   
+   /*Size of PDU Counter expressed in bits*/
+   const uint8 ComIPduCounterSize;
+
+   /*Position of PDU counter expressed in bits from start position of data content*/
+   const uint32 ComIPduCounterStartPosition;
+   
+   /* Threshold value of I-PDU counter algorithm*/
+   const uint8 ComIPduCounterThreshold;
+
+   uint8 ComCurrentCounterValue;
+
+}ComIPduCounter_type;
+
+/********************************************************************************************
+Name: ComIPduGroup
+
+Type: Structure
+
+Description: 
+********************************************************************************************/
+typedef struct{
+	/* The numerical value used as the ID of this I-PDU Group */
+	const uint16 ComIPduGroupHandleId;
+
+	state_type IpduGroupFlag;
+
+    /* 
+	 Check if Reception deadline monitoring for this IpduGruop is enabled or not
+     ---> Not in SWS
+	*/ 
+	boolean RxDeadlineMonitoringEnabled;
+
+	/*
+	   Number of IPDUs within this group
+	   ----> Not in SWS
+	*/
+    uint16 numIPdus;
+	
+
+}ComIPduGroup_type;
+
 
 /* This container contains the configuration parameters of the AUTOSAR COM module's IPDUs */
 typedef struct {
@@ -371,41 +415,6 @@ typedef struct {
 	boolean ReceptionDMEnabled;
    
 } ComIPdu_type;
-
-
-/********************************************************************************************
-Name: ComIPduGroup
-
-Type: Structure
-
-Description: 
-********************************************************************************************/
-typedef struct{
-	/* The numerical value used as the ID of this I-PDU Group */
-	const uint16 ComIPduGroupHandleId;
-
-	state_type IpduGroupFlag;
-    
-	/* References to all I-PDU groups that includes this I-PDU group. I */
-	ComIPduGroup_type const * ComIPduGroupGroupRef;
-
-    /* 
-	 Check if Reception deadline monitoring for this IpduGruop is enabled or not
-     ---> Not in SWS
-	*/ 
-	boolean RxDeadlineMonitoringEnabled;
-
-    /*-------> not in SWS */
-	ComIPdu_type **IPDU;
-
-	/*
-	   Number of IPDUs within this group
-	   ----> Not in SWS
-	*/
-    uint16 numIPdus;
-	
-
-}ComIPduGroup_type;
 
 
 
@@ -641,23 +650,7 @@ typedef struct {
  
 }ComGroupSignal_type;
 
-typedef struct{
 
-   /*Name of Com_CbkCounterErr callback function to be called. */
-   void (*ComIPduCounterErrorNotification) (void);
-   
-   /*Size of PDU Counter expressed in bits*/
-   const uint8 ComIPduCounterSize;
-
-   /*Position of PDU counter expressed in bits from start position of data content*/
-   const uint32 ComIPduCounterStartPosition;
-   
-   /* Threshold value of I-PDU counter algorithm*/
-   const uint8 ComIPduCounterThreshold;
-
-   uint8 ComCurrentCounterValue;
-
-}ComIPduCounter_type;
 
 /*This optional container contains the information needed for each I-PDU replicated.*/
 typedef struct{

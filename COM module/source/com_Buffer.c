@@ -28,6 +28,7 @@
  * 
  *************************************************************************/
 
+/*
 void Com_CopyShadowBufferToIPDU (const Com_SignalGroupIdType signalGroupId)
 {
     // Get Signal Group
@@ -57,7 +58,7 @@ void Com_CopyShadowBufferToIPDU (const Com_SignalGroupIdType signalGroupId)
         }
 
 }
-
+*/
 /***********************************************************************************
  *                                                                                 *
  *    Service Name: Com_CopyPduToShadowBuffer                                                             
@@ -72,7 +73,7 @@ void Com_CopyShadowBufferToIPDU (const Com_SignalGroupIdType signalGroupId)
  * 
  *********************************************************************************/
 
-
+/*
 void Com_CopyPduToShadowBuffer(const Com_SignalGroupIdType signalGroupId) {
 
     // Get Signal Group
@@ -99,7 +100,7 @@ void Com_CopyPduToShadowBuffer(const Com_SignalGroupIdType signalGroupId) {
         *buffer++ =  *pduDataPtr++;
     }
 }
-
+*/
 
 /***********************************************************************
  *                                                                       

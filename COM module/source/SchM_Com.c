@@ -3,13 +3,12 @@
  ********************************************************************************/
 
 
-#include "include/Com.h"
-#include "include/Com_Types.h"
-#include "include/Com_Cfg.h"
-#include "include/ComMacros.h"
-#include "include/com_buffers.h"
-#include "include/Com_HelpingFunctions.h"
-//#include <cstddef>
+#include "../include/Com.h"
+#include "../include/Com_Types.h"
+#include "../include/Com_Cfg.h"
+#include "../include/ComMacros.h"
+#include "../include/com_buffers.h"
+#include "../include/Com_HelpingFunctions.h"
 
 
 #define timerDec(timer)                         
