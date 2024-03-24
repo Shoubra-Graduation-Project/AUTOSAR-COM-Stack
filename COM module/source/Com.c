@@ -7,13 +7,13 @@
 #include "../include/Com_HelpingFunctions.h"
 #include "../include/com_buffers.h"
 #include "../include/Com_Types.h"
-#include "include/Com_Cfg.h"
-#include "include/ComMacros.h"
-#include "Det/include/Det.h"
-#include "Det/include/Com_Det.h"
+#include "../include/Com_Cfg.h"
+#include "../include/ComMacros.h"
+#include "../../Det/inc/Det.h"
+//#include "../../Det/inc/Com_Det.h"
 #include <string.h>
 #include <cstddef>
-#include <minwindef.h>
+//#include <minwindef.h>
 
 static Com_StatusType initStatus = COM_UNINIT;
 
@@ -42,10 +42,7 @@ const Com_ConfigType * ComConfig;
 
 void Com_Init (const Com_ConfigType* config)
 {
-
-        // Initialize global and static variables
-        ComConfig = config;
-    
+				
 	    ComIPdu_type *IPdu;
     	ComSignal_type *Signal;
 		ComSignalGroup_type *SignalGroup;
@@ -57,6 +54,10 @@ void Com_Init (const Com_ConfigType* config)
         uint8 ComInitSignalGroupId;
 
 		uint8 *ComShadowBuffer;
+	
+        // Initialize global and static variables
+        ComConfig = config;
+    
 
 	    // Loop over all I-PDUs
         for (ComInitPduId = 0; ComInitPduId < COM_NUM_OF_IPDU ; ComInitPduId++)

@@ -2,11 +2,12 @@
  *                                    Includes                                   *
  ********************************************************************************/
 
-#include <stdio.h>
+#include "stdio.h"
 #include "../include/Com.h"
 #include "../include/Com_Types.h"
 #include "../include/Com_Cfg.h"
 #include "../include/ComMacros.h"
+#include "../include/com_buffers.h"
 
 
 /**********************************************************************************
@@ -18,9 +19,9 @@ uint8 power(unsigned n)
 { 
     // Initialize result to 1 
     uint8 pow = 1; 
-  
+		uint8 i;
     // Multiply x for n times 
-    for (int i = 0; i < n; i++) { 
+    for (i = 0; i < n; i++) { 
         pow = pow * 2; 
     } 
     
@@ -276,7 +277,11 @@ uint8 com_pdu_transmissions_handle_signalGroup(ComIPdu_type* IPdu, ComSignalGrou
 boolean com_pdu_transmissionsModeSelection(ComIPdu_type* IPdu)
 {
 	boolean TMS = 0;
-	for (uint32 ComSignalId = 0; (IPdu->ComIPduSignalRef[ComSignalId] != NULL); ComSignalId++)
+	uint32 ComSignalId;
+	boolean oldTMS = IPdu->ComTxIPdu->ComCurrentTransmissionSelection;
+	ComTxModeMode_type oldMode;
+	ComTxModeMode_type newMode;
+	for (ComSignalId = 0; (IPdu->ComIPduSignalRef[ComSignalId] != NULL); ComSignalId++)
 	{
 		//Get signal
 		ComSignal_type* signal = IPdu->ComIPduSignalRef[ComSignalId];
@@ -289,7 +294,8 @@ boolean com_pdu_transmissionsModeSelection(ComIPdu_type* IPdu)
 	}
 	if(TMS == 0)
 	{
-		for (uint32 ComSignalGroupId = 0; (IPdu->ComIPduSignalRef[ComSignalGroupId] != NULL); ComSignalGroupId++)
+		uint32 ComSignalGroupId;
+		for (ComSignalGroupId = 0; (IPdu->ComIPduSignalRef[ComSignalGroupId] != NULL); ComSignalGroupId++)
 		{
 			//Get signal
 			ComSignalGroup_type* signalGroup = IPdu->ComIPduSignalGroupRef[ComSignalGroupId];
@@ -305,36 +311,57 @@ boolean com_pdu_transmissionsModeSelection(ComIPdu_type* IPdu)
 	When a call to Com_SendSignal or Com_SendSignalGroup results into a change of the transmission mode of a started I-PDU to the transmission mode PERIODIC
 	or MIXED, then the AUTOSAR COM module shall start the new transmission cycle with a call to PduR_ComTransmit within the next main function at the latest.
 	--------------------------------------------------------------------------------------------------------------------------------------------------------*/
-	boolean oldTMS = IPdu->ComTxIPdu->ComCurrentTransmissionSelection;
-	if((oldTMS == 0 && TMS == 1 && IPdu->ComTxIPdu->ComTxModeFalse->ComTxMode->ComTxModeMode == DIRECT && IPdu->ComTxIPdu->ComTxModeTrue->ComTxMode->ComTxModeMode != DIRECT)
-		||(oldTMS == 1 && TMS == 0 && IPdu->ComTxIPdu->ComTxModeTrue->ComTxMode->ComTxModeMode == DIRECT && IPdu->ComTxIPdu->ComTxModeFalse->ComTxMode->ComTxModeMode != DIRECT))
+	
+	if(oldTMS!=TMS)
 	{
-		 IPdu->ComTxIPdu->ComFirstPeriodicModeEntry = 1;
+		if(oldTMS == 1)
+		{
+			oldMode = IPdu->ComTxIPdu->ComTxModeTrue->ComTxMode->ComTxModeMode;
+			newMode = IPdu->ComTxIPdu->ComTxModeFalse->ComTxMode->ComTxModeMode;
+		}
+		else
+		{
+			newMode = IPdu->ComTxIPdu->ComTxModeTrue->ComTxMode->ComTxModeMode;
+			oldMode = IPdu->ComTxIPdu->ComTxModeFalse->ComTxMode->ComTxModeMode;
+		}
 	}
-	else if((oldTMS == 0 && TMS == 1 && IPdu->ComTxIPdu->ComTxModeFalse->ComTxMode->ComTxModeMode != DIRECT && IPdu->ComTxIPdu->ComTxModeTrue->ComTxMode->ComTxModeMode == DIRECT)
-			||(oldTMS == 1 && TMS == 0 && IPdu->ComTxIPdu->ComTxModeTrue->ComTxMode->ComTxModeMode != DIRECT && IPdu->ComTxIPdu->ComTxModeFalse->ComTxMode->ComTxModeMode == DIRECT))
+	else{}
+
+	if(oldMode!=newMode)
 	{
-		IPdu->ComTxIPdu->ComFirstDirectModeEntry = 1;
+		if(oldMode==DIRECT && newMode!=DIRECT)
+		{
+			IPdu->ComTxIPdu->ComNumberOfTransmissions +=1;
+		}
+		else if(oldMode!=DIRECT && newMode==DIRECT)
+		{
+			IPdu->ComTxIPdu->ComNumberOfTransmissions +=1;
+		}
+		else{}
 	}
 	else{}
 	
 	return TMS;
 }
 
-com_packSignalsToPdu(ComIPdu_type* IPdu)
+void com_packSignalsToPdu(ComIPdu_type* IPdu)
 {
-	for(uint16 ComSignalId = 0; (IPdu->ComIPduSignalRef[ComSignalId] != NULL); ComSignalId++)
+	uint16 ComSignalId;
+	void * dataAddress = NULL;
+	uint16 ComSignaGrouplId;
+	for(ComSignalId = 0; (IPdu->ComIPduSignalRef[ComSignalId] != NULL); ComSignalId++)
 	{
 		ComSignal_type* signal = IPdu->ComIPduSignalRef[ComSignalId];
 		Com_WriteSignalDataToPdu(signal->ComHandleId, signal->ComFGBuffer);
 	}
-	void * dataAddress = NULL;
-	for(uint16 ComSignaGrouplId = 0; (IPdu->ComIPduSignalGroupRef[ComSignaGrouplId] != NULL); ComSignaGrouplId++)
+	
+	for(ComSignaGrouplId = 0; (IPdu->ComIPduSignalGroupRef[ComSignaGrouplId] != NULL); ComSignaGrouplId++)
 	{
 		ComSignalGroup_type* signalGroup = IPdu->ComIPduSignalGroupRef[ComSignaGrouplId];
-		for(uint16 ComGroupSignalId = 0; (signalGroup->ComGroupSignal[ComGroupSignalId] != NULL); ComGroupSignalId++)
+		uint16 ComGroupSignalId;
+		for(ComGroupSignalId = 0; (signalGroup->ComGroupSignal[ComGroupSignalId] != NULL); ComGroupSignalId++)
 		{
-			ComGroupSignal_type* groupSignal = signalGroup->ComGroupSignal[ComGroupSignalId];
+			const ComGroupSignal_type* groupSignal = signalGroup->ComGroupSignal[ComGroupSignalId];
 			CopyGroupSignalFromFGtoAddress(signalGroup->ComHandleId, groupSignal->ComHandleId, dataAddress);
 			Com_WriteGroupSignalDataToPdu(groupSignal->ComHandleId, dataAddress);
 		}
@@ -352,14 +379,19 @@ Std_ReturnType Com_writeCounterValueToPduBuffer(ComIPdu_type *IPdu, uint8 counte
 	if(IPdu != NULL)
 	{
 		const ComIPduCounter_type* PduCounter = IPdu->ComIPduCounter;
+		uint8 mask;
+		uint32 BitPosition;
+		uint8 pduStartByte;
+		uint8 BitOffsetInByte;
+		uint8* pduBufferBytesptr = NULL;
+		uint8 counterLength;
 		if(PduCounter != NULL)
 		{
-			uint8 mask;
-			uint32 BitPosition = PduCounter->ComIPduCounterStartPosition;;
-			uint8 pduStartByte = BitPosition / 8;
-			uint8 BitOffsetInByte = BitPosition % 8;
-			uint8 *pduBufferBytesptr = (uint8 *)(IPdu->ComIPduDataPtr);
-			uint8 counterLength = PduCounter->ComIPduCounterSize;
+			BitPosition = PduCounter->ComIPduCounterStartPosition;;
+			pduStartByte = BitPosition / 8;
+			BitOffsetInByte = BitPosition % 8;
+			pduBufferBytesptr = (uint8*)(IPdu->ComIPduDataPtr);
+			counterLength = PduCounter->ComIPduCounterSize;
 
 			pduBufferBytesptr += pduStartByte;
 
@@ -372,8 +404,9 @@ Std_ReturnType Com_writeCounterValueToPduBuffer(ComIPdu_type *IPdu, uint8 counte
 			if(8-BitOffsetInByte >= counterLength)
 			{
 				// if whole counter is contained in one byte
+				uint8 i;
 				mask = 0;
-				for(uint8 i = 0; i<counterLength; i++)
+				for(i = 0; i<counterLength; i++)
 				{
 					mask = mask | (1u << (BitOffsetInByte+i) );
 				}
@@ -387,6 +420,8 @@ Std_ReturnType Com_writeCounterValueToPduBuffer(ComIPdu_type *IPdu, uint8 counte
 			{
 				// if counter is divided on two bytes
 				// for first byte
+				uint8 bitsNumberInSecondByte;
+				uint8 i;
 				mask = 255;
 				mask = ~(mask << BitOffsetInByte);
 				*pduBufferBytesptr = (*pduBufferBytesptr) & mask;
@@ -399,13 +434,13 @@ Std_ReturnType Com_writeCounterValueToPduBuffer(ComIPdu_type *IPdu, uint8 counte
 
 				//for second byte
 				pduBufferBytesptr += 1;
-				uint8 bitsNumberInSecondByte = counterLength - (8 - BitOffsetInByte);
+				bitsNumberInSecondByte = counterLength - (8 - BitOffsetInByte);
 				mask = 255;
 				mask = ~( mask >> (8 - bitsNumberInSecondByte) );
 				*pduBufferBytesptr = (*pduBufferBytesptr) & mask;
 
 				mask = 0;
-				for(uint8 i = 0; i<bitsNumberInSecondByte; i++)
+				for(i = 0; i<bitsNumberInSecondByte; i++)
 				{
 					mask = mask | (1u << ((8 - BitOffsetInByte) + i));
 				}
@@ -436,6 +471,7 @@ uint8 check_Data_Sequence(ComIPdu_type *Ipdu)
 	
 	uint8 counterValue1 = 0;
 	uint8 mask1;
+	uint8 i;
 	uint32 BitPosition1 = PduCounter1->ComIPduCounterStartPosition;
 
 	uint32 pduStartByte1 = BitPosition1 / 8;
@@ -452,7 +488,7 @@ uint8 check_Data_Sequence(ComIPdu_type *Ipdu)
 	{
 		// if whole counter is contained in one byte
 		mask1 = 0;
-		for(uint8 i = 0; i<counterLength1; i++)
+		for(i = 0; i<counterLength1; i++)
 		{
 			mask1 = mask1 | (1u << (BitOffsetInByte1+i) );
 		}
@@ -464,6 +500,7 @@ uint8 check_Data_Sequence(ComIPdu_type *Ipdu)
 	{
 		// if counter is divided on two bytes
 		// for first byte
+		uint32 bitsNumberInSecondByte1;
 		mask1 = 255;
 		mask1 = mask1 << BitOffsetInByte1;
 		mask1 = (*pduBufferBytesptr1) & mask1;
@@ -472,7 +509,7 @@ uint8 check_Data_Sequence(ComIPdu_type *Ipdu)
 
 		//for second byte
 		pduBufferBytesptr1 += 1;
-		uint32 bitsNumberInSecondByte1 = counterLength1 - (8 - BitOffsetInByte1);
+		bitsNumberInSecondByte1 = counterLength1 - (8 - BitOffsetInByte1);
 		mask1 = 255;
 		mask1 = mask1 >> (8 - bitsNumberInSecondByte1);
 		mask1 = (*pduBufferBytesptr1) & mask1;

@@ -265,14 +265,14 @@ typedef struct
 /* If ComFilter evaluates to true */
 typedef struct 
 {
-	const ComTxMode_type ComTxMode;
+	const ComTxMode_type *ComTxMode;
 
 } ComTxModeTrue_type;
 
 /* If  ComFilter evaluates to ComTxModeFalse */
 typedef struct 
 {
-	const ComTxMode_type ComTxMode;
+	const ComTxMode_type *ComTxMode;
 
 } ComTxModeFalse_type;
 
@@ -290,10 +290,10 @@ typedef struct
 	const uint8 ComTxIPduUnusedAreasDefault;
 
 	/* ComFilter evaluates to true */
-	const ComTxModeTrue_type ComTxModeTrue ;
+	const ComTxModeTrue_type *ComTxModeTrue ;
 
 	/* ComFilter evaluates to ComTxModeFalse */
-	const ComTxModeFalse_type ComTxModeFalse ;
+	const ComTxModeFalse_type *ComTxModeFalse ;
 
 	/*Not in SWS*/
 	uint32 ComNumberOfTransmissions;
@@ -469,7 +469,7 @@ typedef struct {
 
 	boolean ComSignalUpdated;
 
-	ComFilter_type* ComFilter;
+	ComFilter_type* comFilter;
 
 }ComSignal_type;
 
@@ -599,7 +599,7 @@ typedef struct{
 	/* -----> Not in SWS*/
 	float32 DeadlineMonitoringTimer;
 
-	ComFilter_type* ComFilter;
+	ComFilter_type* comFilter;
 
 }ComSignalGroup_type;
 

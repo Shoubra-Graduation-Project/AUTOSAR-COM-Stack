@@ -9,6 +9,7 @@
 #include "../include/ComMacros.h"
 #include "../include/com_buffers.h"
 #include "../include/Com_HelpingFunctions.h"
+#include <stdio.h>
 
 
 #define timerDec(timer)                         
@@ -108,7 +109,7 @@ void Com_MainFunctionTx (void)
 			if((IPduGroup == NULL || IPduGroup->IpduGroupFlag == STARTED) && IPdu->ComIPduDirection == SEND)
 			{	
 				/*-----------------------------------------------Notify RTE layer if IPDU is DEFERED--------------------------------------------------------*/
-				if(IPdu->ComIPduSignalProcessing == DEFERRED && (IPdu->ComTxIPdu).ComIsIPduDeferred == 1)
+				if(IPdu->ComIPduSignalProcessing == DEFERRED && (IPdu->ComTxIPdu)->ComIsIPduDeferred == 1)
 				{
 					for(uint16 signalID=0; (IPdu->ComIPduSignalRef[signalID] != NULL); signalID++)
 					{
@@ -136,7 +137,6 @@ void Com_MainFunctionTx (void)
 					switch(IPdu->ComTxIPdu->ComTxModeTrue->ComTxMode->ComTxModeMode)
 					{
 						case MIXED:
-								else{}
 								if(IPdu->ComTxIPdu->ComNumberOfTransmissions > 0)
 								{
 									com_packSignalsToPdu(IPdu);
@@ -145,10 +145,10 @@ void Com_MainFunctionTx (void)
 									while( (IPdu->ComTxIPdu->ComNumberOfTransmissions) > 0)
 									{
 										Com_writeCounterValueToPduBuffer(IPdu->ComIPduHandleId, (IPdu->ComIPduCounter)->ComCurrentCounterValue);
-										IPdu->ComIPduCounter->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue + 1)%(pow(IPdu->ComIPduCounter->ComIPduCounterSize));
+										IPdu->ComIPduCounter->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue + 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
 										if(PduR_ComTransmit(TransmisionReturnValue, IPdu->ComIPduHandleId, IPdu->ComIPduDataPtr) == E_NOT_OK)
 										{
-											(IPdu->ComIPduCounter)->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue - 1)%(pow(IPdu->ComIPduCounter->ComIPduCounterSize));
+											(IPdu->ComIPduCounter)->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue - 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
 										}
 										IPdu->ComTxIPdu->ComNumberOfTransmissions--;
 										delay(IPdu->ComTxIPdu->ComTxModeTrue->ComTxMode->ComTxModeRepetitionPeriod);
@@ -163,24 +163,24 @@ void Com_MainFunctionTx (void)
 								else{}
 									
 						case PERIODIC:
-								if(IPdu->ComTxIPdu.ComTxModeTrue.ComTxMode.comPeriodicTimeFired == 1)
+								if(IPdu->ComTxIPdu->ComTxModeTrue->ComTxMode->comPeriodicTimeFired == 1)
 								{
-									IPdu->ComTxIPdu.ComTxModeTrue.ComTxMode.comPeriodicTimeFired == 0;
+									IPdu->ComTxIPdu->ComTxModeTrue->ComTxMode->comPeriodicTimeFired == 0;
 									if(IPdu->ComIPduCallout != NULL) {IPdu->ComIPduCallout();}
 									else{}
 									Com_writeCounterValueToPduBuffer(IPdu->ComIPduHandleId, (IPdu->ComIPduCounter)->ComCurrentCounterValue);
-									(IPdu->ComIPduCounter)->ComCurrentCounterValue = ((IPdu->ComIPduCounter)->ComCurrentCounterValue + 1)%(pow((IPdu->ComIPduCounter)->ComIPduCounterSize));
+									(IPdu->ComIPduCounter)->ComCurrentCounterValue = ((IPdu->ComIPduCounter)->ComCurrentCounterValue + 1)%(power((IPdu->ComIPduCounter)->ComIPduCounterSize));
 									if(PduR_ComTransmit(TransmisionReturnValue, IPdu->ComIPduHandleId, IPdu->ComIPduDataPtr) == E_NOT_OK)
 									{
-										(IPdu->ComIPduCounter)->ComCurrentCounterValue = ((IPdu->ComIPduCounter)->ComCurrentCounterValue - 1)%(pow((IPdu->ComIPduCounter)->ComIPduCounterSize));
+										(IPdu->ComIPduCounter)->ComCurrentCounterValue = ((IPdu->ComIPduCounter)->ComCurrentCounterValue - 1)%(power((IPdu->ComIPduCounter)->ComIPduCounterSize));
 									}
-									if(ComTxIPdu.ComMinimumDelayTime != 0){delay(IPdu->ComTxIPdu.ComMinimumDelayTime);}
+									if(IPdu->ComTxIPdu->ComMinimumDelayTime != 0){delay(IPdu->ComTxIPdu->ComMinimumDelayTime);}
 									else{}
 								}
 								else{}
 								break;
 						case DIRECT:
-								if(IPdu->ComTxIPdu.ComNumberOfTransmissions > 0)
+								if(IPdu->ComTxIPdu->ComNumberOfTransmissions > 0)
 								{
 									com_packSignalsToPdu(IPdu);
 									if(IPdu->ComIPduCallout != NULL) {IPdu->ComIPduCallout();}
@@ -188,16 +188,16 @@ void Com_MainFunctionTx (void)
 									while( IPdu->ComTxIPdu->ComNumberOfTransmissions > 0)
 									{
 										Com_writeCounterValueToPduBuffer(IPdu->ComIPduHandleId, IPdu->ComIPduCounter->ComCurrentCounterValue);
-										IPdu->ComIPduCounter->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue + 1)%(pow(IPdu->ComIPduCounter->ComIPduCounterSize));
+										IPdu->ComIPduCounter->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue + 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
 										if(PduR_ComTransmit(TransmisionReturnValue, IPdu->ComIPduHandleId, IPdu->ComIPduDataPtr) == E_NOT_OK)
 										{
-											IPdu->ComIPduCounter->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue - 1)%(pow(IPdu->ComIPduCounter->ComIPduCounterSize));
+											IPdu->ComIPduCounter->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue - 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
 										}
 										IPdu->ComTxIPdu->ComNumberOfTransmissions--;
 										delay(IPdu->ComTxIPdu->ComTxModeTrue->ComTxMode->ComTxModeRepetitionPeriod);
 										if((IPdu->ComTxIPdu->ComNumberOfTransmissions) == 0)
 										{
-											if(ComTxIPdu->ComMinimumDelayTime != 0){delay(IPdu->ComTxIPdu->ComMinimumDelayTime);}
+											if(IPdu->ComTxIPdu->ComMinimumDelayTime != 0){delay(IPdu->ComTxIPdu->ComMinimumDelayTime);}
 											else{}
 										}
 										else{}
@@ -220,10 +220,10 @@ void Com_MainFunctionTx (void)
 									while( (IPdu->ComTxIPdu->ComNumberOfTransmissions) > 0)
 									{
 										Com_writeCounterValueToPduBuffer(IPdu->ComIPduHandleId, IPdu->ComIPduCounter->ComCurrentCounterValue);
-										IPdu->ComIPduCounter->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue + 1)%(pow(IPdu->ComIPduCounter->ComIPduCounterSize));
+										IPdu->ComIPduCounter->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue + 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
 										if(PduR_ComTransmit(TransmisionReturnValue, IPdu->ComIPduHandleId, IPdu->ComIPduDataPtr) == E_NOT_OK)
 										{
-											IPdu->ComIPduCounter->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue - 1)%(pow(IPdu->ComIPduCounter->ComIPduCounterSize));
+											IPdu->ComIPduCounter->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue - 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
 										}
 										IPdu->ComTxIPdu->ComNumberOfTransmissions--;
 										delay(IPdu->ComTxIPdu->ComTxModeFalse->ComTxMode->ComTxModeRepetitionPeriod);
@@ -245,10 +245,10 @@ void Com_MainFunctionTx (void)
 									if(IPdu->ComIPduCallout != NULL) {IPdu->ComIPduCallout();}
 									else{}
 									Com_writeCounterValueToPduBuffer(IPdu->ComIPduHandleId, (IPdu->ComIPduCounter)->ComCurrentCounterValue);
-									(IPdu->ComIPduCounter)->ComCurrentCounterValue = ((IPdu->ComIPduCounter)->ComCurrentCounterValue + 1)%(pow(IPdu->ComIPduCounter->ComIPduCounterSize));
+									(IPdu->ComIPduCounter)->ComCurrentCounterValue = ((IPdu->ComIPduCounter)->ComCurrentCounterValue + 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
 									if(PduR_ComTransmit(TransmisionReturnValue, IPdu->ComIPduHandleId, IPdu->ComIPduDataPtr) == E_NOT_OK)
 									{
-										(IPdu->ComIPduCounter)->ComCurrentCounterValue = ((IPdu->ComIPduCounter)->ComCurrentCounterValue - 1)%(pow(IPdu->ComIPduCounter->ComIPduCounterSize));
+										(IPdu->ComIPduCounter)->ComCurrentCounterValue = ((IPdu->ComIPduCounter)->ComCurrentCounterValue - 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
 									}
 									if(ComTxIPdu.ComMinimumDelayTime != 0){delay(IPdu->ComTxIPdu.ComMinimumDelayTime);}
 									else{}
@@ -264,10 +264,10 @@ void Com_MainFunctionTx (void)
 									while( IPdu->ComTxIPdu->ComNumberOfTransmissions > 0)
 									{
 										Com_writeCounterValueToPduBuffer(IPdu->ComIPduHandleId, IPdu->ComIPduCounter->ComCurrentCounterValue);
-										IPdu->ComIPduCounter->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue + 1)%(pow(IPdu->ComIPduCounter->ComIPduCounterSize));
+										IPdu->ComIPduCounter->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue + 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
 										if(PduR_ComTransmit(TransmisionReturnValue, IPdu->ComIPduHandleId, IPdu->ComIPduDataPtr) == E_NOT_OK)
 										{
-											IPdu->ComIPduCounter->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue - 1)%(pow(IPdu->ComIPduCounter->ComIPduCounterSize));
+											IPdu->ComIPduCounter->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue - 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
 										}
 										IPdu->ComTxIPdu->ComNumberOfTransmissions--;
 										delay(IPdu->ComTxIPdu->ComTxModeFalse.ComTxMode.ComTxModeRepetitionPeriod);
