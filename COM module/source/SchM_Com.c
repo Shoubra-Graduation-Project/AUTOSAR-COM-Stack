@@ -11,11 +11,6 @@
 #include <cstddef>
 
 
-#define timerDec(timer)                         
-	if (timer > 0) {     
-                               
-		timer = timer - 1;                      
-	}
 
 /**********************************************************************************
  *                             Functions Definitions                              *
@@ -99,7 +94,7 @@ void Com_MainFunctionRx(void)
  ***************************************************************************************/
 void Com_MainFunctionTx (void)
 {
-	for(uint8 currentIPduID = 0; currentIPduID<COM_NUM_OF_IPDU; currentIPduID++)
+	for(uint8 currentIPduID = 0; currentIPduID < COM_NUM_OF_IPDU; currentIPduID++)
 	{
 		ComIPdu_type* IPdu = GET_IPDU(currentIPduID);
 		if(IPdu !=NULL)
