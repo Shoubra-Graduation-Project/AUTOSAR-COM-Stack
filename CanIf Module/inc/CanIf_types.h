@@ -114,9 +114,14 @@ Description:
 **************************************************************************************************/
 
 typedef enum {
-    CANIF_TX_RX_NOTIFICATION,
-    CANIF_NO_NOTIFICATION
-}CanIf_NotifStatusType;
+	/** No transmit or receive event occurred for
+	 *  the requested L-PDU. */
+	CANIF_NO_NOTIFICATION = 0,
+	/** The requested Rx/Tx CAN L-PDU was
+	 *  successfully transmitted or received. */
+	CANIF_TX_RX_NOTIFICATION
+
+} CanIf_NotifStatusType;
 
 typedef enum {
   /** UNINIT mode. Default mode of the CAN driver and all
