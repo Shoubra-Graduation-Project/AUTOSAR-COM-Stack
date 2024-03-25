@@ -48,7 +48,7 @@
  * 
  *    Description: Get Signal Group by it's Id from config container
  *********************************************************************************/
-#define GET_SIGNALGROUP(SignalGroupId)   ((&(ComConfig->ComSignalGroup[SignalGroupId])))
+#define GET_SIGNALGROUP(SignalGroupId)  ((&(ComConfig->ComSignalGroup[SignalGroupId])))
 
 /***********************************************************************************                                                                               
  *    Macro Name: GET_GROUPSIGNAL    

@@ -22,9 +22,11 @@ typedef uint16 Com_SignalIdType;
 
 /* The COM module's signal group object identifier */
 typedef uint16 Com_SignalGroupIdType;
+typedef uint16 Com_GroupSignalIdType;
 
 /* The COM I-PDU module's group object identifier. */
 typedef uint16 Com_IpduGroupIdType;
+
 
 
 /*This is a status value returned by the API service Com_GetStatus()*/

@@ -136,7 +136,7 @@ void Com_Init (const Com_ConfigType* config)
                        with the lower n-bits of its configuration parameter ComSignalInitValue
                     */
                   
-                  memcpy(GroupSignal->ComSignalDataPtr, config->ComSignal[ComInitGroupSignalId].ComSignalInitValue, GroupSignal->ComBitSize/8); */
+                  memcpy(GroupSignal->ComSignalDataPtr, config->ComSignal[ComInitGroupSignalId].ComSignalInitValue, GroupSignal->ComBitSize/8); 
                    /*
                     uint8 *dest = (uint8 *) GroupSignal->ComSignalDataPtr;
                     uint8 *src =  (uint8 *) config->ComSignal[ComInitGroupSignalId].ComSignalInitValue;
@@ -186,7 +186,7 @@ void Com_DeInit( void )
     if( initStatus != COM_INIT ) 
 	{
 
-        Det_ReportError(COM_MODULE_ID, COM_INSTANCE_ID, COM_DEINIT_ID, COM_E_UNINIT);
+        /*Det_ReportError(COM_MODULE_ID, COM_INSTANCE_ID, COM_DEINIT_ID, COM_E_UNINIT);*/
 
         return;
     }
@@ -237,7 +237,7 @@ void Com_IpduGroupStart(Com_IpduGroupIdType IpduGroupId , boolean Initialize)
 	uint8 IpduId;
 	uint8 ComSignalId;
 
-	float MDT;
+	float MDT ;
 
 
 	IPduGroup = GET_IpduGroup(IpduGroupId);
@@ -358,30 +358,37 @@ void Com_EnableReceptionDM (Com_IpduGroupIdType IpduGroupId)
 
       if (ipduGroup != NULL) 
       {
-         for (ipduIndex = 0; ipduIndex < ipduGroup->numIPdus; ipduIndex++)
+         for (ipduIndex = 0; ipduIndex < COM_NUM_OF_IPDU; ipduIndex++)
           {
+			  IPdu = GET_IPdu(ipduIndex);
+	
             /*
               [SWS_Com_00534] If Com_EnableReceptionDM is invoked on an I-PDU group
               containing Tx-I-PDUs, then the AUTOSAR COM module shall silently ignore 
               this request.
             */
-            if(ipduGroup->IPDU[ipduIndex].ComIPduDirection != SEND)
+            if(IPdu->ComIPduGroupRef->ComIPduGroupHandleId == IpduGroupId)
             {
+				if(IPdu->ComIPduDirection != SEND)
+				{
+					 if(!IPdu[ipduIndex].ReceptionDMEnabled)
+                     {
+                        IPdu[ipduIndex].ReceptionDMEnabled = 1;
+                
+                     }
+                     else
+                    {
+
+                    }
+
+
+				}
             /*
               [SWS_Com_00486] The AUTOSAR COM module shall silently ignore setting the
               reception deadline monitoring of an I-PDU to enabled by Com_EnableReceptionDM,
               in case the reception deadline monitoring is already enabled for this I-PDU
             */
-               if(!ipduGroup->IPDU[ipduIndex].ReceptionDMEnabled)
-               {
-                  ipduGroup->IPDU[ipduIndex].ReceptionDMEnabled = TRUE;
-                
-               }
-               else
-               {
-
-               }
-
+              
             }
             else
             {
@@ -425,30 +432,37 @@ void Com_DisableReceptionDM (Com_IpduGroupIdType IpduGroupId)
 
       if (ipduGroup != NULL) 
       {
-         for (ipduIndex = 0; ipduIndex < ipduGroup->numIPdus; ipduIndex++)
+         for (ipduIndex = 0; ipduIndex < COM_NUM_OF_IPDU; ipduIndex++)
           {
+			  IPdu = GET_IPdu(ipduIndex);
+	
             /*
-              [SWS_Com_00534] If Com_DisableReceptionDM is invoked on an I-PDU group
+              [SWS_Com_00534] If Com_EnableReceptionDM is invoked on an I-PDU group
               containing Tx-I-PDUs, then the AUTOSAR COM module shall silently ignore 
               this request.
             */
-            if(ipduGroup->IPDU[ipduIndex].ComIPduDirection != SEND)
+            if(IPdu->ComIPduGroupRef->ComIPduGroupHandleId == IpduGroupId)
             {
+				if(IPdu->ComIPduDirection != SEND)
+				{
+					 if(!IPdu[ipduIndex].ReceptionDMEnabled)
+                     {
+                        IPdu[ipduIndex].ReceptionDMEnabled = 0;
+                
+                     }
+                     else
+                    {
+
+                    }
+
+
+				}
             /*
               [SWS_Com_00486] The AUTOSAR COM module shall silently ignore setting the
               reception deadline monitoring of an I-PDU to enabled by Com_EnableReceptionDM,
               in case the reception deadline monitoring is already enabled for this I-PDU
             */
-               if(!ipduGroup->IPDU[ipduIndex].ReceptionDMEnabled)
-               {
-                  ipduGroup->IPDU[ipduIndex].ReceptionDMEnabled = FALSE;
-                
-               }
-               else
-               {
-
-               }
-
+              
             }
             else
             {
@@ -530,8 +544,9 @@ uint8 Com_SendSignal (Com_SignalIdType SignalId, const void* SignalDataPtr)
 					switch(signalStruct->ComSignalType)
 					{
 						case BOOLEAN:
+							boolean new_signalData_boolean;
 
-							boolean new_signalData_boolean = *((boolean*)SignalDataPtr);
+							new_signalData_boolean = *((boolean*)SignalDataPtr);
 							boolean old_signalData_boolean = *((boolean*)(signalStruct->ComFGBuffer));
 							signalFilterResult = Com_ProcessTxSignalFilter(signalStruct, old_signalData_boolean, new_signalData_boolean);
 							if(new_signalData_boolean != old_signalData_boolean)
@@ -968,8 +983,8 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 
  uint8 Com_ReceiveSignalGroup (Com_SignalGroupIdType SignalGroupId)
  {
-    const ComSignalGroup_type * SignalGroup= GET_SIGNALGROUP(GroupSignal->SignalGroupId);
-    const ComIPdu_type *Ipdu=GET_IPDU(SignalGroup->ComIPduHandleId);
+     ComSignalGroup_type * SignalGroup= GET_SIGNALGROUP(GroupSignal->SignalGroupId);
+     ComIPdu_type *Ipdu=GET_IPDU(SignalGroup->ComIPduHandleId);
 	
 	if(Ipdu->ComIPduDirection!=RECEIVE)
 	{
@@ -1010,8 +1025,8 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 	}
 	else
 	{
-      const ComIPdu_type *Ipdu=GET_IPDU(RxPduId);
-	  const ComIPdu_type *Ipdu_Rx=(ComIPdu_type *)PduInfoPtr->SduDataPtr;
+       ComIPdu_type *Ipdu=GET_IPDU(RxPduId);
+	   ComIPdu_type *Ipdu_Rx=(ComIPdu_type *)PduInfoPtr->SduDataPtr;
 	  
 	if(Ipdu->ComIPduGroupRef!=NULL&&Ipdu->ComIPduGroupRef->IpduGroupFlag==STOPPED)
 	{
@@ -1071,7 +1086,7 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 		
    if( SignalId>=0 && SignalId<=COM_MAX_SIGNAL)
    {
-       const ComSignal_type * Signal = GET_SIGNAL(SignalId);
+        ComSignal_type * Signal = GET_SIGNAL(SignalId);
 	   if(Signal->containingIPDU->ComIPduDirection!=RECEIVE)
 	   {
 		  return E_NOT_OK;
@@ -1101,9 +1116,9 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
     
      else if(SignalId >= COM_MIN_GROUPSIGNAL && SignalId <= COM_MAX_GROUPSIGNAL)
      {
-        const ComGroupSignal_type * GroupSignal = GET_GROUPSIGNAL(SignalId);
-        const ComSignalGroup_type * SignalGroup = GET_SIGNALGROUP(GroupSignal->SignalGroupId);
-        const ComIPdu_type *Ipdu=GET_IPDU(SignalGroup->ComIPduHandleId);
+         ComGroupSignal_type * GroupSignal = GET_GROUPSIGNAL(SignalId);
+         ComSignalGroup_type * SignalGroup = GET_SIGNALGROUP(GroupSignal->SignalGroupId);
+         ComIPdu_type *Ipdu=GET_IPDU(SignalGroup->ComIPduHandleId);
 
 	     if(Ipdu->ComIPduDirection!=RECEIVE)
 	     {
@@ -1266,8 +1281,8 @@ uint8 Com_InvalidateSignal(Com_SignalIdType SignalId)
 
 uint8 Com_InvalidateSignalGroup (Com_SignalGroupIdType SignalGroupId)
 {   uint8 flag=0;
-	const ComSignalGroup_type * SignalGroup= GET_SIGNALGROUP(GroupSignal->SignalGroupId);
-    const ComIPdu_type *Ipdu=GET_IPDU(SignalGroup->ComIPduHandleId);
+	 ComSignalGroup_type * SignalGroup= GET_SIGNALGROUP(GroupSignal->SignalGroupId);
+    ComIPdu_type *Ipdu=GET_IPDU(SignalGroup->ComIPduHandleId);
 		if(Ipdu->ComIPduGroupRef==NULL)
 	{
 		if (Com_GetStatus()==COM_INIT)

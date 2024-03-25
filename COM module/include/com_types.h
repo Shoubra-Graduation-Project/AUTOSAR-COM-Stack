@@ -286,7 +286,7 @@ typedef struct
 typedef struct 
 {
 	/* Minimum delay time between successive transmissions of the IPdu in s*/
-	const float32 ComMinimumDelayTime;
+	 float32 ComMinimumDelayTime;
 
    /* Defines when the update-bits of contained in I-PDU will be cleared */
 	const ComTxIPduClearUpdateBit_type ComTxIPduClearUpdateBit;
@@ -579,7 +579,7 @@ typedef struct {
 
 	boolean ComSignalFilterResult;
 
-  /*ComIPdu_type *containingIPDU;*/
+
 
 
 	boolean ComSignalUpdated;
@@ -587,6 +587,37 @@ typedef struct {
 	ComFilter_type* ComFilter;
 
 }ComSignal_type;
+
+
+/********************************************************************************************
+Name: ComIPduGroup
+
+Type: Structure
+
+Description: 
+********************************************************************************************/
+typedef struct{
+	/* The numerical value used as the ID of this I-PDU Group */
+	const uint16 ComIPduGroupHandleId;
+
+	state_type IpduGroupFlag;
+
+    /* 
+	 Check if Reception deadline monitoring for this IpduGruop is enabled or not
+     ---> Not in SWS
+	*/ 
+	boolean RxDeadlineMonitoringEnabled;
+
+	/*
+	   Number of IPDUs within this group
+	   ----> Not in SWS
+	*/
+    uint16 numIPdus;
+
+	
+	
+
+}ComIPduGroup_type;
 
 /* This container contains the configuration parameters of the AUTOSAR COM module's IPDUs */
 typedef struct {
@@ -649,36 +680,12 @@ typedef struct {
    
 } ComIPdu_type;
 
-/********************************************************************************************
-Name: ComIPduGroup
 
-Type: Structure
-
-Description: 
-********************************************************************************************/
-typedef struct{
-	/* The numerical value used as the ID of this I-PDU Group */
-	const uint16 ComIPduGroupHandleId;
-
-	state_type IpduGroupFlag;
-
-    /* 
-	 Check if Reception deadline monitoring for this IpduGruop is enabled or not
-     ---> Not in SWS
-	*/ 
-	boolean RxDeadlineMonitoringEnabled;
-
-	/*
-	   Number of IPDUs within this group
-	   ----> Not in SWS
-	*/
-    uint16 numIPdus;
-
-	ComIPdu_type * IPDU;
-	
-
-}ComIPduGroup_type;
-
+typedef struct {
+    /*This container contains the configuration parameters and sub containers of
+    the AUTOSAR COM module.*/
+    Com_ConfigType ComConfig;
+}Com_Type;
 
 
 
