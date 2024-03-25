@@ -4,6 +4,7 @@
 
 #include "../include/Com_Cfg.h"
 #include "../include/Com.h"
+#include "../include/Com_types.h"
 
 
 
@@ -65,16 +66,15 @@ uint8 ComBGBuffer_2[1];
 uint8 ComSignalGroupBuffer_0[5];
 
 
-const ComGroupSignal_type ComGSignals[2] =
+const ComGroupSignal_type ComGSignals[] =
 {
- {    // Group signal 1
-       .ComBitPosition= 32,
+
+   {    
+       .ComBitPosition = 0,
 	   .ComBitSize= 8,
        .ComHandleId= 0 ,
 
 	   .ComSignalEndianness = LITTLE_ENDIAN,
-       .ComSignalInitValue = COM_SIGNAL_INIT_VALUE , 
-	   .ComTimeoutSubstitutionValue = COM_TIMEOUT_SUBSTITUTION_VALUE, 
 	   .ComSignalType = UINT16,
 	 
 	   .ComTransferProperty = TRIGGERED_ON_CHANGE ,
@@ -84,7 +84,6 @@ const ComGroupSignal_type ComGSignals[2] =
 	   .IsGroupSignal = 1
    },
 
-   //group signal 2
    {
        .ComBitPosition = 32,
 	   .ComBitSize = 8,
@@ -99,6 +98,7 @@ const ComGroupSignal_type ComGSignals[2] =
 	   .SignalGroupId = 0,
 	   .IsGroupSignal = 1
    }
+	 
    
 };
 

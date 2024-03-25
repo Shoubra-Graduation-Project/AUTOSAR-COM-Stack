@@ -15,7 +15,7 @@
  * 
  *    Description:  Get Signal by it's Id from config container
  *********************************************************************************/
-#define GET_SIGNAL(SignalId) (&(ComConfig->ComSignal[SignalId]))
+#define GET_SIGNAL(SignalId) (&(ComConfig.ComSignal[SignalId]))
 
 /**********************************************************************************                                                                              
  *    Macro Name: GET_IPDU    
@@ -26,7 +26,7 @@
  * 
  *    Description:  Get I-PDU by it's Id from config container
  *********************************************************************************/
-#define GET_IPDU(IPduId) (&(ComConfig->ComIPdu[IPduId]))
+#define GET_IPDU(IPduId) (&(ComConfig.ComIPdu[IPduId]))
 
 /**********************************************************************************                                                                              
  *    Macro Name: GET_IpduGroup   
@@ -37,7 +37,7 @@
  * 
  *    Description:  Get I-PDU by it's Id from config container
  *********************************************************************************/
-#define GET_IpduGroup(IpduGroupId) (&(ComConfig->ComIPduGroup[IpduGroupId]))
+#define GET_IpduGroup(IpduGroupId) (&(ComConfig.ComIPduGroup[IpduGroupId]))
 
 /**********************************************************************************                                                                            
  *    Macro Name: GET_SIGNALGROUP    
@@ -48,7 +48,7 @@
  * 
  *    Description: Get Signal Group by it's Id from config container
  *********************************************************************************/
-#define GET_SIGNALGROUP(SignalGroupId)  ((&(ComConfig->ComSignalGroup[SignalGroupId])))
+#define GET_SIGNALGROUP(SignalGroupId)  ((&(ComConfig.ComSignalGroup[SignalGroupId])))
 
 /***********************************************************************************                                                                               
  *    Macro Name: GET_GROUPSIGNAL    

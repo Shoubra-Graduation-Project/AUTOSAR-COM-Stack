@@ -1,6 +1,8 @@
 #ifndef _COM_CFG_H_
 #define _COM_CFG_H_
 
+#include "Com.h"
+
 #define COM_NUM_OF_IPDU 10
 #define COM_NUM_OF_SIGNAL 20
 

@@ -367,7 +367,7 @@ Description:
 ********************************************************************************************/
 typedef struct {
 
-	uint32 ComBitPosition;
+	const uint32 ComBitPosition;
 
 	const uint8 ComBitSize;
 
@@ -681,11 +681,6 @@ typedef struct {
 } ComIPdu_type;
 
 
-typedef struct {
-    /*This container contains the configuration parameters and sub containers of
-    the AUTOSAR COM module.*/
-    Com_ConfigType ComConfig;
-}Com_Type;
 
 
 
