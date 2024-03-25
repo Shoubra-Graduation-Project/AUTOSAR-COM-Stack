@@ -107,8 +107,8 @@ FUNC(Std_ReturnType,CANIF_CODE) CanIf_SetControllerMode(VAR(uint8,AUTOMATIC) Con
     {
         /*MISRA*/
     }
-    
-    Can_SetControllerMode(ControllerId, ControllerMode);
+    CanIf_SetPduMode();
+    Can_SetControllerMode();
      if ( ErrorStatus == E_NOT_OK )
     {
 
