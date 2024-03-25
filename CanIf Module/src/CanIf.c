@@ -1,4 +1,5 @@
 #include "../inc/CanIf.h"
+#include "CanIf_Cfg.c"
 #include "../inc/CanIf_types.h"
 #include "../inc/CanIf_Cfg.h"
 #include "../COM module/include/ComStack_Types.h"
