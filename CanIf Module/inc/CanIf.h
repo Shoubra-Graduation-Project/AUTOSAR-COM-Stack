@@ -45,6 +45,7 @@ CanIf_ControllerModeType CurrentCanState[NUMBER_OF_CONTROLLERS];
  /* Section : Function Declaration */
 FUNC(Std_ReturnType,CANIF_CODE) CanIf_SetControllerMode(VAR(uint8_t,AUTOMATIC) ControllerId,VAR(Can_ControllerStateType , AUTOMATIC) ControllerMode);
 Std_ReturnType CanIf_GetControllerMode(uint8 ControllerId, CanIf_ControllerModeType *ControllerModePtr);
+FUNC(void,CANIF_CODE) CanIf_DeInit(void);
 Std_ReturnType CanIf_SetPduMode(uint8 ControllerId, CanIf_PduModeType PduModeRequest);
 Std_ReturnType CanIf_GetPduMode(uint8 ControllerId, CanIf_PduModeType* PduModePtr);
 void CanIf_Init(const CanIf_ConfigType* ConfigPtr);
