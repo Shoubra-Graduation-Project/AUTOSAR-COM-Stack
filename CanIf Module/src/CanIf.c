@@ -19,6 +19,15 @@ static CanIf_ControllerModeType CanIfControllerMode[NUMBER_OF_CONTROLLERS] = {
 
 static CanIf_PduModeType CanIfPduMode[NUMBER_OF_CONTROLLERS];
 
+static inline int LockSave(void)
+{
+    return 0;
+}
+
+static inline void LockRestore(int msr)
+{
+}
+
 #if(CanIfPublicReadRxPduDataApi == true)
 static PduInfoType RxBuffer[CanIfMaxRxPduCfg];
 #endif
@@ -49,6 +58,23 @@ static CanIf_PduModeType CanIfPduMode[NUMBER_OF_CONTROLLERS];
 static const CanIf_ConfigType* CanIf_ConfigPtr;
 PduInfoType* CanifBuffer;
 
+static void ClearTxBuffers(uint8 controller) {
+    // reset all pending tx requests
+    for(PduIdType i = 0; i < CANIF_NUM_TX_PDU_ID; i++) {
+        if(CanIf_ConfigPtr->TxPduCfg[i].controller == controller) {
+#if CANIF_PUBLIC_READTXPDU_NOTIFY_STATUS_API
+      // clear notification status
+      lPduData.txLpdu[i].txConfirmed = CANIF_NO_NOTIFICATION;
+#endif
+#if CANIF_PUBLIC_TX_BUFFERING
+            // set nextInQueue to indicate empty queue
+            hthData.hth[CanIf_ConfigPtr->TxPduCfg[i].hth].nextInQueue = -1;
+          // set dlc to -1 to indicate empty buffer
+            lPduData.txLpdu[i].dlc = -1;
+#endif
+        }
+    }
+}
 /******************************************* CanIf_SetControllerMode ***********************************************/
 LOCAL VAR(CanIf_GlobalType ,AUTOMATIC) CanIf_Global;
 
@@ -250,6 +276,12 @@ is called() */
     {
         /*MISRA*/
     }
+// reset all buffers
+    int lock = LockSave();
+    ClearTxBuffers(ControllerId);
+    ClearRxBuffers(ControllerId);
+    LockRestore(lock);	
+	
    
 }
 
