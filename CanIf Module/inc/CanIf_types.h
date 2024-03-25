@@ -205,7 +205,16 @@ typedef enum {
   /** Transceiver mode SLEEP */
   CANTRCV_TRCVMODE_SLEEP
 } CanTrcv_TrcvModeType ;
+/****************************************************************************/
+typedef struct {
+	/* Everything in this structure is implementation specific */
+    const CanIf_TxPduConfigType* TxPduCfg;
+	const CanIf_RxLPduConfigType* RxLpduCfg;
 
+    const CanIf_ControllerConfigType* ControllerConfig;
+    const CanIf_DispatchConfigType* DispatchConfig;
+    const CanIf_HrHConfigType** canIfHrhCfg;  // This is an array of Hrh objects, for each controller ID
+} CanIf_ConfigType;
 /**************************************************************************************************
 **
 Name:                                	CanIfPduCanIdType
