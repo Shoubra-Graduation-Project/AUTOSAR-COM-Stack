@@ -88,3 +88,69 @@ CanIf_ConfigType CanIf =
 		}
 	}
 };
+
+
+
+const CanIf_TxPduConfigType CanIfTxPduConfigData[CANIF_NUM_TX_PDU_ID] =
+{
+  {
+
+    .id = 512,
+    .dlc = 8,
+    .controller = 0,
+    .hth = 0, //&CanIfHthConfigData_Hoh[0],
+    .user_TxConfirmation = NULL,
+    .ulPduId = 0
+  },
+  {
+      .id = 0x13F, /* throttle position parameters */
+      .dlc = 8,
+      .controller = 0,
+      .hth = 0,
+      .user_TxConfirmation = NULL,
+      .ulPduId = 1
+  },
+};
+
+const CanIf_RxLPduConfigType CanIfRxPduConfigData[CANIF_NUM_RX_LPDU_ID] =
+{ /* CAN ID must be sorted from high to low! */
+    { /* Contains throttle body position sensor, and some temperature values */
+        .id = 0x318,
+        .dlc = 8,
+        .controller = 0,
+        .user_RxIndication = &IMACanRxIndication,
+        .ulPduId = 0
+    },
+    { /* contains the SOC */
+        .id = 0x231,
+        .dlc = 7,
+        .controller = 0,
+        .user_RxIndication = &IMACanRxIndication,
+        .ulPduId = 1
+    },
+    { /* contains the motor current */
+        .id = 0x169,
+        .dlc = 8,
+        .controller = 0,
+        .user_RxIndication = &IMACanRxIndication,
+        .ulPduId = 2
+    },
+    {
+        .id = 0x111, /* contains engine RPM, and battery voltage */
+        .dlc = 7,
+        .controller = 0,
+        .user_RxIndication = &IMACanRxIndication,
+        .ulPduId = 3
+    },
+
+
+
+};
+
+
+
+
+
+
+
+
