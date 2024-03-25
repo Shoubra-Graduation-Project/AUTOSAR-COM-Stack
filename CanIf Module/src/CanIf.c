@@ -42,6 +42,18 @@ struct {
     } txLpdu[CANIF_NUM_TX_PDU_ID];
 
 
+struct {
+#if CANIF_PUBLIC_READRXPDU_DATA_API
+        uint8 data[8];
+        uint8 dlc;
+#endif
+#if CANIF_PUBLIC_READRXPDU_NOTIFY_STATUS_API
+        bool rxInd;
+#endif
+    } rxLpdu[CANIF_NUM_RX_LPDU_ID];
+} CanIf_LPduDataType;
+
+
 #if(CanIfPublicReadRxPduDataApi == true)
 static PduInfoType RxBuffer[CanIfMaxRxPduCfg];
 #endif
