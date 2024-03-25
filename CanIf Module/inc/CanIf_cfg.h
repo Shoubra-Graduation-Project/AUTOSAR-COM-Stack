@@ -54,6 +54,15 @@ typedef enum {
   CANIF_PDU_ID_PDU_TestData,
   CANIF_NUM_TX_PDU_ID
 } CanIf_StaticTxLPduIdType;
+
+typedef enum
+{
+    CANIF_PDU_ID_PDU_IMA_ID111,
+    CANIF_PDU_ID_PDU_IMA_ID169,
+    CANIF_PDU_ID_PDU_IMA_ID231,
+    CANIF_PDU_ID_PDU_IMA_ID318,
+    CANIF_NUM_RX_LPDU_ID
+} CanIf_RxLPduIdType;
 /**************************************************************************************************
 **
 Name:                                   CanIfPrivateDlcCheck
