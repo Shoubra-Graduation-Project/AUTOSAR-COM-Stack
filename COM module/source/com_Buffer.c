@@ -8,7 +8,8 @@
 #include "../include/Com_Types.h"
 #include "../include/Com_Cfg.h"
 #include "../include/ComMacros.h"
-#include "include/Com.h"
+#include "../include/Com.h"
+#include "../libra"
 #include <string.h>
 #include <cstddef>
 
@@ -28,6 +29,7 @@
  * 
  *************************************************************************/
 
+/*
 void Com_CopyShadowBufferToIPDU (const Com_SignalGroupIdType signalGroupId)
 {
     // Get Signal Group
@@ -57,7 +59,7 @@ void Com_CopyShadowBufferToIPDU (const Com_SignalGroupIdType signalGroupId)
         }
 
 }
-
+*/
 /***********************************************************************************
  *                                                                                 *
  *    Service Name: Com_CopyPduToShadowBuffer                                                             
@@ -72,7 +74,7 @@ void Com_CopyShadowBufferToIPDU (const Com_SignalGroupIdType signalGroupId)
  * 
  *********************************************************************************/
 
-
+/*
 void Com_CopyPduToShadowBuffer(const Com_SignalGroupIdType signalGroupId) {
 
     // Get Signal Group
@@ -99,7 +101,7 @@ void Com_CopyPduToShadowBuffer(const Com_SignalGroupIdType signalGroupId) {
         *buffer++ =  *pduDataPtr++;
     }
 }
-
+*/
 
 /***********************************************************************
  *                                                                       

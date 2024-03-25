@@ -1,7 +1,9 @@
 #ifndef DET_H_
 #define DET_H_
 
-void Det_ReportError(uint16_t ModuleId ,uint8_t Instanceid ,uint8_t ApiId ,uint8_t ErrorId);
+#include "../../COM module/libraries/Std_Types.h"
+
+void Det_ReportError(uint16 ModuleId ,uint8 Instanceid ,uint8 ApiId ,uint8 ErrorId);
 
 
 

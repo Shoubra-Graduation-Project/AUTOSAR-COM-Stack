@@ -26,7 +26,6 @@ Type: EcucEnumerationParamDef
 Description: Possible return values of com APIs
 ****************************************************************************************************/
 typedef enum {
-	E_OK,
 	COM_SERVICE_NOT_AVAILABLE,
 	COM_BUSY
 } Com_ReturnType;
@@ -41,7 +40,7 @@ Description: Transmission modes for I-PDU
 typedef enum {
 	DIRECT,
 	MIXED,
-	NONE,
+	MODE_NONE,
     PERIODIC
 } ComTxModeMode_type;
 
@@ -161,7 +160,7 @@ Description:
 ****************************************************************************************************/
 typedef enum{
 	NOTIFY,
-    REPLACE 
+  INVALIDATE_REPLACE 
 }ComDataInvalidAction_type;
 
 /***************************************************************************************************
@@ -172,8 +171,13 @@ Type: EcucEnumerationParamDef
 Description: 
 ****************************************************************************************************/
 typedef enum{
+
 	ComRxDataTimeoutAction_NONE,
 	ComRxDataTimeoutAction_REPLACE,
+
+	NONE,
+	TIMEOUT_REPLACE,
+
 	SUBSTITUTE
 }ComRxDataTimeoutAction_type;
 
@@ -226,8 +230,6 @@ typedef struct{
 	/*Activate/Deactivate the version information API (Com_GetVersionInfo).*/
 	const boolean ComVersionInfoApi;
 
-    //Defines the maximum number of supported I-PDU groups.
-	const uint16 ComSupportedIPduGroups;
 
 }ComGeneral_type;
 
@@ -268,14 +270,14 @@ typedef struct
 /* If ComFilter evaluates to true */
 typedef struct 
 {
-	const ComTxMode_type ComTxMode;
+	const ComTxMode_type *ComTxMode;
 
 } ComTxModeTrue_type;
 
 /* If  ComFilter evaluates to ComTxModeFalse */
 typedef struct 
 {
-	const ComTxMode_type ComTxMode;
+	const ComTxMode_type *ComTxMode;
 
 } ComTxModeFalse_type;
 
@@ -293,10 +295,10 @@ typedef struct
 	const uint8 ComTxIPduUnusedAreasDefault;
 
 	/* ComFilter evaluates to true */
-	const ComTxModeTrue_type ComTxModeTrue ;
+	const ComTxModeTrue_type *ComTxModeTrue ;
 
 	/* ComFilter evaluates to ComTxModeFalse */
-	const ComTxModeFalse_type ComTxModeFalse ;
+	const ComTxModeFalse_type *ComTxModeFalse ;
 
 	/*Not in SWS*/
 	uint32 ComNumberOfTransmissions;
@@ -311,104 +313,179 @@ typedef struct
 
 } ComTxIPdu_type;
 
+typedef struct{
 
-/* This container contains the configuration parameters of the AUTOSAR COM module's IPDUs */
-typedef struct {
-	
-	/*
-	   Defines for I-PDUs with ComIPduType NORMAL: If the underlying IF module supports cancellation of transmit requests.
-       Defines for I-PDUs with ComIPduType TP: If the underlying TP-module supports RX and TX cancellation of ongoing requests.
-    */
-    const boolean ComIPduCancellationSupport;
-    ComIPduCounter_type* ComIPduCounter;
-    /* sent or received */
-    ComIPduDirection_type ComIPduDirection;
-
-    /* The numerical value used as the ID of the I-PDU */
-    uint16 ComIPduHandleId ;
-
-	/* Immediate or Deferred*/
-	ComIPduSignalProcessing_type ComIPduSignalProcessing;
-
-    /* 
-	   If there is a trigger transmit callout defined for this I-PDU this parameter
-       contains the name of the callout function 
-	*/
-	void (*ComIPduTriggerTransmitCallout) (void);
-
-    /*Normal or TP*/
-	ComIPduType_type ComIPduType;
-	
-	
-	 /*This parameter defines the existence and the name of a callout function for the corresponding I-PDU*/
-	 boolean (* ComIPduCallout)  ( PduIdType PduId,const PduInfoType* PduInfoPtr);
-
-	 /*Reference to the Com_MainFunctionRx/Com_MainFunctionTx this I-PDU
-	 belongs to.*/
-	 void (*ComIPduMainFunctionRef)(void);
-
-	  /*Reference to the I-PDU groups this I-PDU belongs to*/
-	 ComIPduGroup_type * ComIPduGroupRef;
-
-	 /*References to all signal groups contained in this I-Pdu*/
-	 ComSignalGroup_type ** ComIPduSignalGroupRef;
-
-	 /* References to all signals contained in this I-PDU.*/
-	 ComSignal_type** ComIPduSignalRef;
-
-	 /*Reference to the "global" Pdu structure to allow harmonization of handle
-	 IDs in the COM-Stack.*/
-	 Pdu* ComPduIdRef;
-
-	 ComTxIPdu_type *ComTxIPdu;
-    
-	/*Pointer to IPDU data ---->  Not in SWS*/
-    void const * ComIPduDataPtr;
-
-	/*Size of IPDU ---->  Not in SWS*/
-	const uint8 ComIPduLength;
-    
-	/* ----> Not in SWS */
-	boolean ReceptionDMEnabled;
+   /*Name of Com_CbkCounterErr callback function to be called. */
+   void (*ComIPduCounterErrorNotification) (void);
    
-} ComIPdu_type;
+   /*Size of PDU Counter expressed in bits*/
+   const uint8 ComIPduCounterSize;
+
+   /*Position of PDU counter expressed in bits from start position of data content*/
+   const uint32 ComIPduCounterStartPosition;
+   
+   /* Threshold value of I-PDU counter algorithm*/
+   const uint8 ComIPduCounterThreshold;
+
+   uint8 ComCurrentCounterValue;
+
+}ComIPduCounter_type;
+
+
+
+
+
+typedef struct{
+	ComFilterAlgorithm_type ComFilterAlgorithm;
+	sint64 ComFilterMask;
+	sint64 ComFilterMax;
+	sint64 ComFilterMin;
+	uint32 ComFilterOffset;
+	uint32 ComFilterPeriod;
+	uint32 ComFilterOccurrence;
+	sint64 ComFilterX;
+}ComFilter_type;
+
+typedef struct{
+	const float64 ComMainTxTimeBase;
+	void (*ComPreparationNotification) (void);
+}ComMainFunctionTx_type;
+
+typedef struct{
+	const float64 ComMainRxTimeBase;
+}ComMainFunctionRx_type;
+
+
 
 
 /********************************************************************************************
-Name: ComIPduGroup
+Name: ComGroupSignal
+
+Type: Structure
+
+Description: 
+********************************************************************************************/
+typedef struct {
+
+	uint32 ComBitPosition;
+
+	const uint8 ComBitSize;
+
+	const uint16 ComHandleId;
+
+	void *const  ComSignalDataInvalidValue;
+
+	ComSignalEndianness_type ComSignalEndianness;
+
+	void *const ComSignalInitValue;
+
+	const uint32 ComSignalLength;
+
+	ComSignalType_type ComSignalType;
+
+	void *const ComTimeoutSubstitutionValue;
+
+	ComTransferProperty_type ComTransferProperty;
+
+/* I-PDU that contain this signal ---------> Not in SWS*/
+	const uint16 ComIPduHandleId;
+    
+	void const * ComSignalDataPtr;
+
+	const uint16 SignalGroupId;
+    
+	// ----> Not is SWS
+	const boolean IsGroupSignal ;
+
+ 
+}ComGroupSignal_type;
+
+
+
+
+/********************************************************************************************
+Name: ComSignalGroup
 
 Type: Structure
 
 Description: 
 ********************************************************************************************/
 typedef struct{
-	/* The numerical value used as the ID of this I-PDU Group */
-	const uint16 ComIPduGroupHandleId;
 
-	state_type IpduGroupFlag;
+    /* Replace or Notify */
+    ComDataInvalidAction_type ComDataInvalidAction;
+
+    /* Only valid on sender side: Name of Com_CbkTxErr callback function to be called.*/
+	void (*ComErrorNotification) (void);
+
+    /*Defines the length of the first deadline monitoring timeout period in seconds*/
+	const float32 ComFirstTimeout;
     
-	/* References to all I-PDU groups that includes this I-PDU group. I */
-	ComIPduGroup_type const * ComIPduGroupGroupRef;
+	/*The numerical value used as the ID.*/
+	const uint16 ComHandleId;
 
-    /* 
-	 Check if Reception deadline monitoring for this IpduGruop is enabled or not
-     ---> Not in SWS
-	*/ 
-	boolean RxDeadlineMonitoringEnabled;
-
-    /*-------> not in SWS */
-	ComIPdu_type **IPDU;
-
-	/*
-	   Number of IPDUs within this group
-	   ----> Not in SWS
+    /*
+	  This parameter defines that the respective signal's initial value shall be put
+      into the respective PDU but there will not be any update of the value through the RTE.
 	*/
-    uint16 numIPdus;
+	boolean ComInitialValueOnly;
+
+    /*Only valid on receiver side: Name of Com_CbkInv callback function to be called.*/
+	void (*ComInvalidNotification) (void);
+
+   /*
+     On sender side: Name of Com_CbkTxAck callback function to be called.
+     On receiver side: Name of Com_CbkRxAck callback function to be called.
+	 */
+	void (*ComNotification) (void);
+
+    /*None - Replace - Substitute*/
+	ComRxDataTimeoutAction_type ComRxDataTimeoutAction;
+
+    /* Defines the length of the deadline monitoring timeout period in seconds. */
+	const float32 ComTimeout;
+
+    /*
+	  On sender side: Name of Com_CbkTxTOut callback function to be called.
+      On receiver side: Name of Com_CbkRxTOut callback function to be called.
+	*/
+	void (*ComTimeoutNotification) (void);
+
+     /*SizeOfsignalGroup in bytes ------>not in SWS*/
+    const uint32 signalGroupSize;
+
+	ComTransferProperty_type ComTransferProperty;
+    
+	/*Bit position of update-bit inside I-PDU.*/
+	const uint32 ComUpdateBitPosition;
+
+	/* Group signals included in this signal group  -------> Not in SWS*/
+	const ComGroupSignal_type **ComGroupSignal;
+    
+	/* Identify shadow buffer -------> Not in SWS*/    
+	 void * ComShadowBuffer;
+
+	/* Identify BackGround buffer -------> Not in SWS*/  
+	 void *ComFGBuffer;
+
+	/* Identify BackGround buffer -------> Not in SWS*/
+    	 void * ComBGBuffer; 
+
+	/* I-PDU that contain this signal group ---------> Not in SWS*/
+	 uint16 ComIPduHandleId;
+
+	 void * SignalGroupDataPtr;
 	
+	boolean ComIsSignalGroupChanged;
 
-}ComIPduGroup_type;
+	boolean ComSignalGroupFilterResult;
 
+	/* -----> Not in SWS*/
+	float32 DeadlineMonitoringTimer;
 
+	ComFilter_type* comFilter;
+
+}ComSignalGroup_type;
 
 
 /********************************************************************************************
@@ -502,7 +579,8 @@ typedef struct {
 
 	boolean ComSignalFilterResult;
 
-  ComIPdu_type *containingIPDU;
+  /*ComIPdu_type *containingIPDU;*/
+
 
 	boolean ComSignalUpdated;
 
@@ -510,188 +588,100 @@ typedef struct {
 
 }ComSignal_type;
 
-
-typedef struct{
-	ComFilterAlgorithm_type ComFilterAlgorithm;
-	sint64 ComFilterMask;
-	sint64 ComFilterMax;
-	sint64 ComFilterMin;
-	uint32 ComFilterOffset;
-	uint32 ComFilterPeriod;
-	uint32 ComFilterOccurrence;
-	sint64 ComFilterX;
-}ComFilter_type;
-
-/********************************************************************************************
-Name: ComSignalGroup
-
-Type: Structure
-
-Description: 
-********************************************************************************************/
-typedef struct{
-
-    /* Replace or Notify */
-    ComDataInvalidAction_type ComDataInvalidAction;
-
-    /* Only valid on sender side: Name of Com_CbkTxErr callback function to be called.*/
-	void (*ComErrorNotification) (void);
-
-    /*Defines the length of the first deadline monitoring timeout period in seconds*/
-	const float32 ComFirstTimeout;
-    
-	/*The numerical value used as the ID.*/
-	const Com_SignalGroupIdType ComHandleId;
-
-    /*
-	  This parameter defines that the respective signal's initial value shall be put
-      into the respective PDU but there will not be any update of the value through the RTE.
-	*/
-	boolean ComInitialValueOnly;
-
-    /*Only valid on receiver side: Name of Com_CbkInv callback function to be called.*/
-	void (*ComInvalidNotification) (void);
-
-   /*
-     On sender side: Name of Com_CbkTxAck callback function to be called.
-     On receiver side: Name of Com_CbkRxAck callback function to be called.
-	 */
-	void (*ComNotification) (void);
-
-    /*None - Replace - Substitute*/
-	ComRxDataTimeoutAction_type ComRxDataTimeoutAction;
-
-    /* Defines the length of the deadline monitoring timeout period in seconds. */
-	const float32 ComTimeout;
-
-    /*
-	  On sender side: Name of Com_CbkTxTOut callback function to be called.
-      On receiver side: Name of Com_CbkRxTOut callback function to be called.
-	*/
-	void (*ComTimeoutNotification) (void);
-
-     /*SizeOfsignalGroup in bytes ------>not in SWS*/
-    const uint32 signalGroupSize;
-
-	ComTransferProperty_type ComTransferProperty;
-    
-	/*Bit position of update-bit inside I-PDU.*/
-	const uint32 ComUpdateBitPosition;
-
-	/* Group signals included in this signal group  -------> Not in SWS*/
-	const ComGroupSignal_type **ComGroupSignal;
-    
-	/* Identify shadow buffer -------> Not in SWS*/    
-	 void * ComShadowBuffer;
-
-	/* Identify BackGround buffer -------> Not in SWS*/  
-	 void *ComFGBuffer;
-
-	/* Identify BackGround buffer -------> Not in SWS*/
-    	 void * ComBGBuffer; 
-
-	/* I-PDU that contain this signal group ---------> Not in SWS*/
-	 uint16 ComIPduHandleId;
-
-	 void * SignalGroupDataPtr;
-	
-	boolean ComIsSignalGroupChanged;
-
-	boolean ComSignalGroupFilterResult;
-
-	/* -----> Not in SWS*/
-	float32 DeadlineMonitoringTimer;
-
-	ComFilter_type* ComFilter;
-
-}ComSignalGroup_type;
-
-
-
-
-/********************************************************************************************
-Name: ComGroupSignal
-
-Type: Structure
-
-Description: 
-********************************************************************************************/
+/* This container contains the configuration parameters of the AUTOSAR COM module's IPDUs */
 typedef struct {
+	
+	/*
+	   Defines for I-PDUs with ComIPduType NORMAL: If the underlying IF module supports cancellation of transmit requests.
+       Defines for I-PDUs with ComIPduType TP: If the underlying TP-module supports RX and TX cancellation of ongoing requests.
+    */
+    const boolean ComIPduCancellationSupport;
+    ComIPduCounter_type* ComIPduCounter;
+    /* sent or received */
+    ComIPduDirection_type ComIPduDirection;
 
-	const uint32 ComBitPosition;
+    /* The numerical value used as the ID of the I-PDU */
+    uint16 ComIPduHandleId ;
 
-	const uint8 ComBitSize;
+	/* Immediate or Deferred*/
+	ComIPduSignalProcessing_type ComIPduSignalProcessing;
 
-	const uint16 ComHandleId;
+    /* 
+	   If there is a trigger transmit callout defined for this I-PDU this parameter
+       contains the name of the callout function 
+	*/
+	void (*ComIPduTriggerTransmitCallout) (void);
 
-	void *const  ComSignalDataInvalidValue;
+    /*Normal or TP*/
+	ComIPduType_type ComIPduType;
+	
+	
+	 /*This parameter defines the existence and the name of a callout function for the corresponding I-PDU*/
+	 boolean (* ComIPduCallout)  ( PduIdType PduId,const PduInfoType* PduInfoPtr);
 
-	ComSignalEndianness_type ComSignalEndianness;
+	 /*Reference to the Com_MainFunctionRx/Com_MainFunctionTx this I-PDU
+	 belongs to.*/
+	 void (*ComIPduMainFunctionRef)(void);
 
-	void *const ComSignalInitValue;
+	  /*Reference to the I-PDU groups this I-PDU belongs to*/
+	 ComIPduGroup_type * ComIPduGroupRef;
 
-	const uint32 ComSignalLength;
+	 /*References to all signal groups contained in this I-Pdu*/
+	 ComSignalGroup_type ** ComIPduSignalGroupRef;
 
-	ComSignalType_type ComSignalType;
+	 /* References to all signals contained in this I-PDU.*/
+	 ComSignal_type** ComIPduSignalRef;
 
-	void *const ComTimeoutSubstitutionValue;
+	 /*Reference to the "global" Pdu structure to allow harmonization of handle
+	 IDs in the COM-Stack.*/
+	 PduIdType* ComPduIdRef;
 
-	ComTransferProperty_type ComTransferProperty;
-
-/* I-PDU that contain this signal ---------> Not in SWS*/
-	const uint16 ComIPduHandleId;
+	 ComTxIPdu_type *ComTxIPdu;
     
-	void const * ComSignalDataPtr;
+	/*Pointer to IPDU data ---->  Not in SWS*/
+    void const * ComIPduDataPtr;
 
-	const Com_SignalGroupIdType SignalGroupId;
+	/*Size of IPDU ---->  Not in SWS*/
+	const uint8 ComIPduLength;
     
-	// ----> Not is SWS
-	const boolean IsGroupSignal ;
-
- 
-}ComGroupSignal_type;
-
-typedef struct{
-
-   /*Name of Com_CbkCounterErr callback function to be called. */
-   void (*ComIPduCounterErrorNotification) (void);
+	/* ----> Not in SWS */
+	boolean ReceptionDMEnabled;
    
-   /*Size of PDU Counter expressed in bits*/
-   const uint8 ComIPduCounterSize;
+} ComIPdu_type;
 
-   /*Position of PDU counter expressed in bits from start position of data content*/
-   const uint32 ComIPduCounterStartPosition;
-   
-   /* Threshold value of I-PDU counter algorithm*/
-   const uint8 ComIPduCounterThreshold;
+/********************************************************************************************
+Name: ComIPduGroup
 
-   uint8 ComCurrentCounterValue;
+Type: Structure
 
-}ComIPduCounter_type;
-
-/*This optional container contains the information needed for each I-PDU replicated.*/
+Description: 
+********************************************************************************************/
 typedef struct{
+	/* The numerical value used as the ID of this I-PDU Group */
+	const uint16 ComIPduGroupHandleId;
 
-   /*The number of identical I-PDUs needed for successful voting.*/
-   const uint8 ComIPduReplicationQuorum;
+	state_type IpduGroupFlag;
 
-   Pdu * ComIPduReplicaRef;
+    /* 
+	 Check if Reception deadline monitoring for this IpduGruop is enabled or not
+     ---> Not in SWS
+	*/ 
+	boolean RxDeadlineMonitoringEnabled;
+
+	/*
+	   Number of IPDUs within this group
+	   ----> Not in SWS
+	*/
+    uint16 numIPdus;
+
+	ComIPdu_type * IPDU;
+	
+
+}ComIPduGroup_type;
 
 
-}ComIPduReplication_type;
-
-/*This container contains the configuration parameters and sub containers of the COM module.*/
 
 
-
-typedef struct{
-	const float64 ComMainTxTimeBase;
-	void (*ComPreparationNotification) (void);
-}ComMainFunctionTx_type;
-
-typedef struct{
-	const float64 ComMainRxTimeBase;
-}ComMainFunctionRx_type;
 #endif
 
 

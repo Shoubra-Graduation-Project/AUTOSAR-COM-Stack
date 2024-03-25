@@ -3,8 +3,8 @@
 #define _COM_H_
 
 #include "../libraries/Std_Types.h"
-#include "com_types.h"
-#include "ComStack_Types.h"
+#include "../include/com_types.h"
+#include "../include/ComStack_Types.h"
 
 
 
@@ -93,11 +93,7 @@ void Com_RxIndication (PduIdType RxPduId, const PduInfoType* PduInfoPtr);
 
 void Com_TxConfirmation (PduIdType TxPduId, Std_ReturnType result);
 
-BufReq_ReturnType Com_StartOfReception (PduIdType id, const PduInfoType* info, PduLengthType TpSduLength, PduLengthType* bufferSizePtr);
 
-BufReq_ReturnType Com_CopyRxData (PduIdType id, const PduInfoType* info, PduLengthType* bufferSizePtr);
-
-BufReq_ReturnType Com_CopyTxData (PduIdType id, const PduInfoType* info, const RetryInfoType* retry, PduLengthType* availableDataPtr);
 
 
 

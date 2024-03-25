@@ -7,13 +7,14 @@
 #include "../include/Com_HelpingFunctions.h"
 #include "../include/com_buffers.h"
 #include "../include/Com_Types.h"
-#include "include/Com_Cfg.h"
-#include "include/ComMacros.h"
-#include "Det/include/Det.h"
-#include "Det/include/Com_Det.h"
+#include "../include/Com_Cfg.h"
+#include "../include/ComMacros.h"
+#include "../../Det/inc/Det.h"
+#include "../../Det/inc/Com_Det.h"
+#include "../libraries/Std_Types.h"
 #include <string.h>
 #include <cstddef>
-#include <minwindef.h>
+//#include <minwindef.h>
 
 static Com_StatusType initStatus = COM_UNINIT;
 
@@ -42,10 +43,7 @@ const Com_ConfigType * ComConfig;
 
 void Com_Init (const Com_ConfigType* config)
 {
-
-        // Initialize global and static variables
-        ComConfig = config;
-    
+				
 	    ComIPdu_type *IPdu;
     	ComSignal_type *Signal;
 		ComSignalGroup_type *SignalGroup;
@@ -57,6 +55,10 @@ void Com_Init (const Com_ConfigType* config)
         uint8 ComInitSignalGroupId;
 
 		uint8 *ComShadowBuffer;
+	
+        // Initialize global and static variables
+        ComConfig = config;
+    
 
 	    // Loop over all I-PDUs
         for (ComInitPduId = 0; ComInitPduId < COM_NUM_OF_IPDU ; ComInitPduId++)
@@ -69,7 +71,7 @@ void Com_Init (const Com_ConfigType* config)
             I-PDU with a value determined by configuration parameter ComTxIPduUnusedAreasDefault*/
 	       if (IPdu->ComIPduDirection == SEND)
 		    {
-			   memset((void *)IPdu->ComIPduDataPtr, IPdu->ComTxIPdu.ComTxIPduUnusedAreasDefault, IPdu->ComIPduLength);
+			   memset((void *)IPdu->ComIPduDataPtr, IPdu->ComTxIPdu->ComTxIPduUnusedAreasDefault, IPdu->ComIPduLength);
 	    	}
 			else
 			{
@@ -91,16 +93,19 @@ void Com_Init (const Com_ConfigType* config)
                  initialize each signal of n-bit sized signal type on sender and receiver side
                  with the lower n-bits of its configuration parameter ComSignalInitValue
                */
-            /*  memcpy(Signal->ComSignalDataPtr, config->ComSignal[ComInitSignalId].ComSignalInitValue, Signal->ComBitSize/8);*/
+              memcpy(Signal->ComSignalDataPtr, config->ComSignal[ComInitSignalId].ComSignalInitValue, Signal->ComBitSize/8);
 
-               uint8 *dest = (uint8 *) Signal->ComSignalDataPtr;
+
+              /*uint8 *dest = (uint8 *) Signal->ComSignalDataPtr;
                uint8 *src =  (uint8 *) config->ComSignal[ComInitSignalId].ComSignalInitValue;
+				       
 
-                    for(int i= 0; i < Signal->ComBitSize/8 ; i++)
+                    for(int i= 0; i < (Signal->ComBitSize)/8 ; i++)
                    {
                        *dest = src++;
                         dest++;
                    }
+				   */
                //[SWS_Com_00117] The AUTOSAR COM module shall clear all update-bits during initialization
 			   CLEARBIT(IPdu->ComIPduDataPtr, Signal->ComUpdateBitPosition);
 
@@ -131,8 +136,8 @@ void Com_Init (const Com_ConfigType* config)
                        with the lower n-bits of its configuration parameter ComSignalInitValue
                     */
                   
-                 /* memcpy(GroupSignal->ComSignalDataPtr, config->ComSignal[ComInitGroupSignalId].ComSignalInitValue, GroupSignal->ComBitSize/8); */
-
+                  memcpy(GroupSignal->ComSignalDataPtr, config->ComSignal[ComInitGroupSignalId].ComSignalInitValue, GroupSignal->ComBitSize/8); */
+                   /*
                     uint8 *dest = (uint8 *) GroupSignal->ComSignalDataPtr;
                     uint8 *src =  (uint8 *) config->ComSignal[ComInitGroupSignalId].ComSignalInitValue;
 
@@ -141,7 +146,7 @@ void Com_Init (const Com_ConfigType* config)
                        *dest = src++;
                         dest++;
                    }
-			       
+			       */
 	            }
 
 			}
