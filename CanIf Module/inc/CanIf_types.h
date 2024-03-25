@@ -6,9 +6,10 @@
 #include "./CanIf_cfg.h"
 #include "../../Common/Platform_Types.h"
 #include "../../Common/Common_Macros.h"
-#include "../COM module/include/ComStack_Types.h"
-#include "../CanDrv/Inc/Can_GeneralTypes.h"
-#include "../CanDrv/Inc/Can_Cfg.h"
+#include "../../CanDrv/inc/ComStack_Types.h"
+#include "../../CanDrv/inc/Can_GeneralTypes.h"
+#include "../../CanDrv/inc/Can_Cfg.h"
+#include "../../CanDrv/inc/Can.h"
 
 
 
@@ -79,6 +80,10 @@
 typedef uint8 Can_ControllerStateType;
 typedef uint8 PduIdType;
 
+
+
+
+
 typedef enum {
     CANIF_CHANNEL_1,
     CANIF_CHANNEL_2,
@@ -141,6 +146,100 @@ typedef enum {
    *  by CAN hardware) */
   CANIF_CS_SLEEP
 } CanIf_ControllerModeType;
+
+typedef struct {
+    /// can id used for transmission, msb indicates extended id
+    Can_IdType id;
+
+    /// data length (DLC)
+    uint8 dlc;
+
+    /// can driver controller id to be used for transmission
+    uint8 controller;
+
+    /// can driver hth id to be used for transmission
+    Can_HwHandleType hth;
+
+    /// upper layer confirmation function, set to null if no confirmation
+    void(*user_TxConfirmation)(PduIdType txPduId);
+
+    /// upper layer pdu id passed to callout function
+    PduIdType ulPduId;
+} CanIf_TxPduConfigType;
+
+
+
+typedef struct {
+    /// can id used for reception filtering
+    ///todo add support for range reception
+    Can_IdType id;
+
+    /// min dlc and dlc reported to upper layers. Set to -1 to disable dlc check
+    uint8 dlc;
+
+    /// can driver controller id from where to receive lpdu
+    uint8 controller;
+
+    /** SWS_CANIF_00012
+     upper layer indication function, set to null if no rx indication */
+    void(*user_RxIndication)(PduIdType RxPduId, const PduInfoType* PduInfoPtr);
+
+    /// upper layer pdu id passed to callout function
+    PduIdType ulPduId;
+} CanIf_RxLPduConfigType;
+
+
+
+#if 0
+typedef struct {
+  union {
+    PduIdType lpduId;
+    PduIdType *array;
+  }pduInfo;
+  PduIdType arrayLen; // 0 means no ptr no filtering = fullCan reception
+} CanIf_HrHConfigType;
+#endif
+#if 0
+typedef struct {
+} CanIf_ControllerConfigType;
+
+typedef struct {
+	void(*user_ControllerModeIndication)(uint8 controllerId, CanIf_ControllerModeType controllerMode);
+	void(*user_ControllerBusOff)(uint8 controllerId);
+//  void(*user_SetWakeupEvent)(asdf)
+//  void(*user_TrcvModeIndication)(asdf)
+}CanIf_DispatchCfgType;
+#endif
+
+
+
+typedef struct
+{
+	uint8 WakeupSupport;
+	uint8 CanIfControllerIdRef;
+	uint8 CanIfDriverNameRef[30];
+	const Can_ControllerConfigType* CanIfInitControllerRef;
+} CanIf_ControllerConfigType;
+
+
+typedef struct
+{
+	void (*CanIfBusOffNotification)(uint8);
+
+	void (*CanIfWakeUpNotification)(uint8);
+	void (*CanIfWakeupValidNotification)(uint8);
+	void (*CanIfErrorNotificaton)(uint8);
+} CanIf_DispatchConfigType;
+
+typedef struct
+{
+    union {
+        PduIdType lpduId;
+        PduIdType *array;
+    }pduInfo;
+    PduIdType arrayLen; // 0 means no ptr no filtering = fullCan reception
+}   CanIf_HrHConfigType;
+
 
 
 /**************************************************************************************************
@@ -208,7 +307,7 @@ typedef enum {
 /****************************************************************************/
 typedef struct {
 	/* Everything in this structure is implementation specific */
-    const CanIf_TxPduConfigType* TxPduCfg;
+        const CanIf_TxPduConfigType* TxPduCfg;
 	const CanIf_RxLPduConfigType* RxLpduCfg;
 
     const CanIf_ControllerConfigType* ControllerConfig;
@@ -331,6 +430,8 @@ typedef struct{
     const CanIf_DispatchConfigType* DispatchConfig;
     const CanIf_HrHConfigType** canIfHrhCfg;  // This is an array of Hrh objects, for each controller ID
 } CanIf_ConfigType;
+
+extern const CanIf_ConfigType CanIf_Config;
 /**************************************************************************************************
 **
 Name:                                     CanIfRxPduCfg

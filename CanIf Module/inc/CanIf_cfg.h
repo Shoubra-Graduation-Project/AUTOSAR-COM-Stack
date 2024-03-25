@@ -49,6 +49,14 @@
 /// Defines if a can tranceiver has wakeup support
 #define CANIF_TRCV_WAKEUP_SUPPORT                 STD_OFF // not supported
 
+
+
+typedef enum
+{
+	CANIF_NUMBER_OF_DYNAMIC_CANTXPDUIDS
+} CanIf_DynamicTxLPduIdType;
+
+
 typedef enum {
   CANIF_PDU_ID_PDU_UDSphysicalTX = CANIF_NUMBER_OF_DYNAMIC_CANTXPDUIDS,
   CANIF_PDU_ID_PDU_TestData,
