@@ -28,6 +28,19 @@ static inline void LockRestore(int msr)
 {
 }
 
+struct {
+#if CANIF_PUBLIC_TX_BUFFERING
+        PduIdType nextInQueue;
+        uint8 data[8];
+    // dlc set to -1 indicates empty buffer
+        uint8 dlc;
+#endif
+#if CANIF_PUBLIC_READTXPDU_NOTIFY_STATUS_API
+        bool txConfirmed;
+#endif
+    } txLpdu[CANIF_NUM_TX_PDU_ID];
+
+
 #if(CanIfPublicReadRxPduDataApi == true)
 static PduInfoType RxBuffer[CanIfMaxRxPduCfg];
 #endif
