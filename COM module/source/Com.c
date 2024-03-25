@@ -18,7 +18,7 @@
 
 static Com_StatusType initStatus = COM_UNINIT;
 
-const Com_ConfigType * ComConfig;
+//const Com_ConfigType * ComConfig;
 
 /***********************************************************************************
  *                                                                                 *
@@ -508,218 +508,238 @@ void Com_DisableReceptionDM (Com_IpduGroupIdType IpduGroupId)
 uint8 Com_SendSignal (Com_SignalIdType SignalId, const void* SignalDataPtr)
 {
 	uint8 returnValue;
-	ComSignal_type* signalStruct =  GET_SIGNAL(SignalId);
-	if(Com_GetStatus() == COM_UNINIT || SignalDataPtr == NULL || signalStruct == NULL)
+	if(Com_GetStatus() == COM_UNINIT || SignalDataPtr == NULL)
 	{
 		returnValue = COM_SERVICE_NOT_AVAILABLE;
 	}
 	else
 	{
-		ComIPdu_type* Ipdu = GET_IPDU(signalStruct->ComIPduHandleId);
-		if(Ipdu == NULL)
+		if(SignalId < COM_MIN_SIGNAL)
 		{
-			returnValue = COM_SERVICE_NOT_AVAILABLE;
-		}
-		else
-		{
-				if(signalStruct->IsGroupSignal)
-				{
+					ComGroupSignal_type* GroupSignalStruct =  GET_GROUPSIGNALCNFG(SignalId);
 					/*--------------------------------------------------------------------------------------------------------------------------------------------------------------
 					If Com_SendSignal or Com_InvalidateSignal is called for a signal that belongs to a signal group, then the AUTOSAR COM will only update the shadow buffer of this
 					signal group. There is no need for any further I-PDU processing like TMS evaluation, unless the I-PDU contents changed.
 					[SWS_Com_00050] ⌈If Com_SendSignalGroup is called for the signal group, the AUTOSAR COM module shall copy the shadow buffer atomically to the 
 					I-PDU buffer.⌋ (SRS_Com_02041)
 					--------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-					Com_WriteSignalDataToShadowBuffer(signalStruct->SignalGroupId, signalStruct->ComHandleId, SignalDataPtr);
+					CopyGroupSignalFromSBtoAddress(GroupSignalStruct->SignalGroupId, GroupSignalStruct->ComHandleId, GroupSignalStruct->ComSignalDataPtr);
+					Com_WriteSignalDataToShadowBuffer(GroupSignalStruct->SignalGroupId, GroupSignalStruct->ComHandleId, SignalDataPtr);
 					returnValue = E_OK;
+		}
+		else
+		{
+			ComSignal_type* signalStruct =  GET_SIGNAL(SignalId);
+			if(signalStruct == NULL)
+			{
+				returnValue = COM_SERVICE_NOT_AVAILABLE;
+			}
+			else
+			{
+				ComIPdu_type* Ipdu = GET_IPDU(signalStruct->ComIPduHandleId);
+				if(Ipdu == NULL)
+				{
+					returnValue = COM_SERVICE_NOT_AVAILABLE;
 				}
 				else
 				{
-					boolean signalFilterResult = 0;
-					boolean isSignalChanged = 0;
-					/*---------------------------------------------------------------------------------------------------------------------------------------------------
-					[SWS_Com_00602] ⌈The AUTOSAR COM module shall use filtering mechanisms on sender side for Transmission Mode Conditions 
-					(TMC) but it shall not filter out signals on sender side.⌋ (SRS_Com_02083)
-					---------------------------------------------------------------------------------------------------------------------------------------------------*/
-					switch(signalStruct->ComSignalType)
-					{
-						case BOOLEAN:
-							boolean new_signalData_boolean;
-
-							new_signalData_boolean = *((boolean*)SignalDataPtr);
-							boolean old_signalData_boolean = *((boolean*)(signalStruct->ComFGBuffer));
-							signalFilterResult = Com_ProcessTxSignalFilter(signalStruct, old_signalData_boolean, new_signalData_boolean);
-							if(new_signalData_boolean != old_signalData_boolean)
+							
+							boolean signalFilterResult = 0;
+							boolean isSignalChanged = 0;
+							uint8 byteOffset, bitOffset, updatebitMask, *pduBufferPointer;
+							boolean new_signalData_boolean, old_signalData_boolean;
+							float32 new_signalData_float32, old_signalData_float32;
+							float64 new_signalData_float64, old_signalData_float64;
+							sint16 new_signalData_sint16, old_signalData_sint16;
+							sint32 new_signalData_sint32, old_signalData_sint32;
+							sint64 new_signalData_sint64, old_signalData_sint64;
+							sint8 new_signalData_sint8, old_signalData_sint8;
+							uint8 new_signalData_uint8, old_signalData_uint8;
+							uint16 new_signalData_uint16, old_signalData_uint16;
+							uint32 new_signalData_uint32, old_signalData_uint32;
+							uint64 new_signalData_uint64, old_signalData_uint64;
+							/*---------------------------------------------------------------------------------------------------------------------------------------------------
+							[SWS_Com_00602] ⌈The AUTOSAR COM module shall use filtering mechanisms on sender side for Transmission Mode Conditions 
+							(TMC) but it shall not filter out signals on sender side.⌋ (SRS_Com_02083)
+							---------------------------------------------------------------------------------------------------------------------------------------------------*/
+							switch(signalStruct->ComSignalType)
 							{
-								isSignalChanged = 1;
+								case BOOLEAN:
+									old_signalData_boolean = *((boolean*)(signalStruct->ComFGBuffer));
+									new_signalData_boolean = *((boolean*)SignalDataPtr);
+									signalFilterResult = Com_ProcessTxSignalFilter(signalStruct, old_signalData_boolean, new_signalData_boolean);
+									if(new_signalData_boolean != old_signalData_boolean)
+									{
+										isSignalChanged = 1;
+									}
+									else{}
+									*(boolean*)(signalStruct->ComFGBuffer) = new_signalData_boolean;
+									break;
+								
+								case FLOAT32:
+								
+									new_signalData_float32 = *((float32*)SignalDataPtr);
+									old_signalData_float32 = *((float32*)(signalStruct->ComFGBuffer));
+									signalFilterResult = Com_ProcessTxSignalFilter_float(signalStruct, old_signalData_float32, new_signalData_float32);
+									if(new_signalData_float32 != old_signalData_float32)
+									{
+										isSignalChanged = 1;
+									}
+									else{}
+									*(float32*)(signalStruct->ComFGBuffer) = new_signalData_float32;
+									break;
+								
+								case FLOAT64:
+								
+									new_signalData_float64 = *((float64*)SignalDataPtr);
+									old_signalData_float64 = *((float64*)(signalStruct->ComFGBuffer));
+									signalFilterResult = Com_ProcessTxSignalFilter_float(signalStruct, old_signalData_float64, new_signalData_float64);
+									if(new_signalData_float64 != old_signalData_float64)
+									{
+										isSignalChanged = 1;
+									}
+									else{}
+									*(float64*)(signalStruct->ComFGBuffer) = new_signalData_float64;
+									break;
+								
+								case SINT16:
+								
+									new_signalData_sint16 = *((sint16*)SignalDataPtr);
+									old_signalData_sint16 = *((sint16*)(signalStruct->ComFGBuffer));
+									signalFilterResult = Com_ProcessTxSignalFilter(signalStruct, old_signalData_sint16, new_signalData_sint16);
+									if(new_signalData_sint16 != old_signalData_sint16)
+									{
+										isSignalChanged = 1;
+									}
+									else{}
+									*(sint16*)(signalStruct->ComFGBuffer) = new_signalData_sint16;
+									break;
+								
+								case SINT32:
+								
+									new_signalData_sint32 = *((sint32*)SignalDataPtr);
+									old_signalData_sint32 = *((sint32*)(signalStruct->ComFGBuffer));
+									signalFilterResult = Com_ProcessTxSignalFilter(signalStruct, old_signalData_sint32, new_signalData_sint32);
+									if(new_signalData_sint32 != old_signalData_sint32)
+									{
+										isSignalChanged = 1;
+									}
+									else{}
+									*(sint32*)(signalStruct->ComFGBuffer) = new_signalData_sint32;
+									break;
+								
+								case SINT64:
+								
+									new_signalData_sint64 = *((sint64*)SignalDataPtr);
+									old_signalData_sint64 = *((sint64*)(signalStruct->ComFGBuffer));
+									signalFilterResult = Com_ProcessTxSignalFilter(signalStruct, old_signalData_sint64, new_signalData_sint64);
+									if(new_signalData_sint64 != old_signalData_sint64)
+									{
+										isSignalChanged = 1;
+									}
+									else{}
+									*(sint64*)(signalStruct->ComFGBuffer) = new_signalData_sint64;
+									break;
+								
+								case SINT8:
+								
+									new_signalData_sint8 = *((sint8*)SignalDataPtr);
+									old_signalData_sint8 = *((sint8*)(signalStruct->ComFGBuffer));
+									signalFilterResult = Com_ProcessTxSignalFilter(signalStruct, old_signalData_sint8, new_signalData_sint8);
+									if(new_signalData_sint8 != old_signalData_sint8)
+									{
+										isSignalChanged = 1;
+									}
+									else{}
+									*(sint8*)(signalStruct->ComFGBuffer) = new_signalData_sint8;
+									break;
+								
+								case UINT16:
+								
+									new_signalData_uint16 = *((uint16*)SignalDataPtr);
+									old_signalData_uint16 = *((uint16*)(signalStruct->ComFGBuffer));
+									signalFilterResult = Com_ProcessTxSignalFilter(signalStruct, old_signalData_uint16, new_signalData_uint16);
+									if(new_signalData_uint16 != old_signalData_uint16)
+									{
+										isSignalChanged = 1;
+									}
+									else{}
+									*(uint16*)(signalStruct->ComFGBuffer) = new_signalData_uint16;
+									break;
+								
+								case UINT32:
+								
+									new_signalData_uint32 = *((uint32*)SignalDataPtr);
+									old_signalData_uint32 = *((uint32*)(signalStruct->ComFGBuffer));
+									signalFilterResult = Com_ProcessTxSignalFilter(signalStruct, old_signalData_uint32, new_signalData_uint32);
+									if(new_signalData_uint32 != old_signalData_uint32)
+									{
+										isSignalChanged = 1;
+									}
+									else{}
+									*(uint32*)(signalStruct->ComFGBuffer) = new_signalData_uint32;
+									break;
+								
+								case UINT64:
+								
+									new_signalData_uint64 = *((uint64*)SignalDataPtr);
+									old_signalData_uint64 = *((uint64*)(signalStruct->ComFGBuffer));
+									signalFilterResult = Com_ProcessTxSignalFilter(signalStruct, old_signalData_uint64, new_signalData_uint64);
+									if(new_signalData_uint64 != old_signalData_uint64)
+									{
+										isSignalChanged = 1;
+									}
+									else{}
+									*(uint64*)(signalStruct->ComFGBuffer) = new_signalData_uint64;
+									break;
+								
+								case UINT8:
+								
+									new_signalData_uint8 = *((uint8*)SignalDataPtr);
+									old_signalData_uint8 = *((uint8*)(signalStruct->ComFGBuffer));
+									signalFilterResult = Com_ProcessTxSignalFilter(signalStruct, old_signalData_uint8, new_signalData_uint8);
+									if(new_signalData_uint8 != old_signalData_uint8)
+									{
+										isSignalChanged = 1;
+									}
+									else{}
+									*(uint8*)(signalStruct->ComFGBuffer) = new_signalData_uint8;
+									break;
 							}
-							else{}
-							*(boolean*)(signalStruct->ComFGBuffer) = new_signalData_boolean;
-							break;
-						
-						case FLOAT32:
-						
-							float32 new_signalData_float32 = *((float32*)SignalDataPtr);
-							float32 old_signalData_float32 = *((float32*)(signalStruct->ComFGBuffer));
-							signalFilterResult = Com_ProcessTxSignalFilter_float(signalStruct, old_signalData_float32, new_signalData_float32);
-							if(new_signalData_float32 != old_signalData_float32)
-							{
-								isSignalChanged = 1;
-							}
-							else{}
-							*(float32*)(signalStruct->ComFGBuffer) = new_signalData_float32;
-							break;
-						
-						case FLOAT64:
-						
-							float64 new_signalData_float64 = *((float64*)SignalDataPtr);
-							float64 old_signalData_float64 = *((float64*)(signalStruct->ComFGBuffer));
-							signalFilterResult = Com_ProcessTxSignalFilter_float(signalStruct, old_signalData_float64, new_signalData_float64);
-							if(new_signalData_float64 != old_signalData_float64)
-							{
-								isSignalChanged = 1;
-							}
-							else{}
-							*(float64*)(signalStruct->ComFGBuffer) = new_signalData_float64;
-							break;
-						
-						case SINT16:
-						
-							sint16 new_signalData_sint16 = *((sint16*)SignalDataPtr);
-							sint16 old_signalData_sint16 = *((sint16*)(signalStruct->ComFGBuffer));
-							signalFilterResult = Com_ProcessTxSignalFilter(signalStruct, old_signalData_sint16, new_signalData_sint16);
-							if(new_signalData_sint16 != old_signalData_sint16)
-							{
-								isSignalChanged = 1;
-							}
-							else{}
-							*(sint16*)(signalStruct->ComFGBuffer) = new_signalData_sint16;
-							break;
-						
-						case SINT32:
-						
-							sint32 new_signalData_sint32 = *((sint32*)SignalDataPtr);
-							sint32 old_signalData_sint32 = *((sint32*)(signalStruct->ComFGBuffer));
-							signalFilterResult = Com_ProcessTxSignalFilter(signalStruct, old_signalData_sint32, new_signalData_sint32);
-							if(new_signalData_sint32 != old_signalData_sint32)
-							{
-								isSignalChanged = 1;
-							}
-							else{}
-							*(sint32*)(signalStruct->ComFGBuffer) = new_signalData_sint32;
-							break;
-						
-						case SINT64:
-						
-							sint64 new_signalData_sint64 = *((sint64*)SignalDataPtr);
-							sint64 old_signalData_sint64 = *((sint64*)(signalStruct->ComFGBuffer));
-							signalFilterResult = Com_ProcessTxSignalFilter(signalStruct, old_signalData_sint64, new_signalData_sint64);
-							if(new_signalData_sint64 != old_signalData_sint64)
-							{
-								isSignalChanged = 1;
-							}
-							else{}
-							*(sint64*)(signalStruct->ComFGBuffer) = new_signalData_sint64;
-							break;
-						
-						case SINT8:
-						
-							sint8 new_signalData_sint8 = *((sint8*)SignalDataPtr);
-							sint8 old_signalData_sint8 = *((sint8*)(signalStruct->ComFGBuffer));
-							signalFilterResult = Com_ProcessTxSignalFilter(signalStruct, old_signalData_sint8, new_signalData_sint8);
-							if(new_signalData_sint8 != old_signalData_sint8)
-							{
-								isSignalChanged = 1;
-							}
-							else{}
-							*(sint8*)(signalStruct->ComFGBuffer) = new_signalData_sint8;
-							break;
-						
-						case UINT16:
-						
-							uint16 new_signalData_uint16 = *((uint16*)SignalDataPtr);
-							uint16 old_signalData_uint16 = *((uint16*)(signalStruct->ComFGBuffer));
-							signalFilterResult = Com_ProcessTxSignalFilter(signalStruct, old_signalData_uint16, new_signalData_uint16);
-							if(new_signalData_uint16 != old_signalData_uint16)
-							{
-								isSignalChanged = 1;
-							}
-							else{}
-							*(uint16*)(signalStruct->ComFGBuffer) = new_signalData_uint16;
-							break;
-						
-						case UINT32:
-						
-							uint32 new_signalData_uint32 = *((uint32*)SignalDataPtr);
-							uint32 old_signalData_uint32 = *((uint32*)(signalStruct->ComFGBuffer));
-							signalFilterResult = Com_ProcessTxSignalFilter(signalStruct, old_signalData_uint32, new_signalData_uint32);
-							if(new_signalData_uint32 != old_signalData_uint32)
-							{
-								isSignalChanged = 1;
-							}
-							else{}
-							*(uint32*)(signalStruct->ComFGBuffer) = new_signalData_uint32;
-							break;
-						
-						case UINT64:
-						
-							uint64 new_signalData_uint64 = *((uint64*)SignalDataPtr);
-							uint64 old_signalData_uint64 = *((uint64*)(signalStruct->ComFGBuffer));
-							signalFilterResult = Com_ProcessTxSignalFilter(signalStruct, old_signalData_uint64, new_signalData_uint64);
-							if(new_signalData_uint64 != old_signalData_uint64)
-							{
-								isSignalChanged = 1;
-							}
-							else{}
-							*(uint64*)(signalStruct->ComFGBuffer) = new_signalData_uint64;
-							break;
-						
-						case UINT8:
-						
-							uint8 new_signalData_uint8 = *((uint8*)SignalDataPtr);
-							uint8 old_signalData_uint8 = *((uint8*)(signalStruct->ComFGBuffer));
-							signalFilterResult = Com_ProcessTxSignalFilter(signalStruct, old_signalData_uint8, new_signalData_uint8);
-							if(new_signalData_uint8 != old_signalData_uint8)
-							{
-								isSignalChanged = 1;
-							}
-							else{}
-							*(uint8*)(signalStruct->ComFGBuffer) = new_signalData_uint8;
-							break;
-					}
-					
-					/*---------------------------------------------------Pack signal processed info in signal struct----------------------------------------------------*/		
-					signalStruct->ComSignalFilterResult = signalFilterResult;
-	
-					signalStruct->ComIsSignalChanged = isSignalChanged;
-		
-					/*--------------------------------------------------------------------------------------------------------------------------------------------------------------
-					[SWS_Com_00061] ⌈If the RTE updates the value of a signal by calling Com_SendSignal, the AUTOSAR COM module shall set the update-bit of this signal.⌋ 
-					(SRS_Com_02030)
-					---------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-					uint8 byteOffset = signalStruct->ComUpdateBitPosition /8;
-					uint8 bitOffset = signalStruct->ComUpdateBitPosition %8 ;
-					
-					uint8* pduBufferPointer = (uint8*)Ipdu->ComIPduDataPtr;
-					pduBufferPointer += byteOffset;
-					uint8 updatebitMask = 1u << (bitOffset);
-					*pduBufferPointer = *pduBufferPointer | updatebitMask;
-					/*-----------------------------------------------IPDU Transmission Mode Selection---------------------------------------------------------*/
-					Ipdu->ComTxIPdu.ComCurrentTransmissionSelection = com_pdu_transmissionsModeSelection(Ipdu);
-					/*--------------------------Handle required number of transmissions of IPDU according to this signal--------------------------------------*/
-					if(com_pdu_transmissions_handle_signal(Ipdu, signalStruct) == E_NOT_OK)
-					{
-						returnValue = COM_SERVICE_NOT_AVAILABLE;
-					}
-					else
-					{
-						returnValue = E_OK;
-					}
-					
+							
+							/*---------------------------------------------------Pack signal processed info in signal struct----------------------------------------------------*/		
+							signalStruct->ComSignalFilterResult = signalFilterResult;
+			
+							signalStruct->ComIsSignalChanged = isSignalChanged;
 				
-				}
+							/*--------------------------------------------------------------------------------------------------------------------------------------------------------------
+							[SWS_Com_00061] ⌈If the RTE updates the value of a signal by calling Com_SendSignal, the AUTOSAR COM module shall set the update-bit of this signal.⌋ 
+							(SRS_Com_02030)
+							---------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+							byteOffset = signalStruct->ComUpdateBitPosition /8;
+							bitOffset = signalStruct->ComUpdateBitPosition %8 ;
+							
+							pduBufferPointer = (uint8*)Ipdu->ComIPduDataPtr;
+							pduBufferPointer += byteOffset;
+							updatebitMask = 1u << (bitOffset);
+							*pduBufferPointer = *pduBufferPointer | updatebitMask;
+							/*-----------------------------------------------IPDU Transmission Mode Selection---------------------------------------------------------*/
+							Ipdu->ComTxIPdu->ComCurrentTransmissionSelection = com_pdu_transmissionsModeSelection(Ipdu);
+							/*--------------------------Handle required number of transmissions of IPDU according to this signal--------------------------------------*/
+							if(com_pdu_transmissions_handle_signal(Ipdu, signalStruct) == E_NOT_OK)
+							{
+								returnValue = COM_SERVICE_NOT_AVAILABLE;
+							}
+							else
+							{
+								returnValue = E_OK;
+							}
+						
+						}
 			}
-		}			
+			
+			}
+	}			
 			
 	return returnValue;
 			 
@@ -779,10 +799,22 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 			{
 				boolean isSignalGroupChanged = 0;
 				boolean SignalGroupFilterResult = 0;
-				for(uint16 i=0; (signalGroup->ComGroupSignal)[i] != NULL; i++)
+				boolean new_signalData_boolean, old_signalData_boolean;
+				float32 new_signalData_float32, old_signalData_float32;
+				float64 new_signalData_float64, old_signalData_float64;
+				sint16 new_signalData_sint16, old_signalData_sint16;
+				sint32 new_signalData_sint32, old_signalData_sint32;
+				sint64 new_signalData_sint64, old_signalData_sint64;
+				sint8 new_signalData_sint8, old_signalData_sint8;
+				uint8 new_signalData_uint8, old_signalData_uint8;
+				uint16 new_signalData_uint16, old_signalData_uint16;
+				uint32 new_signalData_uint32, old_signalData_uint32;
+				uint64 new_signalData_uint64, old_signalData_uint64;
+				uint16 i;
+				for(i=0; (signalGroup->ComGroupSignal)[i] != NULL; i++)
 				{
 					ComGroupSignal_type* groupSignal = (signalGroup->ComGroupSignal)[i];
-		
+					
 					/*---------------------------------------------------------------------------------------------------------------------------------------------------
 					[SWS_Com_00602] ⌈The AUTOSAR COM module shall use filtering mechanisms on sender side for Transmission Mode Conditions 
 					(TMC) but it shall not filter out signals on sender side.⌋ (SRS_Com_02083)
@@ -791,8 +823,7 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 					{
 						case BOOLEAN:
 					
-							boolean old_signalData_boolean = *((boolean*)groupSignal->ComSignalDataPtr);
-							boolean new_signalData_boolean;
+							old_signalData_boolean = *((boolean*)groupSignal->ComSignalDataPtr);
 							CopyGroupSignalFromSBtoAddress(signalGroup->ComHandleId, groupSignal->ComHandleId, &new_signalData_boolean);
 							SignalGroupFilterResult = Com_ProcessTxSignalFilter(groupSignal, old_signalData_boolean, new_signalData_boolean);
 							if(new_signalData_boolean != old_signalData_boolean)
@@ -805,8 +836,7 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 					
 						case FLOAT32:
 					
-							float32 old_signalData_float32 = *((float32*)groupSignal->ComSignalDataPtr);
-							float32 new_signalData_float32;
+							old_signalData_float32 = *((float32*)groupSignal->ComSignalDataPtr);
 							CopyGroupSignalFromSBtoAddress(signalGroup->ComHandleId, groupSignal->ComHandleId, &new_signalData_float32);
 							SignalGroupFilterResult = Com_ProcessTxSignalFilter_float(groupSignal, old_signalData_float32, new_signalData_float32);
 							if(old_signalData_float32 != new_signalData_float32)
@@ -819,8 +849,7 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 					
 						case FLOAT64:
 					
-							float64 old_signalData_float64 = *((float64*)groupSignal->ComSignalDataPtr);
-							float64 new_signalData_float64;
+							old_signalData_float64 = *((float64*)groupSignal->ComSignalDataPtr);
 							CopyGroupSignalFromSBtoAddress(signalGroup->ComHandleId, groupSignal->ComHandleId, &new_signalData_float64);
 							SignalGroupFilterResult = Com_ProcessTxSignalFilter_float(groupSignal, old_signalData_float64, new_signalData_float64);
 							if(old_signalData_float64 != new_signalData_float64)
@@ -833,8 +862,7 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 					
 						case SINT16:
 					
-							sint16 old_signalData_sint16 = *((sint16*)groupSignal->ComSignalDataPtr);
-							sint16 new_signalData_sint16;
+							old_signalData_sint16 = *((sint16*)groupSignal->ComSignalDataPtr);
 							CopyGroupSignalFromSBtoAddress(signalGroup->ComHandleId, groupSignal->ComHandleId, &new_signalData_sint16);
 							SignalGroupFilterResult = Com_ProcessTxSignalFilter(groupSignal, old_signalData_sint16, new_signalData_sint16);
 							if(old_signalData_sint16 != new_signalData_sint16)
@@ -847,8 +875,7 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 					
 						case SINT32:
 					
-							sint32 old_signalData_sint32 = *((sint32*)groupSignal->ComSignalDataPtr);
-							sint32 new_signalData_sint32;
+							old_signalData_sint32 = *((sint32*)groupSignal->ComSignalDataPtr);
 							CopyGroupSignalFromSBtoAddress(signalGroup->ComHandleId, groupSignal->ComHandleId, &new_signalData_sint32);
 							SignalGroupFilterResult = Com_ProcessTxSignalFilter(groupSignal, old_signalData_sint32, new_signalData_sint32);
 							if(old_signalData_sint32 != new_signalData_sint32)
@@ -861,8 +888,7 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 					
 						case SINT64:
 					
-							sint64 old_signalData_sint64 = *((sint64*)groupSignal->ComSignalDataPtr);
-							sint64 new_signalData_sint64;
+							old_signalData_sint64 = *((sint64*)groupSignal->ComSignalDataPtr);
 							CopyGroupSignalFromSBtoAddress(signalGroup->ComHandleId, groupSignal->ComHandleId, &new_signalData_sint64);
 							SignalGroupFilterResult = Com_ProcessTxSignalFilter(groupSignal, old_signalData_sint64, new_signalData_sint64);
 							if(old_signalData_sint64 != new_signalData_sint64)
@@ -875,8 +901,7 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 					
 						case SINT8:
 					
-							sint8 old_signalData_sint8 = *((sint8*)groupSignal->ComSignalDataPtr);
-							sint8 new_signalData_sint8;
+							old_signalData_sint8 = *((sint8*)groupSignal->ComSignalDataPtr);
 							CopyGroupSignalFromSBtoAddress(signalGroup->ComHandleId, groupSignal->ComHandleId, &new_signalData_sint8);
 							SignalGroupFilterResult = Com_ProcessTxSignalFilter(groupSignal, old_signalData_sint8, new_signalData_sint8);
 							if(old_signalData_sint8 != new_signalData_sint8)
@@ -889,8 +914,7 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 					
 						case UINT16:
 					
-							uint16 old_signalData_uint16 = *((uint16*)groupSignal->ComSignalDataPtr);
-							uint16 new_signalData_uint16;
+							old_signalData_uint16 = *((uint16*)groupSignal->ComSignalDataPtr);
 							CopyGroupSignalFromSBtoAddress(signalGroup->ComHandleId, groupSignal->ComHandleId, &new_signalData_uint16);
 							SignalGroupFilterResult = Com_ProcessTxSignalFilter(groupSignal, old_signalData_uint16, new_signalData_uint16);
 							if(old_signalData_uint16 != new_signalData_uint16)
@@ -903,8 +927,7 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 					
 						case UINT32:
 					
-							uint32 old_signalData_uint32 = *((uint32*)groupSignal->ComSignalDataPtr);
-							uint32 new_signalData_uint32;
+							old_signalData_uint32 = *((uint32*)groupSignal->ComSignalDataPtr);
 							CopyGroupSignalFromSBtoAddress(signalGroup->ComHandleId, groupSignal->ComHandleId, &new_signalData_uint32);
 							SignalGroupFilterResult = Com_ProcessTxSignalFilter(groupSignal, old_signalData_uint32, new_signalData_uint32);
 							if(old_signalData_uint32 != new_signalData_uint32)
@@ -917,8 +940,7 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 					
 						case UINT64:
 					
-							uint64 old_signalData_uint64 = *((uint64*)groupSignal->ComSignalDataPtr);
-							uint64 new_signalData_uint64;
+							old_signalData_uint64 = *((uint64*)groupSignal->ComSignalDataPtr);
 							CopyGroupSignalFromSBtoAddress(signalGroup->ComHandleId, groupSignal->ComHandleId, &new_signalData_uint64);
 							SignalGroupFilterResult = Com_ProcessTxSignalFilter(groupSignal, old_signalData_uint64, new_signalData_uint64);
 							if(old_signalData_uint64 != new_signalData_uint64)
@@ -931,7 +953,7 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 					
 						case UINT8:
 					
-							uint8 old_signalData_uint8 = *((uint8*)groupSignal->ComSignalDataPtr);
+							old_signalData_uint8 = *((uint8*)groupSignal->ComSignalDataPtr);
 							uint8 new_signalData_uint8;
 							CopyGroupSignalFromSBtoAddress(signalGroup->ComHandleId, groupSignal->ComHandleId, &new_signalData_uint8);
 							SignalGroupFilterResult = Com_ProcessTxSignalFilter(groupSignal, old_signalData_uint8, new_signalData_uint8);
@@ -964,7 +986,7 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 					*pduBufferPointer = *pduBufferPointer | updatebitMask;
 				
 					/*-----------------------------------------------IPDU Transmission Mode Selection---------------------------------------------------------*/
-					Ipdu->ComTxIPdu.ComCurrentTransmissionSelection = com_pdu_transmissionsModeSelection(Ipdu);
+					Ipdu->ComTxIPdu->ComCurrentTransmissionSelection = com_pdu_transmissionsModeSelection(Ipdu);
 					/*--------------------------Handle required number of transmissions of IPDU according to this signalGroup--------------------------------------*/
 					if(com_pdu_transmissions_handle_signalGroup(Ipdu, signalGroup) == E_NOT_OK)
 					{

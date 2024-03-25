@@ -394,8 +394,9 @@ typedef struct {
 
 	const uint16 SignalGroupId;
     
-	// ----> Not is SWS
-	const boolean IsGroupSignal ;
+	uint16 ComGlobalGroupSignalID;
+	
+	void *ComFGBuffer;
 
  
 }ComGroupSignal_type;
@@ -460,7 +461,7 @@ typedef struct{
 	const uint32 ComUpdateBitPosition;
 
 	/* Group signals included in this signal group  -------> Not in SWS*/
-	const ComGroupSignal_type **ComGroupSignal;
+	ComGroupSignal_type **ComGroupSignal;
     
 	/* Identify shadow buffer -------> Not in SWS*/    
 	 void * ComShadowBuffer;

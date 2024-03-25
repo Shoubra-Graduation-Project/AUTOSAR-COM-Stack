@@ -50,16 +50,19 @@ typedef struct{
 	const uint64 ComMaxIPduCnt;
 
 	 /* Contains the configuration parameters of the  COM module's IPDUs. */
-	const ComIPdu_type * ComIPdu;
+	ComIPdu_type ** ComIPdu;
 
     /* Contains the configuration parameters of the COM module's IPDU groups. */
-	const ComIPduGroup_type *ComIPduGroup;
+	ComIPduGroup_type **ComIPduGroup;
 
 	 /* Contains the configuration parameters of the COM module's signals. */
-	const ComSignal_type *ComSignal;
+	ComSignal_type **ComSignal;
 
 	/* Contains the configuration parameters of the COM module's signal groups. */
-	const ComSignalGroup_type *ComSignalGroup;
+	ComSignalGroup_type **ComSignalGroup;
+	
+	/* Contains the configuration parameters of the COM module's signal groups. */
+	ComGroupSignal_type **ComGroupSignal;
 	
    
 

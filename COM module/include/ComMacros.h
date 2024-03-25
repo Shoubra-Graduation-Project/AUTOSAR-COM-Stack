@@ -3,9 +3,9 @@
 #define COM_MACROS_H_
 
 #include "Com.h"
-#define COM_MAX_GROUPSIGNAL 65535
-#define COM_MIN_GROUPSIGNAL 32768
-#define COM_MAX_SIGNAL 32767
+#define COM_MAX_SIGNAL 65535
+#define COM_MIN_SIGNAL 32768
+#define COM_MAX_GROUPSIGNAL 32767
 /**********************************************************************************                                                              
  *    Macro Name: GET_SIGNAL    
  *                                                                 
@@ -15,7 +15,18 @@
  * 
  *    Description:  Get Signal by it's Id from config container
  *********************************************************************************/
-#define GET_SIGNAL(SignalId) (&(ComConfig.ComSignal[SignalId]))
+#define GET_SIGNAL(SignalId) (ComConfig.ComSignal[SignalId])
+
+/**********************************************************************************                                                              
+ *    Macro Name: GET_SIGNAL    
+ *                                                                 
+ *    Parameters (in): SignalId
+ * 
+ *    Return Value: Pointer to the SignalId-th element
+ * 
+ *    Description:  Get Signal by it's Id from config container
+ *********************************************************************************/
+#define GET_GROUPSIGNALCNFG(GroupSignalId) (ComConfig.ComGroupSignal[GroupSignalId])
 
 /**********************************************************************************                                                                              
  *    Macro Name: GET_IPDU    
@@ -26,7 +37,7 @@
  * 
  *    Description:  Get I-PDU by it's Id from config container
  *********************************************************************************/
-#define GET_IPDU(IPduId) (&(ComConfig.ComIPdu[IPduId]))
+#define GET_IPDU(IPduId) (ComConfig.ComIPdu[IPduId])
 
 /**********************************************************************************                                                                              
  *    Macro Name: GET_IpduGroup   
@@ -37,7 +48,7 @@
  * 
  *    Description:  Get I-PDU by it's Id from config container
  *********************************************************************************/
-#define GET_IpduGroup(IpduGroupId) (&(ComConfig.ComIPduGroup[IpduGroupId]))
+#define GET_IpduGroup(IpduGroupId) (ComConfig.ComIPduGroup[IpduGroupId])
 
 /**********************************************************************************                                                                            
  *    Macro Name: GET_SIGNALGROUP    
@@ -48,7 +59,7 @@
  * 
  *    Description: Get Signal Group by it's Id from config container
  *********************************************************************************/
-#define GET_SIGNALGROUP(SignalGroupId)  ((&(ComConfig.ComSignalGroup[SignalGroupId])))
+#define GET_SIGNALGROUP(SignalGroupId)  (ComConfig.ComSignalGroup[SignalGroupId])
 
 /***********************************************************************************                                                                               
  *    Macro Name: GET_GROUPSIGNAL    
@@ -59,7 +70,7 @@
  * 
  *    Description: Get Group Signal by it's Id from SignalGroup container
  *********************************************************************************/ 
-#define GET_GROUPSIGNAL(SignalGroupId,GroupSignalId)  ((&(ComConfig->ComSignalGroup[SignalGroupId]->ComGroupSignal[GroupSignalId])))
+#define GET_GROUPSIGNAL(SignalGroupId,GroupSignalId)  (ComConfig->ComSignalGroup[SignalGroupId]->ComGroupSignal[GroupSignalId])
 
 
 

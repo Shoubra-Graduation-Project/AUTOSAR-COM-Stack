@@ -483,7 +483,7 @@ void Com_WriteGroupSignalDataToPduBuffer(const uint16 groupSignalId, const void 
 	uint8 i;
 
     // Get signal
-	const ComGroupSignal_type * GroupSignal =  GET_GROUPSIGNAL(groupSignalId);
+	const ComGroupSignal_type * GroupSignal =  GET_GROUPSIGNALCNFG(groupSignalId);
 
 	// Get PDU
 	const ComIPdu_type *IPdu = GET_IPDU(GroupSignal->ComIPduHandleId);
@@ -570,7 +570,7 @@ void Com_WriteGroupSignalDataToPduBuffer(const uint16 groupSignalId, const void 
 void Com_WriteGroupSignalDataToPdu(const Com_SignalIdType signalId, const void *signalData) 
 {
 	// Get Signal
-	const ComGroupSignal_type *GroupSignal     = GET_GROUPSIGNAL(signalId);
+	const ComGroupSignal_type *GroupSignal     = GET_GROUPSIGNALCNFG(signalId);
 
     // Get Ipdu
 	const ComIPdu_type   *IPdu       = GET_IPDU(GroupSignal->ComIPduHandleId);
