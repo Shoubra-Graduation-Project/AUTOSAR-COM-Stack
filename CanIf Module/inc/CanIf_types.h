@@ -321,7 +321,7 @@ typedef struct{
 }CanIfRxPduCanIdRange;
 
 
-*************************************************************************************************
+/*************************************************************************************************/
 	typedef struct {
 	/* Everything in this structure is implementation specific */
     const CanIf_TxPduConfigType* TxPduCfg;
