@@ -109,12 +109,15 @@ FUNC(Std_ReturnType,CANIF_CODE) CanIf_SetControllerMode(VAR(uint8,AUTOMATIC) Con
     }
     CanIf_SetPduMode();
     Can_SetControllerMode();
-    if (ControllerMode == CANIF_CS_SLEEP){
-	    PduModeRequest == CANIF_OFFLINE ;
-    }	
-    if(ControllerMode == CANIF_CS_STOPPED){
-	    PduModeRequest == CANIF_TX_OFFLINE;
-    }	
+     if (CAN_CS_SLEEP == ControllerMode)
+    {
+        CanIf_SetPduMode(controllerId, CANIF_OFFLINE);
+    }
+    else if (CAN_CS_STOPPED == ControllerMode)
+    {
+        CanIf_SetPduMode(controllerId, CANIF_TX_OFFLINE);
+    }
+
      if ( ErrorStatus == E_NOT_OK )
     {
 
@@ -133,7 +136,8 @@ FUNC(Std_ReturnType,CANIF_CODE) CanIf_SetControllerMode(VAR(uint8,AUTOMATIC) Con
     }
   
   
-   
+    return Can_SetControllerMode(controllerId, ControllerMode);
+
   
 }
 
