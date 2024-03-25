@@ -89,6 +89,23 @@ static void ClearTxBuffers(uint8 controller) {
         }
     }
 }
+
+
+static void ClearRxBuffers(uint8 controller) {
+    // reset buffers
+    for(PduIdType i = 0; i < CANIF_NUM_RX_LPDU_ID; i++) {
+        if(CanIf_ConfigPtr->RxLpduCfg[i].controller == controller) {
+#if CANIF_PUBLIC_READRXPDU_NOTIFY_STATUS_API
+      // clear notification status
+      lPduData.rxLpdu[i].rxInd = CANIF_NO_NOTIFICATION;
+#endif
+#if CANIF_PUBLIC_READRXPDU_DATA_API
+          // set dlc to -1 to indicate empty buffer
+            lPduData.rxLpdu[i].dlc = -1;
+#endif
+        }
+    }
+}
 /******************************************* CanIf_SetControllerMode ***********************************************/
 LOCAL VAR(CanIf_GlobalType ,AUTOMATIC) CanIf_Global;
 
