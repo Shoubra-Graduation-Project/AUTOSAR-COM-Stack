@@ -148,7 +148,20 @@ const CanIf_RxLPduConfigType CanIfRxPduConfigData[CANIF_NUM_RX_LPDU_ID] =
 };
 
 
-
+// This container includes all necessary configuration sub-containers
+// according the CAN Interface configuration structure.
+const CanIf_ConfigType CanIf_Config =
+{
+  .ControllerConfig = CanIfControllerConfig,
+  .DispatchConfig = &CanIfDispatchConfig,
+  .TxPduCfg = CanIfTxPduConfigData,
+  .RxLpduCfg = CanIfRxPduConfigData,
+  .canIfHrhCfg = CanIfHrhConfigData_Hoh,
+  //.InitConfig = &CanIfInitConfig,
+  //.TransceiverConfig = NULL, // Not used
+  //.Arc_ChannelToControllerMap = CanIf_Arc_ChannelToControllerMap,
+  //.Arc_ChannelDefaultConfIndex = CanIf_Arc_ChannelDefaultConfIndex,
+};
 
 
 
