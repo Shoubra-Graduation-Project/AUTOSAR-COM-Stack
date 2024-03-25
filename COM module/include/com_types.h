@@ -484,7 +484,7 @@ typedef struct{
 	/* -----> Not in SWS*/
 	float32 DeadlineMonitoringTimer;
 
-	ComFilter_type* comFilter;
+	ComFilter_type* ComFilter;
 
 }ComSignalGroup_type;
 

@@ -825,7 +825,7 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 					
 							old_signalData_boolean = *((boolean*)groupSignal->ComSignalDataPtr);
 							CopyGroupSignalFromSBtoAddress(signalGroup->ComHandleId, groupSignal->ComHandleId, &new_signalData_boolean);
-							SignalGroupFilterResult = Com_ProcessTxSignalFilter(groupSignal, old_signalData_boolean, new_signalData_boolean);
+							SignalGroupFilterResult = Com_ProcessTxSignalFilter_groupsignal(groupSignal, old_signalData_boolean, new_signalData_boolean);
 							if(new_signalData_boolean != old_signalData_boolean)
 							{
 								isSignalGroupChanged = 1;
@@ -838,7 +838,7 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 					
 							old_signalData_float32 = *((float32*)groupSignal->ComSignalDataPtr);
 							CopyGroupSignalFromSBtoAddress(signalGroup->ComHandleId, groupSignal->ComHandleId, &new_signalData_float32);
-							SignalGroupFilterResult = Com_ProcessTxSignalFilter_float(groupSignal, old_signalData_float32, new_signalData_float32);
+							SignalGroupFilterResult = Com_ProcessTxSignalFilter_float_groupsignal(groupSignal, old_signalData_float32, new_signalData_float32);
 							if(old_signalData_float32 != new_signalData_float32)
 							{
 								isSignalGroupChanged = 1;
@@ -851,7 +851,7 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 					
 							old_signalData_float64 = *((float64*)groupSignal->ComSignalDataPtr);
 							CopyGroupSignalFromSBtoAddress(signalGroup->ComHandleId, groupSignal->ComHandleId, &new_signalData_float64);
-							SignalGroupFilterResult = Com_ProcessTxSignalFilter_float(groupSignal, old_signalData_float64, new_signalData_float64);
+							SignalGroupFilterResult = Com_ProcessTxSignalFilter_float_groupsignal(groupSignal, old_signalData_float64, new_signalData_float64);
 							if(old_signalData_float64 != new_signalData_float64)
 							{
 								isSignalGroupChanged = 1;
@@ -864,7 +864,7 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 					
 							old_signalData_sint16 = *((sint16*)groupSignal->ComSignalDataPtr);
 							CopyGroupSignalFromSBtoAddress(signalGroup->ComHandleId, groupSignal->ComHandleId, &new_signalData_sint16);
-							SignalGroupFilterResult = Com_ProcessTxSignalFilter(groupSignal, old_signalData_sint16, new_signalData_sint16);
+							SignalGroupFilterResult = Com_ProcessTxSignalFilter_groupsignal(groupSignal, old_signalData_sint16, new_signalData_sint16);
 							if(old_signalData_sint16 != new_signalData_sint16)
 							{
 								isSignalGroupChanged = 1;
@@ -877,7 +877,7 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 					
 							old_signalData_sint32 = *((sint32*)groupSignal->ComSignalDataPtr);
 							CopyGroupSignalFromSBtoAddress(signalGroup->ComHandleId, groupSignal->ComHandleId, &new_signalData_sint32);
-							SignalGroupFilterResult = Com_ProcessTxSignalFilter(groupSignal, old_signalData_sint32, new_signalData_sint32);
+							SignalGroupFilterResult = Com_ProcessTxSignalFilter_groupsignal(groupSignal, old_signalData_sint32, new_signalData_sint32);
 							if(old_signalData_sint32 != new_signalData_sint32)
 							{
 								isSignalGroupChanged = 1;
@@ -890,7 +890,7 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 					
 							old_signalData_sint64 = *((sint64*)groupSignal->ComSignalDataPtr);
 							CopyGroupSignalFromSBtoAddress(signalGroup->ComHandleId, groupSignal->ComHandleId, &new_signalData_sint64);
-							SignalGroupFilterResult = Com_ProcessTxSignalFilter(groupSignal, old_signalData_sint64, new_signalData_sint64);
+							SignalGroupFilterResult = Com_ProcessTxSignalFilter_groupsignal(groupSignal, old_signalData_sint64, new_signalData_sint64);
 							if(old_signalData_sint64 != new_signalData_sint64)
 							{
 								isSignalGroupChanged = 1;
@@ -903,7 +903,7 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 					
 							old_signalData_sint8 = *((sint8*)groupSignal->ComSignalDataPtr);
 							CopyGroupSignalFromSBtoAddress(signalGroup->ComHandleId, groupSignal->ComHandleId, &new_signalData_sint8);
-							SignalGroupFilterResult = Com_ProcessTxSignalFilter(groupSignal, old_signalData_sint8, new_signalData_sint8);
+							SignalGroupFilterResult = Com_ProcessTxSignalFilter_groupsignal(groupSignal, old_signalData_sint8, new_signalData_sint8);
 							if(old_signalData_sint8 != new_signalData_sint8)
 							{
 								isSignalGroupChanged = 1;
@@ -916,7 +916,7 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 					
 							old_signalData_uint16 = *((uint16*)groupSignal->ComSignalDataPtr);
 							CopyGroupSignalFromSBtoAddress(signalGroup->ComHandleId, groupSignal->ComHandleId, &new_signalData_uint16);
-							SignalGroupFilterResult = Com_ProcessTxSignalFilter(groupSignal, old_signalData_uint16, new_signalData_uint16);
+							SignalGroupFilterResult = Com_ProcessTxSignalFilter_groupsignal(groupSignal, old_signalData_uint16, new_signalData_uint16);
 							if(old_signalData_uint16 != new_signalData_uint16)
 							{
 								isSignalGroupChanged = 1;
@@ -929,7 +929,7 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 					
 							old_signalData_uint32 = *((uint32*)groupSignal->ComSignalDataPtr);
 							CopyGroupSignalFromSBtoAddress(signalGroup->ComHandleId, groupSignal->ComHandleId, &new_signalData_uint32);
-							SignalGroupFilterResult = Com_ProcessTxSignalFilter(groupSignal, old_signalData_uint32, new_signalData_uint32);
+							SignalGroupFilterResult = Com_ProcessTxSignalFilter_groupsignal(groupSignal, old_signalData_uint32, new_signalData_uint32);
 							if(old_signalData_uint32 != new_signalData_uint32)
 							{
 								isSignalGroupChanged = 1;
@@ -942,7 +942,7 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 					
 							old_signalData_uint64 = *((uint64*)groupSignal->ComSignalDataPtr);
 							CopyGroupSignalFromSBtoAddress(signalGroup->ComHandleId, groupSignal->ComHandleId, &new_signalData_uint64);
-							SignalGroupFilterResult = Com_ProcessTxSignalFilter(groupSignal, old_signalData_uint64, new_signalData_uint64);
+							SignalGroupFilterResult = Com_ProcessTxSignalFilter_groupsignal(groupSignal, old_signalData_uint64, new_signalData_uint64);
 							if(old_signalData_uint64 != new_signalData_uint64)
 							{
 								isSignalGroupChanged = 1;
@@ -956,7 +956,7 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 							old_signalData_uint8 = *((uint8*)groupSignal->ComSignalDataPtr);
 							uint8 new_signalData_uint8;
 							CopyGroupSignalFromSBtoAddress(signalGroup->ComHandleId, groupSignal->ComHandleId, &new_signalData_uint8);
-							SignalGroupFilterResult = Com_ProcessTxSignalFilter(groupSignal, old_signalData_uint8, new_signalData_uint8);
+							SignalGroupFilterResult = Com_ProcessTxSignalFilter_groupsignal(groupSignal, old_signalData_uint8, new_signalData_uint8);
 							if(old_signalData_uint8 != new_signalData_uint8)
 							{
 								isSignalGroupChanged = 1;

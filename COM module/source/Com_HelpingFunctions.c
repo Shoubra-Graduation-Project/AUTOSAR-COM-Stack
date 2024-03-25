@@ -156,6 +156,136 @@ boolean Com_ProcessTxSignalFilter_float(ComSignal_type* signalStruct, float64 ol
 }
 
 
+boolean Com_ProcessTxSignalFilter_groupsignal(ComGroupSignal_type* signalStruct, uint64 oldData, uint64 newData)
+{
+	boolean filterResult = 0;
+	ComSignalGroup_type *SignalGroup = GET_SIGNALGROUP(signalStruct->SignalGroupId);
+	ComSignalType_type signalType = signalStruct->ComSignalType;
+	uint64 mask = (SignalGroup->ComFilter)->ComFilterMask;
+	sint64 ComFilterMax = SignalGroup->ComFilter->ComFilterMax;
+	sint64 ComFilterMin = SignalGroup->ComFilter->ComFilterMin;
+	if(signalType == SINT8 || signalType == SINT16 || signalType == SINT32 || signalType == SINT64)
+	{
+		sint64 signedNewData = (sint64)newData;
+		sint64 signedOldData = (sint64)oldData;
+		if((SignalGroup->ComFilter)->ComFilterAlgorithm == ALWAYS)
+		{
+			filterResult = 1;
+		}
+		else if( ((SignalGroup->ComFilter)->ComFilterAlgorithm == MASKED_NEW_DIFFERS_MASKED_OLD) && (mask & signedNewData) != (mask & signedOldData) )
+		{
+			filterResult = 1;
+		}
+		else if( ((SignalGroup->ComFilter)->ComFilterAlgorithm == MASKED_NEW_DIFFERS_X) && ( (mask & signedNewData) != (SignalGroup->ComFilter)->ComFilterX) )
+		{
+			filterResult = 1;
+		}
+		else if( ((SignalGroup->ComFilter)->ComFilterAlgorithm == MASKED_NEW_EQUALS_X) && ( (mask & signedNewData) == (SignalGroup->ComFilter)->ComFilterX) )
+		{
+			filterResult = 1;
+		}
+		else if( (SignalGroup->ComFilter)->ComFilterAlgorithm == NEW_IS_WITHIN)
+		{
+			if(signedNewData <= ComFilterMax && signedNewData >= ComFilterMin)
+			{
+				filterResult = 1;
+			}
+		}
+		else if( (SignalGroup->ComFilter)->ComFilterAlgorithm == NEW_IS_OUTSIDE)
+		{
+			if(signedNewData > ComFilterMax || signedNewData < ComFilterMin)
+			{
+				filterResult = 1;
+			}
+		}
+		else if( ((SignalGroup->ComFilter)->ComFilterAlgorithm == ONE_EVERY_N) && ((SignalGroup->ComFilter)->ComFilterOccurrence == (SignalGroup->ComFilter)->ComFilterOffset) )
+		{
+			filterResult = 1;
+			(SignalGroup->ComFilter)->ComFilterOccurrence += 1;
+			
+			if((SignalGroup->ComFilter)->ComFilterOccurrence == (SignalGroup->ComFilter)->ComFilterPeriod)
+			{
+				(SignalGroup->ComFilter)->ComFilterOccurrence = 0;
+			}
+			
+		}
+		else{}
+	}
+	else
+	{
+		if((SignalGroup->ComFilter)->ComFilterAlgorithm == ALWAYS)
+		{
+			filterResult = 1;
+		}
+		else if( ((SignalGroup->ComFilter)->ComFilterAlgorithm == MASKED_NEW_DIFFERS_MASKED_OLD) && (mask & newData) != (mask & oldData) )
+		{
+			filterResult = 1;
+		}
+		else if( ((SignalGroup->ComFilter)->ComFilterAlgorithm == MASKED_NEW_DIFFERS_X) && ( (mask & newData) != (SignalGroup->ComFilter)->ComFilterX) )
+		{
+			filterResult = 1;
+		}
+		else if( ((SignalGroup->ComFilter)->ComFilterAlgorithm == MASKED_NEW_EQUALS_X) && ( (mask & newData) == (SignalGroup->ComFilter)->ComFilterX) )
+		{
+			filterResult = 1;
+		}
+		else if( (SignalGroup->ComFilter)->ComFilterAlgorithm == NEW_IS_WITHIN)
+		{
+			if(newData <= ComFilterMax && newData >= ComFilterMin)
+			{
+				filterResult = 1;
+			}
+		}
+		else if( (SignalGroup->ComFilter)->ComFilterAlgorithm == NEW_IS_OUTSIDE)
+		{
+			if(newData > ComFilterMax || newData < ComFilterMin)
+			{
+				filterResult = 1;
+			}
+		}
+		else if( ((SignalGroup->ComFilter)->ComFilterAlgorithm == ONE_EVERY_N) && ((SignalGroup->ComFilter)->ComFilterOccurrence == (SignalGroup->ComFilter)->ComFilterOffset) )
+		{
+			filterResult = 1;
+			(SignalGroup->ComFilter)->ComFilterOccurrence += 1;
+			
+			if((SignalGroup->ComFilter)->ComFilterOccurrence == (SignalGroup->ComFilter)->ComFilterPeriod)
+			{
+				(SignalGroup->ComFilter)->ComFilterOccurrence = 0;
+			}
+			
+		}
+		else{}
+	}
+	
+	return filterResult;
+}
+
+boolean Com_ProcessTxSignalFilter_float_groupsignal(ComGroupSignal_type* signalStruct, float64 oldData, float64 newData)
+{
+	boolean filterResult = 0;
+	ComSignalGroup_type *SignalGroup = GET_SIGNALGROUP(signalStruct->SignalGroupId);
+	ComSignalType_type signalType = signalStruct->ComSignalType;
+	if((SignalGroup->ComFilter)->ComFilterAlgorithm == ALWAYS)
+	{
+		filterResult = 1;
+	}
+	else if( ((SignalGroup->ComFilter)->ComFilterAlgorithm == ONE_EVERY_N) && ((SignalGroup->ComFilter)->ComFilterOccurrence == (SignalGroup->ComFilter)->ComFilterOffset) )
+	{
+		filterResult = 1;
+		(SignalGroup->ComFilter)->ComFilterOccurrence += 1;
+		
+		if((SignalGroup->ComFilter)->ComFilterOccurrence == (SignalGroup->ComFilter)->ComFilterPeriod)
+		{
+			(SignalGroup->ComFilter)->ComFilterOccurrence = 0;
+		}
+		else{}
+	}
+	else{}
+	
+	return filterResult;
+}
+
+
 
 
 uint8 com_pdu_transmissions_handle_signal(ComIPdu_type* IPdu, ComSignal_type* signal)
