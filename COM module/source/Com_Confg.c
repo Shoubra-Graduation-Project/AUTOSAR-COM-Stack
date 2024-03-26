@@ -81,7 +81,7 @@ const ComFilter_type Filters[]=
 
 const ComGroupSignal_type ComGSignals[] =
 {
-
+		(ComGroupSignal_type)
    {    
        .ComBitPosition = 0,
 	   .ComBitSize= 8,
@@ -95,7 +95,7 @@ const ComGroupSignal_type ComGSignals[] =
 	   .SignalGroupId = 0,
 		 .ComFGBuffer = ComGSignalFGBuffer_0
    },
-
+		(ComGroupSignal_type)
    {
        .ComBitPosition = 32,
 	   .ComBitSize = 8,
@@ -118,7 +118,7 @@ const ComGroupSignal_type ComGSignals[] =
 
 const ComSignal_type ComSignal[7] = 
 {
-
+		(ComSignal_type)
     {	//signal1
 	   .ComHandleId= 0 ,
        .ComBitPosition= 0,
@@ -142,6 +142,7 @@ const ComSignal_type ComSignal[7] =
 	   .ComSignalUpdated = 0,
 	   .ComFilter = &Filters[0]
     },
+		(ComSignal_type)
 	{	//signal2
 	   .ComHandleId= 1 ,
 	   .ComBitPosition= 0,
@@ -173,6 +174,7 @@ const ComSignal_type ComSignal[7] =
 	   .ComSignalUpdated = 0,
 	   .ComFilter = &Filters[0]
 	},
+	(ComSignal_type)
 	{	//signal3
 		.ComBitPosition= 0,
 	   .ComBitSize= 16,
@@ -203,6 +205,7 @@ const ComSignal_type ComSignal[7] =
 	   .ComSignalUpdated = 0,
 	   .ComFilter = &Filters[0]
 	},
+		(ComSignal_type)
     {	//signal4
 	   .ComHandleId= 3,
        .ComBitPosition= 0,
@@ -227,6 +230,7 @@ const ComSignal_type ComSignal[7] =
 	   .ComSignalUpdated = 0,
 	   .ComFilter = &Filters[0]
     }, 
+		(ComSignal_type)
 	 {	//signal5
 	   .ComHandleId= 4,
        .ComBitPosition= 0,
@@ -251,7 +255,7 @@ const ComSignal_type ComSignal[7] =
 	   .ComSignalUpdated = 0,
 	   .ComFilter = &Filters[0]
     },
-
+		(ComSignal_type)
 	 {	//signal6
 	   .ComHandleId= 5,
        .ComBitPosition= 0,
@@ -276,7 +280,7 @@ const ComSignal_type ComSignal[7] =
 	   .ComSignalUpdated = 0,
 	   .ComFilter = &Filters[0]
     },
-
+		(ComSignal_type)
 	 {	//signal7
 	   .ComHandleId= 6,
        .ComBitPosition= 0,
