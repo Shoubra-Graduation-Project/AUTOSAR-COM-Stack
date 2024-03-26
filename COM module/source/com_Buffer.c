@@ -8,7 +8,7 @@
 #include "../include/Com_Types.h"
 #include "../include/Com_Cfg.h"
 #include "../include/ComMacros.h"
-#include "../include/Com.h"
+//#include "../include/Com.h"
 
 
 #include <string.h>
@@ -120,7 +120,7 @@ void Com_CopyPduToShadowBuffer(const Com_SignalGroupIdType signalGroupId) {
  *************************************************************************/
 
 
-void CopyGroupSignalFromSBtoAddress(const Com_SignalGroupIdType SignalGroup_id, const Com_GroupSignalIdType GroupSignal_id, void *dataAddress)
+void CopyGroupSignalFromSBtoAddress(const Com_SignalGroupIdType SignalGroup_id, const Com_GroupSignalIdType GroupSignal_id, const void *dataAddress)
 {
     // Get signal
     const ComSignalGroup_type * SignalGroup;
@@ -139,7 +139,7 @@ void CopyGroupSignalFromSBtoAddress(const Com_SignalGroupIdType SignalGroup_id, 
     SignalGroup = GET_SIGNALGROUP(SignalGroup_id);
 
     // Get signal group
-    GroupSignal = GET_SIGNAL(GroupSignal_id);
+    GroupSignal = GET_GROUPSIGNALCNFG(GroupSignal_id);
 
 
     shadowBuffer = (uint8*)SignalGroup->ComShadowBuffer;

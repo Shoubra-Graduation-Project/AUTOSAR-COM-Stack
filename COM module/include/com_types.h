@@ -574,14 +574,10 @@ typedef struct {
 	float32 DeadlineMonitoringTimer;
 
     // ---> Not is SWS
-	const boolean IsGroupSignal;
 
 	boolean ComIsSignalChanged;
 
 	boolean ComSignalFilterResult;
-
-
-
 
 	boolean ComSignalUpdated;
 

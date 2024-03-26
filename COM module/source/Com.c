@@ -799,6 +799,7 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 			{
 				boolean isSignalGroupChanged = 0;
 				boolean SignalGroupFilterResult = 0;
+				uint8 byteOffset, bitOffset, updatebitMask, *pduBufferPointer;
 				boolean new_signalData_boolean, old_signalData_boolean;
 				float32 new_signalData_float32, old_signalData_float32;
 				float64 new_signalData_float64, old_signalData_float64;
@@ -954,7 +955,6 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 						case UINT8:
 					
 							old_signalData_uint8 = *((uint8*)groupSignal->ComSignalDataPtr);
-							uint8 new_signalData_uint8;
 							CopyGroupSignalFromSBtoAddress(signalGroup->ComHandleId, groupSignal->ComHandleId, &new_signalData_uint8);
 							SignalGroupFilterResult = Com_ProcessTxSignalFilter_groupsignal(groupSignal, old_signalData_uint8, new_signalData_uint8);
 							if(old_signalData_uint8 != new_signalData_uint8)
@@ -977,12 +977,12 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 					[SWS_Com_00801] ⌈If the RTE updates a signal group by calling Com_SendSignalGroup, the AUTOSAR COM module shall set the update-bit of this signal
 					group.⌋ (SRS_Com_02030)
 					----------------------------------------------------------------------------------------------------------------------------------------------------------*/
-					uint8 byteOffset = signalGroup->ComUpdateBitPosition /8;
-					uint8 bitOffset = signalGroup->ComUpdateBitPosition %8 ;
+					byteOffset = signalGroup->ComUpdateBitPosition /8;
+					bitOffset = signalGroup->ComUpdateBitPosition %8 ;
 					
-					uint8* pduBufferPointer = (uint8*)Ipdu->ComIPduDataPtr;
+					pduBufferPointer = (uint8*)Ipdu->ComIPduDataPtr;
 					pduBufferPointer += byteOffset;
-					uint8 updatebitMask = 1u << (bitOffset);
+					updatebitMask = 1u << (bitOffset);
 					*pduBufferPointer = *pduBufferPointer | updatebitMask;
 				
 					/*-----------------------------------------------IPDU Transmission Mode Selection---------------------------------------------------------*/
@@ -1192,30 +1192,11 @@ void Com_TxConfirmation(PduIdType TxPduId, Std_ReturnType result)
 		{
 			if(IPdu->ComIPduSignalProcessing == DEFERRED)
 			{
-				(IPdu->ComTxIPdu).ComIsIPduDeferred = 1;
+				(IPdu->ComTxIPdu)->ComIsIPduDeferred = 1;
 			}
 			else if(IPdu->ComIPduSignalProcessing == IMMEDIATE)
 			{
-				if(/*deadline monitor timeout*/)
-				{
-					for(uint16 signalID=0; (IPdu->ComIPduSignalRef[signalID] != NULL); signalID++)
-					{
-						if(IPdu->ComIPduSignalRef[signalID]->ComTimeoutNotification != NULL)
-						{
-							IPdu->ComIPduSignalRef[signalID]->ComTimeoutNotification();
-						}
-						else{}
-					}
-					for(uint16 signalGroupID=0; (IPdu->ComIPduSignalGroupRef[signalGroupID] != NULL); signalGroupID++)
-					{
-						if(IPdu->ComIPduSignalGroupRef[signalGroupID]->ComTimeoutNotification != NULL)
-						{
-							IPdu->ComIPduSignalGroupRef[signalGroupID]->ComTimeoutNotification();
-						}
-						else{}
-					}
-				}
-				else if(result == E_OK)
+				if(result == E_OK)
 				{
 					for(uint16 signalID=0; (IPdu->ComIPduSignalRef[signalID] != NULL); signalID++)
 					{
@@ -1397,21 +1378,39 @@ void Com_SwitchIpduTxMode (PduIdType PduId, boolean Mode)
 		ComIPdu_type* IPdu = GET_IPDU(PduId);
 		if(IPdu != NULL)
 		{
-			boolean oldTMS = IPdu->ComTxIPdu.ComCurrentTransmissionSelection;
-			IPdu->ComTxIPdu.ComCurrentTransmissionSelection = Mode;
+			ComTxModeMode_type oldTMS, newTMS;
+			boolean oldMode = IPdu->ComTxIPdu->ComCurrentTransmissionSelection;
+			IPdu->ComTxIPdu->ComCurrentTransmissionSelection = Mode;
 			/*--------------------------------------------------------------------------------------------------------------------------------------------------------
 			When a call to Com_SendSignal or Com_SendSignalGroup results into a change of the transmission mode of a started I-PDU to the transmission mode PERIODIC
 			or MIXED, then the AUTOSAR COM module shall start the new transmission cycle with a call to PduR_ComTransmit within the next main function at the latest.
 			--------------------------------------------------------------------------------------------------------------------------------------------------------*/
-			if((oldTMS == 0 && Mode == 1 && IPdu->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeMode == DIRECT && IPdu->ComTxIPdu.ComTxModeTrue.ComTxMode.ComTxModeMode != DIRECT)
-				||(oldTMS == 1 && Mode == 0 && IPdu->ComTxIPdu.ComTxModeTrue.ComTxMode.ComTxModeMode == DIRECT && IPdu->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeMode != DIRECT))
+			if(oldMode!=Mode)
 			{
-				 IPdu->ComTxIPdu.ComFirstPeriodicModeEntry = 1;
+				if(oldMode == 1)
+				{
+					oldTMS = IPdu->ComTxIPdu->ComTxModeTrue->ComTxMode->ComTxModeMode;
+					newTMS = IPdu->ComTxIPdu->ComTxModeFalse->ComTxMode->ComTxModeMode;
+				}
+				else
+				{
+					newTMS = IPdu->ComTxIPdu->ComTxModeTrue->ComTxMode->ComTxModeMode;
+					oldTMS = IPdu->ComTxIPdu->ComTxModeFalse->ComTxMode->ComTxModeMode;
+				}
 			}
-			else if((oldTMS == 0 && Mode == 1 && IPdu->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeMode != DIRECT && IPdu->ComTxIPdu.ComTxModeTrue.ComTxMode.ComTxModeMode == DIRECT)
-					||(oldTMS == 1 && Mode == 0 && IPdu->ComTxIPdu.ComTxModeTrue.ComTxMode.ComTxModeMode != DIRECT && IPdu->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeMode == DIRECT))
+			else{}
+
+			if(oldTMS!=newTMS)
 			{
-				IPdu->ComTxIPdu.ComFirstDirectModeEntry = 1;
+				if(oldTMS==DIRECT && newTMS!=DIRECT)
+				{
+					IPdu->ComTxIPdu->ComNumberOfTransmissions +=1;
+				}
+				else if(oldTMS!=DIRECT && newTMS==DIRECT)
+				{
+					IPdu->ComTxIPdu->ComNumberOfTransmissions +=1;
+				}
+				else{}
 			}
 			else{}
 		}

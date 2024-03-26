@@ -8,6 +8,8 @@
 uint8 power(unsigned n);
 boolean Com_ProcessTxSignalFilter(ComSignal_type* signalStruct, uint64 oldData, uint64 newData);
 boolean Com_ProcessTxSignalFilter_float(ComSignal_type* signalStruct, float64 oldData, float64 newData);
+boolean Com_ProcessTxSignalFilter_float_groupsignal(ComGroupSignal_type* signalStruct, float64 oldData, float64 newData);
+boolean Com_ProcessTxSignalFilter_groupsignal(ComGroupSignal_type* signalStruct, uint64 oldData, uint64 newData);
 uint8 com_pdu_transmissions_handle_signal(ComIPdu_type* IPdu, ComSignal_type* signal);
 uint8 com_pdu_transmissions_handle_signalGroup(ComIPdu_type* IPdu, ComSignalGroup_type* signalGroup);
 boolean com_pdu_transmissionsModeSelection(ComIPdu_type* IPdu);
