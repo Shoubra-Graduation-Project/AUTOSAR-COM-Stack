@@ -373,7 +373,7 @@ ComTxModeTrue_type ComTxModeTrue[] =
 	}
 };
 
-ComTxModeTrue_type ComTxModeFalse[] =
+ComTxModeFalse_type ComTxModeFalse[] =
 {
 	{
 		.ComTxMode = &ComTxMode[1],
