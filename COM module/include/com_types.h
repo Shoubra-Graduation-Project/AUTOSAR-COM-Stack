@@ -414,7 +414,7 @@ Description:
 typedef struct{
 
     /* Replace or Notify */
-    ComDataInvalidAction_type ComDataInvalidAction;
+    ComDataInvalidAction_type ComDataInvalidAction;  
 
     /* Only valid on sender side: Name of Com_CbkTxErr callback function to be called.*/
 	void (*ComErrorNotification) (void);
@@ -499,7 +499,7 @@ Description:
 typedef struct {
     
 	/* Starting position within the I-PDU */
-	const uint32 ComBitPosition;
+	const uint32 ComBitPosition;   
     
 	/* Size in bits */
 	const uint8 ComBitSize;
@@ -611,9 +611,6 @@ typedef struct{
 	*/
     uint16 numIPdus;
 
-	
-	
-
 }ComIPduGroup_type;
 
 /* This container contains the configuration parameters of the AUTOSAR COM module's IPDUs */
@@ -623,7 +620,8 @@ typedef struct {
 	   Defines for I-PDUs with ComIPduType NORMAL: If the underlying IF module supports cancellation of transmit requests.
        Defines for I-PDUs with ComIPduType TP: If the underlying TP-module supports RX and TX cancellation of ongoing requests.
     */
-    const boolean ComIPduCancellationSupport;
+    const boolean ComIPduCancellationSupport; 
+	
     ComIPduCounter_type* ComIPduCounter;
     /* sent or received */
     ComIPduDirection_type ComIPduDirection;
