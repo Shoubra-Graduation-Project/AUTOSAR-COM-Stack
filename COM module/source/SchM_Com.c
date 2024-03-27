@@ -143,12 +143,13 @@ void Com_MainFunctionTx (void)
 								if(IPdu->ComTxIPdu->ComNumberOfTransmissions > 0)
 								{
 									com_packSignalsToPdu(IPdu);
-									if(IPdu->ComIPduCallout != NULL) {IPdu->ComIPduCallout();}
+									if(IPdu->ComIPduCallout != NULL) {IPdu->ComIPduCallout(*(IPdu->ComPduIdRef), IPdu->PduInfo);}
 									else{}
 									while( (IPdu->ComTxIPdu->ComNumberOfTransmissions) > 0)
 									{
 										Com_writeCounterValueToPduBuffer(IPdu->ComIPduHandleId, (IPdu->ComIPduCounter)->ComCurrentCounterValue);
 										IPdu->ComIPduCounter->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue + 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
+										Std_ReturnType TransmisionReturnValue = E_OK;
 										if(PduR_ComTransmit(TransmisionReturnValue, IPdu->ComIPduHandleId, IPdu->ComIPduDataPtr) == E_NOT_OK)
 										{
 											(IPdu->ComIPduCounter)->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue - 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
@@ -166,32 +167,19 @@ void Com_MainFunctionTx (void)
 								else{}
 									
 						case PERIODIC:
-								if(IPdu->ComTxIPdu->ComTxModeTrue->ComTxMode->comPeriodicTimeFired == 1)
-								{
-									IPdu->ComTxIPdu->ComTxModeTrue->ComTxMode->comPeriodicTimeFired == 0;
-									if(IPdu->ComIPduCallout != NULL) {IPdu->ComIPduCallout();}
-									else{}
-									Com_writeCounterValueToPduBuffer(IPdu->ComIPduHandleId, (IPdu->ComIPduCounter)->ComCurrentCounterValue);
-									(IPdu->ComIPduCounter)->ComCurrentCounterValue = ((IPdu->ComIPduCounter)->ComCurrentCounterValue + 1)%(power((IPdu->ComIPduCounter)->ComIPduCounterSize));
-									if(PduR_ComTransmit(TransmisionReturnValue, IPdu->ComIPduHandleId, IPdu->ComIPduDataPtr) == E_NOT_OK)
-									{
-										(IPdu->ComIPduCounter)->ComCurrentCounterValue = ((IPdu->ComIPduCounter)->ComCurrentCounterValue - 1)%(power((IPdu->ComIPduCounter)->ComIPduCounterSize));
-									}
-									if(IPdu->ComTxIPdu->ComMinimumDelayTime != 0){delay(IPdu->ComTxIPdu->ComMinimumDelayTime);}
-									else{}
-								}
-								else{}
+								
 								break;
 						case DIRECT:
 								if(IPdu->ComTxIPdu->ComNumberOfTransmissions > 0)
 								{
 									com_packSignalsToPdu(IPdu);
-									if(IPdu->ComIPduCallout != NULL) {IPdu->ComIPduCallout();}
+									if(IPdu->ComIPduCallout != NULL) {IPdu->ComIPduCallout(*(IPdu->ComPduIdRef), IPdu->PduInfo);}
 									else{}
 									while( IPdu->ComTxIPdu->ComNumberOfTransmissions > 0)
 									{
 										Com_writeCounterValueToPduBuffer(IPdu->ComIPduHandleId, IPdu->ComIPduCounter->ComCurrentCounterValue);
 										IPdu->ComIPduCounter->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue + 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
+										Std_ReturnType TransmisionReturnValue = E_OK;
 										if(PduR_ComTransmit(TransmisionReturnValue, IPdu->ComIPduHandleId, IPdu->ComIPduDataPtr) == E_NOT_OK)
 										{
 											IPdu->ComIPduCounter->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue - 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
@@ -218,12 +206,13 @@ void Com_MainFunctionTx (void)
 								if(IPdu->ComTxIPdu->ComNumberOfTransmissions > 0)
 								{
 									com_packSignalsToPdu(IPdu);
-									if(IPdu->ComIPduCallout != NULL) {IPdu->ComIPduCallout();}
+									if(IPdu->ComIPduCallout != NULL) {IPdu->ComIPduCallout(*(IPdu->ComPduIdRef), IPdu->PduInfo);}
 									else{}
 									while( (IPdu->ComTxIPdu->ComNumberOfTransmissions) > 0)
 									{
 										Com_writeCounterValueToPduBuffer(IPdu->ComIPduHandleId, IPdu->ComIPduCounter->ComCurrentCounterValue);
 										IPdu->ComIPduCounter->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue + 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
+										Std_ReturnType TransmisionReturnValue = E_OK;
 										if(PduR_ComTransmit(TransmisionReturnValue, IPdu->ComIPduHandleId, IPdu->ComIPduDataPtr) == E_NOT_OK)
 										{
 											IPdu->ComIPduCounter->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue - 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
@@ -241,33 +230,19 @@ void Com_MainFunctionTx (void)
 								else{}
 									
 						case PERIODIC:
-								if(IPdu->ComTxIPdu->ComTxModeFalse->ComTxMode->comPeriodicTimeFired == 1)
-								{
-									IPdu->ComTxIPdu->ComTxModeFalse->ComTxMode->comPeriodicTimeFired == 0;
-									com_packSignalsToPdu(IPdu);
-									if(IPdu->ComIPduCallout != NULL) {IPdu->ComIPduCallout();}
-									else{}
-									Com_writeCounterValueToPduBuffer(IPdu->ComIPduHandleId, (IPdu->ComIPduCounter)->ComCurrentCounterValue);
-									(IPdu->ComIPduCounter)->ComCurrentCounterValue = ((IPdu->ComIPduCounter)->ComCurrentCounterValue + 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
-									if(PduR_ComTransmit(TransmisionReturnValue, IPdu->ComIPduHandleId, IPdu->ComIPduDataPtr) == E_NOT_OK)
-									{
-										(IPdu->ComIPduCounter)->ComCurrentCounterValue = ((IPdu->ComIPduCounter)->ComCurrentCounterValue - 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
-									}
-									if(IPdu->ComTxIPdu->ComMinimumDelayTime != 0){delay(IPdu->ComTxIPdu->ComMinimumDelayTime);}
-									else{}
-								}
-								else{}
+								
 								break;
 						case DIRECT:
 								if(IPdu->ComTxIPdu->ComNumberOfTransmissions > 0)
 								{
 									com_packSignalsToPdu(IPdu);
-									if(IPdu->ComIPduCallout != NULL) {IPdu->ComIPduCallout();}
+									if(IPdu->ComIPduCallout != NULL) {IPdu->ComIPduCallout(*(IPdu->ComPduIdRef), IPdu->PduInfo);}
 									else{}
 									while( IPdu->ComTxIPdu->ComNumberOfTransmissions > 0)
 									{
 										Com_writeCounterValueToPduBuffer(IPdu->ComIPduHandleId, IPdu->ComIPduCounter->ComCurrentCounterValue);
 										IPdu->ComIPduCounter->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue + 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
+										Std_ReturnType TransmisionReturnValue = E_OK;
 										if(PduR_ComTransmit(TransmisionReturnValue, IPdu->ComIPduHandleId, IPdu->ComIPduDataPtr) == E_NOT_OK)
 										{
 											IPdu->ComIPduCounter->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue - 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
@@ -308,7 +283,7 @@ void Com_MainFunctionTx (void)
 
 void Com_MainFunctionRxSignal(ComSignal_type Signal)
 {
-    if (Signal->ComSignalUpdated)
+    if (Signal.ComSignalUpdated)
 	{
         /*[SWS_Com_00301] If ComIPduSignalProcessing for an I-PDU is configured to DEFERRED, 
         the AUTOSAR COM module shall first copy the I-PDU’s data within the
@@ -316,28 +291,28 @@ void Com_MainFunctionRxSignal(ComSignal_type Signal)
         the PduR into COM. Then the AUTOSAR COM module shall invoke the configured
         ComNotifications for the included signals and signal groups asynchronously during
         the next call to Com_MainFunctionRx*/
-		if (Signal->ComNotification != NULL)
+		if (Signal.ComNotification != NULL)
 		{
-			Signal->ComNotification();
+			Signal.ComNotification();
 		}
-		Signal->ComSignalUpdated = FALSE;
+		Signal.ComSignalUpdated = 0;
 
     }
 
-    if (Signal->ComTimeout > 0)
+    if (Signal.ComTimeout > 0)
     {
         timerDec(Signal->DeadlineMonitoringTimer);
 
-        if(Signal->DeadlineMonitoringTimer == 0)
+        if(Signal.DeadlineMonitoringTimer == 0)
         {
-             switch(Signal->ComRxDataTimeoutAction )
+             switch(Signal.ComRxDataTimeoutAction )
             { 
                 /* [SWS_Com_00470] If ComRxDataTimeoutAction is set to REPLACE, 
                 the AUTOSAR COM module shall replace the signal’s value by
                 its ComSignalInitValue when the reception deadline monitoring
                 timer of a signal expires*/
-                case REPLACE:
-                memcpy((uint8*)Signal->ComFGBuffer, (uint8*)Signal->ComSignalInitValue,(Signal->ComBitSize)/8);
+                case TIMEOUT_REPLACE:
+                memcpy((uint8*)Signal.ComFGBuffer, (uint8*)Signal.ComSignalInitValue,(Signal.ComBitSize)/8);
                 break;
 
                 /*[SWS_Com_00875] If ComRxDataTimeoutAction is set to SUBSTITUTE,
@@ -345,21 +320,21 @@ void Com_MainFunctionRxSignal(ComSignal_type Signal)
                 its ComTimeoutSubstitutionValue when the reception deadline monitoring
                 timer of a signal expires*/
                 case SUBSTITUTE:
-                memcpy((uint8*)Signal->ComFGBuffer, (uint8*)Signal->ComTimeoutSubstitutionValue,(Signal->ComBitSize)/8);
+                memcpy((uint8*)Signal.ComFGBuffer, (uint8*)Signal.ComTimeoutSubstitutionValue,(Signal.ComBitSize)/8);
                 break;
 
             }
 
-            if (Signal->ComTimeoutNotification != NULL)
+            if (Signal.ComTimeoutNotification != NULL)
             {
-				Signal->ComTimeoutNotification();
+				Signal.ComTimeoutNotification();
 		    }
                        
             else
             {
             }
             // Restart the timer
-            Signal->DeadlineMonitoringTimer = Signal->ComTimeout;
+            Signal.DeadlineMonitoringTimer = Signal.ComTimeout;
         }
         else
         {
@@ -384,15 +359,15 @@ void Com_MainFunctionRxSignalGroup(ComSignalGroup_type SignalGroup)
 {
     uint8 ComMainRxGroupSignalId;
     
-    if (SignalGroup->ComTimeout > 0)
+    if (SignalGroup.ComTimeout > 0)
     {
-        timerDec(SignalGroup->DeadlineMonitoringTimer);
+        timerDec(SignalGroup.DeadlineMonitoringTimer);
 
-        if(SignalGroup->DeadlineMonitoringTimer == 0)
+        if(SignalGroup.DeadlineMonitoringTimer == 0)
         {
-            for(ComMainRxGroupSignalId=0 ;(SignalGroup->ComGroupSignal != NULL && SignalGroup->ComGroupSignal[ComMainRxGroupSignalId] != NULL) ; ComMainRxGroupSignalId++)
+            for(ComMainRxGroupSignalId=0 ;(SignalGroup.ComGroupSignal != NULL && SignalGroup.ComGroupSignal[ComMainRxGroupSignalId] != NULL) ; ComMainRxGroupSignalId++)
             {
-                GroupSignal = SignalGroup->ComGroupSignal[ComMainRxGroupSignalId];
+                GroupSignal = SignalGroup.ComGroupSignal[ComMainRxGroupSignalId];
 
                 switch(GroupSignal->ComRxDataTimeoutAction )
                 { 
@@ -419,9 +394,9 @@ void Com_MainFunctionRxSignalGroup(ComSignalGroup_type SignalGroup)
 
             }
 
-            if (SignalGroup->ComTimeoutNotification != NULL)
+            if (SignalGroup.ComTimeoutNotification != NULL)
             {
-				SignalGroup->ComTimeoutNotification();
+				SignalGroup.ComTimeoutNotification();
 		    }
             else
             {
@@ -429,7 +404,7 @@ void Com_MainFunctionRxSignalGroup(ComSignalGroup_type SignalGroup)
             }
 
             // Restart the timer
-            SignalGroup->DeadlineMonitoringTimer = SignalGroup->ComTimeout;
+            SignalGroup.DeadlineMonitoringTimer = SignalGroup.ComTimeout;
 
         }
 
@@ -463,13 +438,13 @@ void CheckRXIpdu(ComIPdu_type IPdu)
 	uint8 ComMainRxSignalId;
     uint8 ComMainRxSignalGroupId;
 
-    if (IPdu->ComIPduSignalProcessing == DEFERRED && IPdu->ComIPduDirection == RECEIVE)
+    if (IPdu.ComIPduSignalProcessing == DEFERRED && IPdu.ComIPduDirection == RECEIVE)
     {
         // For each signal at PDU
-        for ( ComMainRxSignalId = 0; (IPdu->ComIPduSignalRef[ComMainRxSignalId] != NULL); ComMainRxSignalId++)
+        for ( ComMainRxSignalId = 0; (IPdu.ComIPduSignalRef[ComMainRxSignalId] != NULL); ComMainRxSignalId++)
         {
             //Get signal
-            Signal = IPdu->ComIPduSignalRef[ComMainRxSignalId];
+            Signal = IPdu.ComIPduSignalRef[ComMainRxSignalId];
 		
             Com_MainFunctionRxSignal(Signal);
             CopySignalfromBGtoFG(ComMainRxSignalId);
@@ -478,7 +453,7 @@ void CheckRXIpdu(ComIPdu_type IPdu)
 
         for (ComMainRxSignalGroupId = 0; IPdu[ComMainRxSignalGroupId].ComIPduSignalGroupRef[ComMainRxSignalGroupId] != NULL; ComMainRxSignalGroupId++)
         {
-            SignalGroup = IPdu->ComIPduSignalGroupRef[ComMainRxSignalGroupId];
+            SignalGroup = IPdu.ComIPduSignalGroupRef[ComMainRxSignalGroupId];
 
             Com_MainFunctionRxSignalGroup(SignalGroup);
 

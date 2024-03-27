@@ -9,7 +9,7 @@
 #include "../libraries/Std_Types.h"
 
 typedef uint16 PduIdType;
-typedef uint32 PduLengthType ;
+typedef uint32 PduLengthType;
 
 typedef struct 
 {

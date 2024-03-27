@@ -49,6 +49,10 @@ uint8 ComIPduBuffer_4[8];
 uint8 ComIPduBuffer_5[8];
 uint8 ComIPduBuffer_6[8];
 
+uint8 SduDataPtr_0[8];
+uint8 SduDataPtr_1[8];
+uint8 SduDataPtr_2[8];
+uint8 SduDataPtr_3[8];
 
 uint8 ComShadowBuffer_0[4];
 uint8 ComShadowBuffer_1[4];
@@ -274,23 +278,40 @@ const ComSignalGroup_type* SignalGroupListIPdu_2[] =
 		NULL
 };
 
+PduInfoType PduInfo[] =
+{
+	{
+		8, &SduDataPtr_0
+	},
+	{
+		8, &SduDataPtr_1
+	},
+	{
+		8, &SduDataPtr_2
+	},
+	{
+		8, &SduDataPtr_3
+	}
+  
+};
+
 const ComIPdu_type ComIPdu[6] = 
 {
   { // IPdu 1
 	  0, &ComIPduCounter[0], SEND, 0, DEFERRED, NULL, NORMAL, NULL, NULL, &ComIPduGroups[0], SignalGroupListIPdu_0, 
-		SignalListIPdu_0, &PduIDs[0], &ComTxIPdu[0], ComIPduBuffer_1, 64, 0
+		SignalListIPdu_0, &PduIDs[0], &ComTxIPdu[0], ComIPduBuffer_1, 64, 0, &PduInfo[0]
   },
 	{ // IPdu 2
 		0, &ComIPduCounter[1], SEND, 1, DEFERRED, NULL, NORMAL, NULL, NULL, &ComIPduGroups[0], NULL, SignalListIPdu_1, 
-		&PduIDs[1], &ComTxIPdu[0], ComIPduBuffer_2, 64, 0
+		&PduIDs[1], &ComTxIPdu[0], ComIPduBuffer_2, 64, 0, &PduInfo[0]
 	},
   { // IPdu 3
     0, &ComIPduCounter[0], RECEIVE, 2, DEFERRED, NULL, NORMAL, NULL, NULL, NULL, SignalGroupListIPdu_2, SignalListIPdu_2, 
-		&PduIDs[2], &ComTxIPdu[1], ComIPduBuffer_3, 64, 0
+		&PduIDs[2], &ComTxIPdu[1], ComIPduBuffer_3, 64, 0, &PduInfo[0]
   },
 	{ // IPdu 4
 		0, &ComIPduCounter[1], RECEIVE, 3, DEFERRED, NULL, NORMAL, NULL, NULL, NULL, NULL, SignalListIPdu_3, &PduIDs[3], 
-		&ComTxIPdu[1], ComIPduBuffer_4, 64, 0
+		&ComTxIPdu[1], ComIPduBuffer_4, 64, 0, &PduInfo[0]
   }
 
 };

@@ -14,6 +14,21 @@
  *                             Functions Definitions                              *
  **********************************************************************************/
  
+void delay(uint32 seconds)
+{
+	uint64 volatile time;
+	uint8 i;
+	for(i=0; i<10; i++)
+	{
+		while(seconds>0){
+			time = 727240;  // 0.1sec at 80 MHz
+			while(time){
+				time--;
+			}
+			seconds--;
+		}
+	}
+}
 
 uint8 power(unsigned n) 
 { 

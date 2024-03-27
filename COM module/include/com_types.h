@@ -672,6 +672,8 @@ typedef struct {
     
 	/* ----> Not in SWS */
 	boolean ReceptionDMEnabled;
+	
+	PduInfoType *PduInfo;
    
 } ComIPdu_type;
 

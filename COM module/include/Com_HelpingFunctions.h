@@ -5,6 +5,7 @@
 #include "../libraries/Std_Types.h"
 #include "../include/com_types.h"
 
+void delay(uint32 seconds);
 uint8 power(unsigned n);
 boolean Com_ProcessTxSignalFilter(ComSignal_type* signalStruct, uint64 oldData, uint64 newData);
 boolean Com_ProcessTxSignalFilter_float(ComSignal_type* signalStruct, float64 oldData, float64 newData);
