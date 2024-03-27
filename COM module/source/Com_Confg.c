@@ -1,7 +1,7 @@
 
 #include <stdio.h>
 #include "../include/Com_Cfg.h"
-
+#include "../include/Com.h"
 #include "../include/Com_types.h"
 #include "../include/ComStack_Types.h"
 
@@ -71,16 +71,6 @@ PduIdType PduIDs[4];
 ComFilter_type Filters[1]=
 {
 	{
-<<<<<<< HEAD
-		.ComFilterAlgorithm = ALWAYS,
-		.ComFilterMax= 15,
-		.ComFilterMin= 5,
-		.ComFilterOffset= 0,
-		.ComFilterPeriod= 10,
-		.ComFilterOccurrence= 0,
-		.ComFilterX= 20
-	},
-=======
 		ALWAYS,
 		15,
 		5,
@@ -89,28 +79,13 @@ ComFilter_type Filters[1]=
 		0,
 		20
 	}
->>>>>>> cb594e3a889349781e1011a25b599edd89b9f562
 };
 
 const ComGroupSignal_type ComGSignals[2] =
 {
 		
    {    
-<<<<<<< HEAD
-       .ComBitPosition = 0,
-	   .ComBitSize= 8,
-       .ComHandleId= 0 ,
-		.ComGlobalGroupSignalID = 0,
-	   .ComSignalEndianness = LITTLE_ENDIAN,
-	   .ComSignalType = UINT16,
-	   .ComTransferProperty = TRIGGERED_ON_CHANGE ,
-	   .ComIPduHandleId = 0,
-	   .ComSignalDataPtr = ComGSignalBuffer_0,
-	   .SignalGroupId = 0,
-		.ComFGBuffer = ComGSignalFGBuffer_0
-=======
        0, 16, 0, NULL, LITTLE_ENDIAN, NULL, 1, UINT16, NULL, TRIGGERED, 0, ComGSignalBuffer_0, 0, 0, ComGSignalFGBuffer_0
->>>>>>> cb594e3a889349781e1011a25b599edd89b9f562
    },
 		
    {
@@ -301,30 +276,10 @@ const ComSignalGroup_type* SignalGroupListIPdu_2[] =
 
 const ComIPdu_type ComIPdu[6] = 
 {
-<<<<<<< HEAD
-  {   // IPdu 1
-	    .ComIPduHandleId = 0 ,
-        .ComIPduDirection = SEND ,
-		.ComIPduType = NORMAL,
-        .ComIPduSignalRef = SignalListIPdu_0,
-		.ComIPduDataPtr = ComIPduBuffer_1,
-		.ComIPduTriggerTransmitCallout = NULL,
-		.ComIPduCallout = NULL,
-		.ComIPduCounter = &ComIPduCounter[0],
-		.ComIPduGroupRef = &(ComIPduGroups[0]),
-		.ComIPduSignalGroupRef = SignalGroupListIPdu_0,
-		.ComIPduLength = 8,
-		.ReceptionDMEnabled = 0,
-    .ComTxIPdu = &ComTxIPdu[0],
-		.ComIPduCancellationSupport = 0
-    },
-
-=======
   { // IPdu 1
 	  0, &ComIPduCounter[0], SEND, 0, DEFERRED, NULL, NORMAL, NULL, NULL, &ComIPduGroups[0], SignalGroupListIPdu_0, 
 		SignalListIPdu_0, &PduIDs[0], &ComTxIPdu[0], ComIPduBuffer_1, 64, 0
   },
->>>>>>> cb594e3a889349781e1011a25b599edd89b9f562
 	{ // IPdu 2
 		0, &ComIPduCounter[1], SEND, 1, DEFERRED, NULL, NORMAL, NULL, NULL, &ComIPduGroups[0], NULL, SignalListIPdu_1, 
 		&PduIDs[1], &ComTxIPdu[0], ComIPduBuffer_2, 64, 0
@@ -334,26 +289,9 @@ const ComIPdu_type ComIPdu[6] =
 		&PduIDs[2], &ComTxIPdu[1], ComIPduBuffer_3, 64, 0
   },
 	{ // IPdu 4
-<<<<<<< HEAD
-
-    .ComIPduDirection = RECEIVE ,
-	.ComIPduSignalProcessing = IMMEDIATE,
-    .ComIPduHandleId = 3 ,
-    .ComIPduSignalRef = SignalListIPdu_3,
-		.ComIPduDataPtr=ComIPduBuffer_4,
-		.ComIPduCounter = &ComIPduCounter[1],
-		.ComIPduGroupRef = NULL,
-		.ComIPduSignalGroupRef = NULL,
-		.ComIPduLength = 8,
-		.ReceptionDMEnabled = 0,
-		.ComTxIPdu = NULL,
-		.ComIPduCancellationSupport = 0
-    }
-=======
 		0, &ComIPduCounter[1], RECEIVE, 3, DEFERRED, NULL, NORMAL, NULL, NULL, NULL, NULL, SignalListIPdu_3, &PduIDs[3], 
 		&ComTxIPdu[1], ComIPduBuffer_4, 64, 0
   }
->>>>>>> cb594e3a889349781e1011a25b599edd89b9f562
 
 };
 
@@ -402,15 +340,6 @@ const ComGroupSignal_type* GroupSignalList[] =
 const Com_ConfigType ComConfig =
 {
 
-<<<<<<< HEAD
-    .ComIPdu = IPduList,
-    .ComSignal = SignalList,
-    .ComSignalGroup = SignalGroupList,
-	.ComGroupSignal = GroupSignalList
-=======
     50000, COM_NUM_OF_IPDU, IPduList, IPduGroupList, SignalList, SignalGroupList, GroupSignalList
->>>>>>> cb594e3a889349781e1011a25b599edd89b9f562
 
 };
-
-
