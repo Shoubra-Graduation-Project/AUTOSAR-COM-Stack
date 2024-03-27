@@ -8,6 +8,7 @@
 #include "../include/Com_Cfg.h"
 #include "../include/ComMacros.h"
 #include "../include/com_buffers.h"
+#include "../include/PeriodicMode_HelpingFunctions.h"
 
 
 /**********************************************************************************
@@ -476,11 +477,13 @@ boolean com_pdu_transmissionsModeSelection(ComIPdu_type* IPdu)
 	{
 		if(oldMode==DIRECT && newMode!=DIRECT)
 		{
+			Std_ReturnType returnValue = Com_InitPeriodicModeForIPdu(IPdu);
 			IPdu->ComTxIPdu->ComNumberOfTransmissions +=1;
 		}
 		else if(oldMode!=DIRECT && newMode==DIRECT)
 		{
 			IPdu->ComTxIPdu->ComNumberOfTransmissions +=1;
+			DisableIPduTimer(IPdu);
 		}
 		else{}
 	}

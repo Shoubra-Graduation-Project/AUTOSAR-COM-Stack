@@ -5,6 +5,7 @@
 
 #include "../include/Com.h"
 #include "../include/Com_HelpingFunctions.h"
+#include "../include/PeriodicMode_HelpingFunctions.h"
 #include "../include/com_buffers.h"
 #include "../include/Com_Types.h"
 #include "../include/Com_Cfg.h"
@@ -43,7 +44,7 @@ const Com_ConfigType * ComConfig;
 
 void Com_Init (const Com_ConfigType* config)
 {
-				
+			InitAllTimers();
 	    ComIPdu_type *IPdu;
     	ComSignal_type *Signal;
 		ComSignalGroup_type *SignalGroup;

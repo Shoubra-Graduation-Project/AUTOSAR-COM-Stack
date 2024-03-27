@@ -9,6 +9,7 @@
 #include "../include/ComMacros.h"
 #include "../include/com_buffers.h"
 #include "../include/Com_HelpingFunctions.h"
+#include "../include/PeriodicMode_HelpingFunctions.h"
 #include "../libraries/Std_Types.h"
 #include <stdio.h>
 
@@ -147,7 +148,7 @@ void Com_MainFunctionTx (void)
 									else{}
 									while( (IPdu->ComTxIPdu->ComNumberOfTransmissions) > 0)
 									{
-										Com_writeCounterValueToPduBuffer(IPdu->ComIPduHandleId, (IPdu->ComIPduCounter)->ComCurrentCounterValue);
+										Com_writeCounterValueToPduBuffer(IPdu, (IPdu->ComIPduCounter)->ComCurrentCounterValue);
 										IPdu->ComIPduCounter->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue + 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
 										Std_ReturnType TransmisionReturnValue = E_OK;
 										if(PduR_ComTransmit(TransmisionReturnValue, IPdu->ComIPduHandleId, IPdu->ComIPduDataPtr) == E_NOT_OK)
@@ -167,7 +168,22 @@ void Com_MainFunctionTx (void)
 								else{}
 									
 						case PERIODIC:
-								
+								if(CheckPeriodicTimeFired(IPdu))
+								{
+									ClearPeriodicTimeFired(IPdu);
+									com_packSignalsToPdu(IPdu);
+									if(IPdu->ComIPduCallout != NULL) {IPdu->ComIPduCallout(*(IPdu->ComPduIdRef), IPdu->PduInfo);}
+									else{}
+									Com_writeCounterValueToPduBuffer(IPdu, IPdu->ComIPduCounter->ComCurrentCounterValue);
+									IPdu->ComIPduCounter->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue + 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
+									Std_ReturnType TransmisionReturnValue = E_OK;
+									if(PduR_ComTransmit(TransmisionReturnValue, IPdu->ComIPduHandleId, IPdu->ComIPduDataPtr) == E_NOT_OK)
+									{
+										IPdu->ComIPduCounter->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue - 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
+									}
+									if(IPdu->ComTxIPdu->ComMinimumDelayTime != 0){delay(IPdu->ComTxIPdu->ComMinimumDelayTime);}
+									else{}
+								}
 								break;
 						case DIRECT:
 								if(IPdu->ComTxIPdu->ComNumberOfTransmissions > 0)
@@ -177,7 +193,7 @@ void Com_MainFunctionTx (void)
 									else{}
 									while( IPdu->ComTxIPdu->ComNumberOfTransmissions > 0)
 									{
-										Com_writeCounterValueToPduBuffer(IPdu->ComIPduHandleId, IPdu->ComIPduCounter->ComCurrentCounterValue);
+										Com_writeCounterValueToPduBuffer(IPdu, IPdu->ComIPduCounter->ComCurrentCounterValue);
 										IPdu->ComIPduCounter->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue + 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
 										Std_ReturnType TransmisionReturnValue = E_OK;
 										if(PduR_ComTransmit(TransmisionReturnValue, IPdu->ComIPduHandleId, IPdu->ComIPduDataPtr) == E_NOT_OK)
@@ -210,7 +226,7 @@ void Com_MainFunctionTx (void)
 									else{}
 									while( (IPdu->ComTxIPdu->ComNumberOfTransmissions) > 0)
 									{
-										Com_writeCounterValueToPduBuffer(IPdu->ComIPduHandleId, IPdu->ComIPduCounter->ComCurrentCounterValue);
+										Com_writeCounterValueToPduBuffer(IPdu, IPdu->ComIPduCounter->ComCurrentCounterValue);
 										IPdu->ComIPduCounter->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue + 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
 										Std_ReturnType TransmisionReturnValue = E_OK;
 										if(PduR_ComTransmit(TransmisionReturnValue, IPdu->ComIPduHandleId, IPdu->ComIPduDataPtr) == E_NOT_OK)
@@ -230,7 +246,22 @@ void Com_MainFunctionTx (void)
 								else{}
 									
 						case PERIODIC:
-								
+								if(CheckPeriodicTimeFired(IPdu))
+								{
+									ClearPeriodicTimeFired(IPdu);
+									com_packSignalsToPdu(IPdu);
+									if(IPdu->ComIPduCallout != NULL) {IPdu->ComIPduCallout(*(IPdu->ComPduIdRef), IPdu->PduInfo);}
+									else{}
+									Com_writeCounterValueToPduBuffer(IPdu, IPdu->ComIPduCounter->ComCurrentCounterValue);
+									IPdu->ComIPduCounter->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue + 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
+									Std_ReturnType TransmisionReturnValue = E_OK;
+									if(PduR_ComTransmit(TransmisionReturnValue, IPdu->ComIPduHandleId, IPdu->ComIPduDataPtr) == E_NOT_OK)
+									{
+										IPdu->ComIPduCounter->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue - 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
+									}
+									if(IPdu->ComTxIPdu->ComMinimumDelayTime != 0){delay(IPdu->ComTxIPdu->ComMinimumDelayTime);}
+									else{}
+								}
 								break;
 						case DIRECT:
 								if(IPdu->ComTxIPdu->ComNumberOfTransmissions > 0)
@@ -240,7 +271,7 @@ void Com_MainFunctionTx (void)
 									else{}
 									while( IPdu->ComTxIPdu->ComNumberOfTransmissions > 0)
 									{
-										Com_writeCounterValueToPduBuffer(IPdu->ComIPduHandleId, IPdu->ComIPduCounter->ComCurrentCounterValue);
+										Com_writeCounterValueToPduBuffer(IPdu, IPdu->ComIPduCounter->ComCurrentCounterValue);
 										IPdu->ComIPduCounter->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue + 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
 										Std_ReturnType TransmisionReturnValue = E_OK;
 										if(PduR_ComTransmit(TransmisionReturnValue, IPdu->ComIPduHandleId, IPdu->ComIPduDataPtr) == E_NOT_OK)

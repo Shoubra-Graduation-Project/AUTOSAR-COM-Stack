@@ -4,7 +4,7 @@
 #include "../include/Com.h"
 #include "../include/Com_types.h"
 #include "../include/ComStack_Types.h"
-
+#include "../../Timer Driver/include/TIMERS_interface.h"
 
 
 uint8 ComSignalBuffer_0 [1];
@@ -199,10 +199,10 @@ ComTxModeFalse_type ComTxModeFalse[2] =
 ComTxIPdu_type ComTxIPdu[] =
 {
 	{
-		1, CONFIRMATION, 255, &ComTxModeTrue[0], &ComTxModeFalse[0], 0, 1, 0, 0, 0
+		1, CONFIRMATION, 255, &ComTxModeTrue[0], &ComTxModeFalse[0], 0, 1, 0, 0, 0, TIMERS_TIMER0A, 'A', 0
 	},
 	{
-		1, CONFIRMATION, 255, &ComTxModeTrue[1], &ComTxModeFalse[1], 0, 1, 0, 0, 0
+		1, CONFIRMATION, 255, &ComTxModeTrue[1], &ComTxModeFalse[1], 0, 1, 0, 0, 0, TIMERS_TIMER0A, 'A', 0
 	}
 };
 

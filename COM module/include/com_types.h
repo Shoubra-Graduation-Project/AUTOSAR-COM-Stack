@@ -310,6 +310,12 @@ typedef struct
 	boolean ComFirstPeriodicModeEntry;
 
 	boolean ComFirstDirectModeEntry;
+	
+	uint8 ComTxTimerID;
+	
+	uint8 ComTxTimerBlock;
+	
+	uint8 ComTxTimerNumber;
 
 } ComTxIPdu_type;
 
