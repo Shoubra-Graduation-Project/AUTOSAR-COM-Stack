@@ -1,7 +1,7 @@
 
 #include <stdio.h>
 #include "../include/Com_Cfg.h"
-#include "../include/Com.h"
+
 #include "../include/Com_types.h"
 
 
@@ -76,7 +76,7 @@ const ComFilter_type Filters[]=
 		.ComFilterPeriod= 10,
 		.ComFilterOccurrence= 0,
 		.ComFilterX= 20
-	}
+	},
 };
 
 const ComGroupSignal_type ComGSignals[] =
@@ -86,14 +86,14 @@ const ComGroupSignal_type ComGSignals[] =
        .ComBitPosition = 0,
 	   .ComBitSize= 8,
        .ComHandleId= 0 ,
-			.ComGlobalGroupSignalID = 0,
+		.ComGlobalGroupSignalID = 0,
 	   .ComSignalEndianness = LITTLE_ENDIAN,
 	   .ComSignalType = UINT16,
 	   .ComTransferProperty = TRIGGERED_ON_CHANGE ,
 	   .ComIPduHandleId = 0,
 	   .ComSignalDataPtr = ComGSignalBuffer_0,
 	   .SignalGroupId = 0,
-		 .ComFGBuffer = ComGSignalFGBuffer_0
+		.ComFGBuffer = ComGSignalFGBuffer_0
    },
 
    {
@@ -503,10 +503,10 @@ const ComSignalGroup_type* SignalGroupListIPdu_2[] =
 const ComIPdu_type ComIPdu[6] = 
 {
   {   // IPdu 1
-	  .ComIPduHandleId = 0 ,
-    .ComIPduDirection = SEND ,
+	    .ComIPduHandleId = 0 ,
+        .ComIPduDirection = SEND ,
 		.ComIPduType = NORMAL,
-    .ComIPduSignalRef = SignalListIPdu_0,
+        .ComIPduSignalRef = SignalListIPdu_0,
 		.ComIPduDataPtr = ComIPduBuffer_1,
 		.ComIPduTriggerTransmitCallout = NULL,
 		.ComIPduCallout = NULL,
@@ -551,7 +551,7 @@ const ComIPdu_type ComIPdu[6] =
 	{ // IPdu 4
 
     .ComIPduDirection = RECEIVE ,
-		.ComIPduSignalProcessing = IMMEDIATE,
+	.ComIPduSignalProcessing = IMMEDIATE,
     .ComIPduHandleId = 3 ,
     .ComIPduSignalRef = SignalListIPdu_3,
 		.ComIPduDataPtr=ComIPduBuffer_4,
@@ -607,6 +607,8 @@ const Com_ConfigType ComConfig =
     .ComIPdu = IPduList,
     .ComSignal = SignalList,
     .ComSignalGroup = SignalGroupList,
-		.ComGroupSignal = GroupSignalList
+	.ComGroupSignal = GroupSignalList
 
 };
+
+

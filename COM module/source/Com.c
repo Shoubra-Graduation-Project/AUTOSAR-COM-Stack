@@ -14,10 +14,10 @@
 #include "../libraries/Std_Types.h"
 #include <string.h>
 #include <cstddef>
-//#include <minwindef.h>
+
 
 static Com_StatusType initStatus = COM_UNINIT;
-
+const Com_ConfigType * ComConfig;
 //const Com_ConfigType * ComConfig;
 
 /***********************************************************************************
@@ -93,7 +93,7 @@ void Com_Init (const Com_ConfigType* config)
                  initialize each signal of n-bit sized signal type on sender and receiver side
                  with the lower n-bits of its configuration parameter ComSignalInitValue
                */
-              memcpy(Signal->ComSignalDataPtr, config->ComSignal[ComInitSignalId].ComSignalInitValue, Signal->ComBitSize/8);
+              memcpy(Signal->ComSignalDataPtr, Signal->ComSignalInitValue, Signal->ComBitSize/8);
 
 
               /*uint8 *dest = (uint8 *) Signal->ComSignalDataPtr;
@@ -136,17 +136,8 @@ void Com_Init (const Com_ConfigType* config)
                        with the lower n-bits of its configuration parameter ComSignalInitValue
                     */
                   
-                  memcpy(GroupSignal->ComSignalDataPtr, config->ComSignal[ComInitGroupSignalId].ComSignalInitValue, GroupSignal->ComBitSize/8); 
-                   /*
-                    uint8 *dest = (uint8 *) GroupSignal->ComSignalDataPtr;
-                    uint8 *src =  (uint8 *) config->ComSignal[ComInitGroupSignalId].ComSignalInitValue;
-
-                    for(int i= 0; i < GroupSignal->ComBitSize/8 ; i++)
-                   {
-                       *dest = src++;
-                        dest++;
-                   }
-			       */
+                  memcpy(GroupSignal->ComSignalDataPtr, GroupSignal->ComSignalInitValue, GroupSignal->ComBitSize/8); 
+                  
 	            }
 
 			}
