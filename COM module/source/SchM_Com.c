@@ -257,7 +257,10 @@ void Com_MainFunctionTx (void)
 										else{}
 									}
 								}
-								else{}
+								else
+								{
+									
+								}
 															
 					}
 				}
@@ -266,7 +269,10 @@ void Com_MainFunctionTx (void)
 			else{}
 			
 		}
-		else{}
+		else
+		{
+
+		}
 		
 	}
 }
