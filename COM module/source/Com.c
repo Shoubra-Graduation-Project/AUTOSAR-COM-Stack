@@ -1129,7 +1129,7 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
     
      else if(SignalId >= COM_MIN_GROUPSIGNAL && SignalId <= COM_MAX_GROUPSIGNAL)
      {
-         ComGroupSignal_type * GroupSignal = GET_GROUPSIGNAL(SignalId);
+         ComGroupSignal_type * GroupSignal = GET_GROUPSIGNALCNFG(SignalId);
          ComSignalGroup_type * SignalGroup = GET_SIGNALGROUP(GroupSignal->SignalGroupId);
          ComIPdu_type *Ipdu=GET_IPDU(SignalGroup->ComIPduHandleId);
 
