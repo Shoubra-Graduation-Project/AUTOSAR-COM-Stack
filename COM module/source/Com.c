@@ -18,7 +18,7 @@
 
 
 static Com_StatusType initStatus = COM_UNINIT;
-const Com_ConfigType * ComConfig;
+//const Com_ConfigType * ComConfig;
 //const Com_ConfigType * ComConfig;
 
 /***********************************************************************************

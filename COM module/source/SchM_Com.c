@@ -115,6 +115,7 @@ void Com_MainFunctionTx (void)
 				/*-----------------------------------------------Notify RTE layer if IPDU is DEFERED--------------------------------------------------------*/
 				if(IPdu->ComIPduSignalProcessing == DEFERRED && (IPdu->ComTxIPdu)->ComIsIPduDeferred == 1)
 				{
+					IPdu->ComTxIPdu->ComIsIPduDeferred = 0;
 					for(uint16 signalID=0; (IPdu->ComIPduSignalRef[signalID] != NULL); signalID++)
 					{
 						if(IPdu->ComIPduSignalRef[signalID]->ComTimeoutNotification != NULL)
@@ -131,7 +132,7 @@ void Com_MainFunctionTx (void)
 						}
 						else{}
 					}
-					IPdu->ComTxIPdu->ComIsIPduDeferred = 0;
+				
 				}
 				else{}
 				
@@ -166,8 +167,9 @@ void Com_MainFunctionTx (void)
 									}
 								}
 								else{}
-									
+								
 						case PERIODIC:
+						{
 								if(CheckPeriodicTimeFired(IPdu))
 								{
 									ClearPeriodicTimeFired(IPdu);
@@ -185,6 +187,7 @@ void Com_MainFunctionTx (void)
 									else{}
 								}
 								break;
+							}
 						case DIRECT:
 								if(IPdu->ComTxIPdu->ComNumberOfTransmissions > 0)
 								{
@@ -246,6 +249,7 @@ void Com_MainFunctionTx (void)
 								else{}
 									
 						case PERIODIC:
+						{
 								if(CheckPeriodicTimeFired(IPdu))
 								{
 									ClearPeriodicTimeFired(IPdu);
@@ -263,6 +267,7 @@ void Com_MainFunctionTx (void)
 									else{}
 								}
 								break;
+							}
 						case DIRECT:
 								if(IPdu->ComTxIPdu->ComNumberOfTransmissions > 0)
 								{
