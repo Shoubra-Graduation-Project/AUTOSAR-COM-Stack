@@ -1,6 +1,6 @@
 
-#include "..//tm4c123gh6pm.h"
-#include "..//tm4c123gh6pm11.h"
+#include "../include/tm4c123gh6pm.h"
+#include "../include/tm4c123gh6pm11.h"
 
 void (*PeriodicTask0A)(void);   // user function
 
