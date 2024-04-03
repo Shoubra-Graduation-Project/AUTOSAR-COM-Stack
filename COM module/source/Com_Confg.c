@@ -4,7 +4,7 @@
 #include "../include/Com.h"
 #include "../include/Com_types.h"
 #include "../include/ComStack_Types.h"
-#include "../../Timer Driver/include/TIMERS_interface.h"
+#include "../../Timer Driver/include/Timer.h"
 
 
 uint8 ComSignalBuffer_0 [1];

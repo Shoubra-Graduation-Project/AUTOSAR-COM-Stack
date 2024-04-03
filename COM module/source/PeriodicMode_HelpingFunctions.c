@@ -7,7 +7,7 @@ function to adjust timer struct to ipdu confg
 function to check if ipdu timer is fired
 */
 
-#include "../../Timer Driver/include/TIMERS_interface.h"
+#include "../../Timer Driver/include/Timer.h"
 #include "../libraries/Std_Types.h"
 #include "../include/PeriodicMode_HelpingFUnctions.h"
 #include "../include/Com_Types.h"
@@ -15,14 +15,81 @@ function to check if ipdu timer is fired
 boolean TIMER_BUSY[2][6] = {{0,0,0,0,0,0}, {0,0,0,0,0,0}};
 boolean TIMER_FIRED[2][6] = {{0,0,0,0,0,0}, {0,0,0,0,0,0}};
 
+void HandleTimer_0A()
+{
+	TIMER_FIRED[0][0] = 1;
+}
+
+void HandleTimer_1A()
+{
+	TIMER_FIRED[0][1] = 1;
+}
+
+void HandleTimer_2A()
+{
+	TIMER_FIRED[0][2] = 1;
+}
+
+void HandleTimer_3A()
+{
+	TIMER_FIRED[0][3] = 1;
+}
+
+void HandleTimer_4A()
+{
+	TIMER_FIRED[0][4] = 1;
+}
+
+void HandleTimer_5A()
+{
+	TIMER_FIRED[0][5] = 1;
+}
+
+void HandleTimer_0B()
+{
+	TIMER_FIRED[1][0] = 1;
+}
+
+void HandleTimer_1B()
+{
+	TIMER_FIRED[1][1] = 1;
+}
+
+void HandleTimer_2B()
+{
+	TIMER_FIRED[1][2] = 1;
+}
+
+void HandleTimer_3B()
+{
+	TIMER_FIRED[1][3] = 1;
+}
+
+void HandleTimer_4B()
+{
+	TIMER_FIRED[1][4] = 1;
+}
+
+void HandleTimer_5B()
+{
+	TIMER_FIRED[1][5] = 1;
+}
+
+
 void InitAllTimers()
 {
-	uint8 i;
-	for(i = 0; i<12; i++)
-	{
-		TIMERS_vidInit(TIMERS_CONFG_STRUCT[i]);
-	}
-	
+	Timer0A_Init(HandleTimer_0A, 0);
+	Timer1A_Init(HandleTimer_1A, 0);
+	Timer2A_Init(HandleTimer_2A, 0);
+	Timer3A_Init(HandleTimer_3A, 0);
+	Timer4A_Init(HandleTimer_4A, 0);
+	Timer5A_Init(HandleTimer_5A, 0);
+	Timer0B_Init(HandleTimer_0B, 0);
+	Timer1B_Init(HandleTimer_1B, 0);
+	Timer2B_Init(HandleTimer_2B, 0);
+	Timer3B_Init(HandleTimer_3B, 0);
+	Timer4B_Init(HandleTimer_4B, 0);
+	Timer5B_Init(HandleTimer_5B, 0);
 }
 
 //call when an IPdu enters Periodic mode
@@ -157,7 +224,7 @@ Std_ReturnType FindAvailableTimer(ComIPdu_type *IPdu)
 
 void AdjustTimerToIPdu(ComIPdu_type *IPdu)
 {
-	float32 loadValue;
+	uint32 loadValue;
 	if(IPdu->ComTxIPdu->ComCurrentTransmissionSelection == 0)
 	{
 		loadValue = IPdu->ComTxIPdu->ComTxModeFalse->ComTxMode->ComTxModeTimePeriod;
@@ -169,25 +236,81 @@ void AdjustTimerToIPdu(ComIPdu_type *IPdu)
 	
 	if(IPdu->ComTxIPdu->ComTxTimerBlock == 'A')
 	{
-		TIMERS_vidSetLoadValueA(IPdu->ComTxIPdu->ComTxTimerID, loadValue);
+		switch(IPdu->ComTxIPdu->ComTxTimerNumber)
+		{
+			case 0: Timer0A_LoadValue(loadValue);
+							break;
+			case 1: Timer1A_LoadValue(loadValue);
+							break;
+			case 2: Timer2A_LoadValue(loadValue);
+							break;
+			case 3: Timer3A_LoadValue(loadValue);
+							break;
+			case 4: Timer4A_LoadValue(loadValue);
+							break;
+			case 5: Timer5A_LoadValue(loadValue);
+							break;
+		}
 	}
 	else if(IPdu->ComTxIPdu->ComTxTimerBlock == 'B')
 	{
-		TIMERS_vidSetLoadValueB(IPdu->ComTxIPdu->ComTxTimerID, loadValue);
+		switch(IPdu->ComTxIPdu->ComTxTimerNumber)
+		{
+			case 0: Timer0B_LoadValue(loadValue);
+							break;
+			case 1: Timer1B_LoadValue(loadValue);
+							break;
+			case 2: Timer2B_LoadValue(loadValue);
+							break;
+			case 3: Timer3B_LoadValue(loadValue);
+							break;
+			case 4: Timer4B_LoadValue(loadValue);
+							break;
+			case 5: Timer5B_LoadValue(loadValue);
+							break;
+		}
 	}
 	else{}
 }
 
 void EnableIPduTimer(ComIPdu_type *IPdu)
 {
-	TIMERS_vidEnableTimer(IPdu->ComTxIPdu->ComTxTimerID, IPdu->ComTxIPdu->ComTxTimerBlock);
+	switch(IPdu->ComTxIPdu->ComTxTimerNumber)
+	{
+		case 0: Timer0_Enable();
+							break;
+		case 1: Timer1_Enable();
+							break;
+		case 2: Timer2_Enable();
+							break;
+		case 3: Timer3_Enable();
+							break;
+		case 4: Timer4_Enable();
+							break;
+		case 5: Timer5_Enable();
+							break;
+	}
 }
 
 void DisableIPduTimer(ComIPdu_type *IPdu)
 {
 	uint8 i = IPdu->ComTxIPdu->ComTxTimerBlock, j = IPdu->ComTxIPdu->ComTxTimerNumber;
 	TIMER_BUSY[i][j] = 0;
-	TIMERS_vidDisableTimer(IPdu->ComTxIPdu->ComTxTimerID, IPdu->ComTxIPdu->ComTxTimerBlock);
+	switch(IPdu->ComTxIPdu->ComTxTimerNumber)
+	{
+		case 0: Timer0_Disable();
+							break;
+		case 1: Timer1_Disable();
+							break;
+		case 2: Timer2_Disable();
+							break;
+		case 3: Timer3_Disable();
+							break;
+		case 4: Timer4_Disable();
+							break;
+		case 5: Timer5_Disable();
+							break;
+	}
 }
 
 
@@ -206,80 +329,4 @@ void ClearPeriodicTimeFired(ComIPdu_type *IPdu)
 	TIMER_FIRED[i][j] = 0;
 }
 
-
-void HandleTimer_0A()
-{
-	TIMER_FIRED[0][0] = 1;
-}
-
-void HandleTimer_1A()
-{
-	TIMER_FIRED[0][1] = 1;
-}
-
-void HandleTimer_2A()
-{
-	TIMER_FIRED[0][2] = 1;
-}
-
-void HandleTimer_3A()
-{
-	TIMER_FIRED[0][3] = 1;
-}
-
-void HandleTimer_4A()
-{
-	TIMER_FIRED[0][4] = 1;
-}
-
-void HandleTimer_5A()
-{
-	TIMER_FIRED[0][5] = 1;
-}
-
-void HandleTimer_0B()
-{
-	TIMER_FIRED[1][0] = 1;
-}
-
-void HandleTimer_1B()
-{
-	TIMER_FIRED[1][1] = 1;
-}
-
-void HandleTimer_2B()
-{
-	TIMER_FIRED[1][2] = 1;
-}
-
-void HandleTimer_3B()
-{
-	TIMER_FIRED[1][3] = 1;
-}
-
-void HandleTimer_4B()
-{
-	TIMER_FIRED[1][4] = 1;
-}
-
-void HandleTimer_5B()
-{
-	TIMER_FIRED[1][5] = 1;
-}
-
-void WriteHandlers()
-{
-	TIMERS_vidPutFunction(TIMERS_TIMER0A, HandleTimer_0A);
-	TIMERS_vidPutFunction(TIMERS_TIMER0A, HandleTimer_1A);
-	TIMERS_vidPutFunction(TIMERS_TIMER0A, HandleTimer_2A);
-	TIMERS_vidPutFunction(TIMERS_TIMER0A, HandleTimer_3A);
-	TIMERS_vidPutFunction(TIMERS_TIMER0A, HandleTimer_4A);
-	TIMERS_vidPutFunction(TIMERS_TIMER0A, HandleTimer_5A);
-	TIMERS_vidPutFunction(TIMERS_TIMER0A, HandleTimer_0B);
-	TIMERS_vidPutFunction(TIMERS_TIMER0A, HandleTimer_1B);
-	TIMERS_vidPutFunction(TIMERS_TIMER0A, HandleTimer_2B);
-	TIMERS_vidPutFunction(TIMERS_TIMER0A, HandleTimer_3B);
-	TIMERS_vidPutFunction(TIMERS_TIMER0A, HandleTimer_4B);
-	TIMERS_vidPutFunction(TIMERS_TIMER0A, HandleTimer_5B);
-}
 
