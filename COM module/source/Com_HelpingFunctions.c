@@ -511,7 +511,7 @@ void com_packSignalsToPdu(ComIPdu_type* IPdu)
 		{
 			const ComGroupSignal_type* groupSignal = signalGroup->ComGroupSignal[ComGroupSignalId];
 			CopyGroupSignalFromFGtoAddress(signalGroup->ComHandleId, groupSignal->ComHandleId, dataAddress);
-			Com_WriteGroupSignalDataToPdu(groupSignal->ComHandleId, dataAddress);
+			Com_WriteGroupSignalDataToPdu(groupSignal->ComGlobalGroupSignalID, dataAddress);
 		}
 		
 	}

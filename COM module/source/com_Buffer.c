@@ -207,7 +207,7 @@ void CopyGroupSignalFromFGtoAddress(const Com_SignalGroupIdType SignalGroup_id, 
    SignalGroup = GET_SIGNALGROUP(SignalGroup_id);
 
    // Get signal group
-   GroupSignal = GET_SIGNAL(GroupSignal_id);
+   GroupSignal = GET_GROUPSIGNAL(SignalGroup_id, GroupSignal_id);
 
 
     FGBuffer = (uint8*)SignalGroup->ComFGBuffer;

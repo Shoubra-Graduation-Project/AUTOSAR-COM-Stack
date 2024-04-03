@@ -70,7 +70,7 @@
  * 
  *    Description: Get Group Signal by it's Id from SignalGroup container
  *********************************************************************************/ 
-#define GET_GROUPSIGNAL(SignalGroupId,GroupSignalId)  (ComConfig->ComSignalGroup[SignalGroupId]->ComGroupSignal[GroupSignalId])
+#define GET_GROUPSIGNAL(SignalGroupId,GroupSignalId)  (ComConfig.ComSignalGroup[SignalGroupId]->ComGroupSignal[GroupSignalId])
 
 
 
