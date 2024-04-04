@@ -48,7 +48,7 @@ boolean Com_ProcessTxSignalFilter(ComSignal_type* signalStruct, uint64 oldData, 
 {
 	boolean filterResult = 0;
 	ComSignalType_type signalType = signalStruct->ComSignalType;
-	uint64 mask = (signalStruct->ComFilter)->ComFilterMask;
+	sint64 mask = (signalStruct->ComFilter)->ComFilterMask;
 	sint64 ComFilterMax = signalStruct->ComFilter->ComFilterMax;
 	sint64 ComFilterMin = signalStruct->ComFilter->ComFilterMin;
 	if(signalType == SINT8 || signalType == SINT16 || signalType == SINT32 || signalType == SINT64)
@@ -85,16 +85,13 @@ boolean Com_ProcessTxSignalFilter(ComSignal_type* signalStruct, uint64 oldData, 
 				filterResult = 1;
 			}
 		}
-		else if( ((signalStruct->ComFilter)->ComFilterAlgorithm == ONE_EVERY_N) && ((signalStruct->ComFilter)->ComFilterOccurrence == (signalStruct->ComFilter)->ComFilterOffset) )
+		else if(signalStruct->ComFilter->ComFilterAlgorithm == ONE_EVERY_N)
 		{
-			filterResult = 1;
+		    if((signalStruct->ComFilter->ComFilterOccurrence % signalStruct->ComFilter->ComFilterPeriod)== signalStruct->ComFilter->ComFilterOffset)
+		    {
+		        filterResult = 1;
+		    }
 			(signalStruct->ComFilter)->ComFilterOccurrence += 1;
-			
-			if((signalStruct->ComFilter)->ComFilterOccurrence == (signalStruct->ComFilter)->ComFilterPeriod)
-			{
-				(signalStruct->ComFilter)->ComFilterOccurrence = 0;
-			}
-			
 		}
 		else{}
 	}
@@ -130,16 +127,13 @@ boolean Com_ProcessTxSignalFilter(ComSignal_type* signalStruct, uint64 oldData, 
 				filterResult = 1;
 			}
 		}
-		else if( ((signalStruct->ComFilter)->ComFilterAlgorithm == ONE_EVERY_N) && ((signalStruct->ComFilter)->ComFilterOccurrence == (signalStruct->ComFilter)->ComFilterOffset) )
+		else if(signalStruct->ComFilter->ComFilterAlgorithm == ONE_EVERY_N)
 		{
-			filterResult = 1;
+		    if((signalStruct->ComFilter->ComFilterOccurrence % signalStruct->ComFilter->ComFilterPeriod)== signalStruct->ComFilter->ComFilterOffset)
+		    {
+		        filterResult = 1;
+		    }
 			(signalStruct->ComFilter)->ComFilterOccurrence += 1;
-			
-			if((signalStruct->ComFilter)->ComFilterOccurrence == (signalStruct->ComFilter)->ComFilterPeriod)
-			{
-				(signalStruct->ComFilter)->ComFilterOccurrence = 0;
-			}
-			
 		}
 		else{}
 	}
@@ -155,16 +149,13 @@ boolean Com_ProcessTxSignalFilter_float(ComSignal_type* signalStruct, float64 ol
 	{
 		filterResult = 1;
 	}
-	else if( ((signalStruct->ComFilter)->ComFilterAlgorithm == ONE_EVERY_N) && ((signalStruct->ComFilter)->ComFilterOccurrence == (signalStruct->ComFilter)->ComFilterOffset) )
+	else if(signalStruct->ComFilter->ComFilterAlgorithm == ONE_EVERY_N)
 	{
-		filterResult = 1;
-		(signalStruct->ComFilter)->ComFilterOccurrence += 1;
-		
-		if((signalStruct->ComFilter)->ComFilterOccurrence == (signalStruct->ComFilter)->ComFilterPeriod)
-		{
-			(signalStruct->ComFilter)->ComFilterOccurrence = 0;
-		}
-		else{}
+		   if((signalStruct->ComFilter->ComFilterOccurrence % signalStruct->ComFilter->ComFilterPeriod)== signalStruct->ComFilter->ComFilterOffset)
+		   {
+		        filterResult = 1;
+		   }
+			(signalStruct->ComFilter)->ComFilterOccurrence += 1;
 	}
 	else{}
 	
@@ -177,7 +168,7 @@ boolean Com_ProcessTxSignalFilter_groupsignal(ComGroupSignal_type* signalStruct,
 	boolean filterResult = 0;
 	ComSignalGroup_type *SignalGroup = GET_SIGNALGROUP(signalStruct->SignalGroupId);
 	ComSignalType_type signalType = signalStruct->ComSignalType;
-	uint64 mask = (SignalGroup->ComFilter)->ComFilterMask;
+	sint64 mask = (SignalGroup->ComFilter)->ComFilterMask;
 	sint64 ComFilterMax = SignalGroup->ComFilter->ComFilterMax;
 	sint64 ComFilterMin = SignalGroup->ComFilter->ComFilterMin;
 	if(signalType == SINT8 || signalType == SINT16 || signalType == SINT32 || signalType == SINT64)
@@ -214,16 +205,13 @@ boolean Com_ProcessTxSignalFilter_groupsignal(ComGroupSignal_type* signalStruct,
 				filterResult = 1;
 			}
 		}
-		else if( ((SignalGroup->ComFilter)->ComFilterAlgorithm == ONE_EVERY_N) && ((SignalGroup->ComFilter)->ComFilterOccurrence == (SignalGroup->ComFilter)->ComFilterOffset) )
+		else if(SignalGroup->ComFilter->ComFilterAlgorithm == ONE_EVERY_N)
 		{
-			filterResult = 1;
+		    if((SignalGroup->ComFilter->ComFilterOccurrence % SignalGroup->ComFilter->ComFilterPeriod)== SignalGroup->ComFilter->ComFilterOffset)
+		    {
+		        filterResult = 1;
+		    }
 			(SignalGroup->ComFilter)->ComFilterOccurrence += 1;
-			
-			if((SignalGroup->ComFilter)->ComFilterOccurrence == (SignalGroup->ComFilter)->ComFilterPeriod)
-			{
-				(SignalGroup->ComFilter)->ComFilterOccurrence = 0;
-			}
-			
 		}
 		else{}
 	}
@@ -259,16 +247,13 @@ boolean Com_ProcessTxSignalFilter_groupsignal(ComGroupSignal_type* signalStruct,
 				filterResult = 1;
 			}
 		}
-		else if( ((SignalGroup->ComFilter)->ComFilterAlgorithm == ONE_EVERY_N) && ((SignalGroup->ComFilter)->ComFilterOccurrence == (SignalGroup->ComFilter)->ComFilterOffset) )
+		else if(SignalGroup->ComFilter->ComFilterAlgorithm == ONE_EVERY_N)
 		{
-			filterResult = 1;
+		    if((SignalGroup->ComFilter->ComFilterOccurrence % SignalGroup->ComFilter->ComFilterPeriod)== SignalGroup->ComFilter->ComFilterOffset)
+		    {
+		        filterResult = 1;
+		    }
 			(SignalGroup->ComFilter)->ComFilterOccurrence += 1;
-			
-			if((SignalGroup->ComFilter)->ComFilterOccurrence == (SignalGroup->ComFilter)->ComFilterPeriod)
-			{
-				(SignalGroup->ComFilter)->ComFilterOccurrence = 0;
-			}
-			
 		}
 		else{}
 	}
@@ -285,17 +270,14 @@ boolean Com_ProcessTxSignalFilter_float_groupsignal(ComGroupSignal_type* signalS
 	{
 		filterResult = 1;
 	}
-	else if( ((SignalGroup->ComFilter)->ComFilterAlgorithm == ONE_EVERY_N) && ((SignalGroup->ComFilter)->ComFilterOccurrence == (SignalGroup->ComFilter)->ComFilterOffset) )
-	{
-		filterResult = 1;
-		(SignalGroup->ComFilter)->ComFilterOccurrence += 1;
-		
-		if((SignalGroup->ComFilter)->ComFilterOccurrence == (SignalGroup->ComFilter)->ComFilterPeriod)
+	else if(SignalGroup->ComFilter->ComFilterAlgorithm == ONE_EVERY_N)
 		{
-			(SignalGroup->ComFilter)->ComFilterOccurrence = 0;
+		    if((SignalGroup->ComFilter->ComFilterOccurrence % SignalGroup->ComFilter->ComFilterPeriod)== SignalGroup->ComFilter->ComFilterOffset)
+		    {
+		        filterResult = 1;
+		    }
+			(SignalGroup->ComFilter)->ComFilterOccurrence += 1;
 		}
-		else{}
-	}
 	else{}
 	
 	return filterResult;
