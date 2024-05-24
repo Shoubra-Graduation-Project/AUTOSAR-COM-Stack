@@ -19,8 +19,8 @@ typedef double                	float64;
 
 typedef enum
 {
-   E_OK,
-   E_NOT_OK
+	E_NOT_OK,
+  E_OK
 }Std_ReturnType;
 
 #endif 
