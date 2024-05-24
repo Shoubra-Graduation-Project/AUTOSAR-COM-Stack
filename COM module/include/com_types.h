@@ -308,8 +308,6 @@ typedef struct
 	boolean ComIsIPduDeferred;
 
 	boolean ComFirstPeriodicModeEntry;
-
-	boolean ComFirstDirectModeEntry;
 	
 	uint8 ComTxTimerID;
 	

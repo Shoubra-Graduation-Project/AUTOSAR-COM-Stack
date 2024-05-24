@@ -289,7 +289,7 @@ boolean Com_ProcessTxSignalFilter_float_groupsignal(ComGroupSignal_type* signalS
 uint8 com_pdu_transmissions_handle_signal(ComIPdu_type* IPdu, ComSignal_type* signal)
 {
 	uint8 returnValue;
-	if(IPdu == NULL || signal == NULL)
+	if(IPdu == NULL || signal == NULL || (IPdu->ComIPduGroupRef != NULL && (IPdu->ComIPduGroupRef)->IpduGroupFlag == STOPPED) )
 	{
 		returnValue = E_NOT_OK;
 	}
@@ -321,7 +321,7 @@ uint8 com_pdu_transmissions_handle_signal(ComIPdu_type* IPdu, ComSignal_type* si
 			uint8 N = IPdu->ComTxIPdu->ComTxModeTrue->ComTxMode->ComTxModeNumberOfRepetitions;
 			if(signal->ComTransferProperty == TRIGGERED && N>0)
 			{
-				IPdu->ComTxIPdu->ComNumberOfTransmissions += N;
+				IPdu->ComTxIPdu->ComNumberOfTransmissions += (N+1);
 			}
 			else if(signal->ComTransferProperty == TRIGGERED_WITHOUT_REPETITION)
 			{
@@ -329,7 +329,7 @@ uint8 com_pdu_transmissions_handle_signal(ComIPdu_type* IPdu, ComSignal_type* si
 			}
 			else if(signal->ComTransferProperty == TRIGGERED_ON_CHANGE && signal->ComIsSignalChanged == 1 && N>0)
 			{
-				IPdu->ComTxIPdu->ComNumberOfTransmissions += N;
+				IPdu->ComTxIPdu->ComNumberOfTransmissions += (N+1);
 			}
 			else if(signal->ComTransferProperty == TRIGGERED_ON_CHANGE_WITHOUT_REPETITION && signal->ComIsSignalChanged == 1)
 			{
@@ -423,7 +423,7 @@ boolean com_pdu_transmissionsModeSelection(ComIPdu_type* IPdu)
 	if(TMS == 0)
 	{
 		uint32 ComSignalGroupId;
-		for (ComSignalGroupId = 0; (IPdu->ComIPduSignalRef[ComSignalGroupId] != NULL); ComSignalGroupId++)
+		for (ComSignalGroupId = 0; (IPdu->ComIPduSignalGroupRef[ComSignalGroupId] != NULL); ComSignalGroupId++)
 		{
 			//Get signal
 			ComSignalGroup_type* signalGroup = IPdu->ComIPduSignalGroupRef[ComSignalGroupId];
@@ -452,20 +452,21 @@ boolean com_pdu_transmissionsModeSelection(ComIPdu_type* IPdu)
 			newMode = IPdu->ComTxIPdu->ComTxModeTrue->ComTxMode->ComTxModeMode;
 			oldMode = IPdu->ComTxIPdu->ComTxModeFalse->ComTxMode->ComTxModeMode;
 		}
-	}
-	else{}
-
-	if(oldMode!=newMode)
-	{
-		if(oldMode==DIRECT && newMode!=DIRECT)
+		
+		if(oldMode!=newMode)
 		{
-			Std_ReturnType returnValue = Com_InitPeriodicModeForIPdu(IPdu);
-			IPdu->ComTxIPdu->ComNumberOfTransmissions +=1;
-		}
-		else if(oldMode!=DIRECT && newMode==DIRECT)
-		{
-			IPdu->ComTxIPdu->ComNumberOfTransmissions +=1;
-			DisableIPduTimer(IPdu);
+			if(oldMode==DIRECT && newMode!=DIRECT)
+			{
+				Std_ReturnType returnValue = Com_InitPeriodicModeForIPdu(IPdu);
+				if(newMode == MIXED){IPdu->ComTxIPdu->ComNumberOfTransmissions +=1;}
+				else{IPdu->ComTxIPdu->ComFirstPeriodicModeEntry = 1;}
+			}
+			else if(oldMode!=DIRECT && newMode==DIRECT)
+			{
+				IPdu->ComTxIPdu->ComNumberOfTransmissions +=1;
+				DisableIPduTimer(IPdu);
+			}
+			else{}
 		}
 		else{}
 	}

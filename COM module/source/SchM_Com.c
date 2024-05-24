@@ -170,8 +170,9 @@ void Com_MainFunctionTx (void)
 								
 						case PERIODIC:
 						{
-								if(CheckPeriodicTimeFired(IPdu))
+								if(CheckPeriodicTimeFired(IPdu) || IPdu->ComTxIPdu->ComFirstPeriodicModeEntry)
 								{
+									IPdu->ComTxIPdu->ComFirstPeriodicModeEntry = 0;
 									ClearPeriodicTimeFired(IPdu);
 									com_packSignalsToPdu(IPdu);
 									if(IPdu->ComIPduCallout != NULL) {IPdu->ComIPduCallout(*(IPdu->ComPduIdRef), IPdu->PduInfo);}
@@ -250,8 +251,9 @@ void Com_MainFunctionTx (void)
 									
 						case PERIODIC:
 						{
-								if(CheckPeriodicTimeFired(IPdu))
+								if(CheckPeriodicTimeFired(IPdu) || IPdu->ComTxIPdu->ComFirstPeriodicModeEntry)
 								{
+									IPdu->ComTxIPdu->ComFirstPeriodicModeEntry = 0;
 									ClearPeriodicTimeFired(IPdu);
 									com_packSignalsToPdu(IPdu);
 									if(IPdu->ComIPduCallout != NULL) {IPdu->ComIPduCallout(*(IPdu->ComPduIdRef), IPdu->PduInfo);}
@@ -293,10 +295,7 @@ void Com_MainFunctionTx (void)
 										else{}
 									}
 								}
-								else
-								{
-									
-								}
+								else{}
 															
 					}
 				}
@@ -305,11 +304,8 @@ void Com_MainFunctionTx (void)
 			else{}
 			
 		}
-		else
-		{
+		else{}
 
-		}
-		
 	}
 }
 
