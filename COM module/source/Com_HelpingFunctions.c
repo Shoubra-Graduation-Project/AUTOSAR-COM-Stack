@@ -478,7 +478,8 @@ boolean com_pdu_transmissionsModeSelection(ComIPdu_type* IPdu)
 void com_packSignalsToPdu(ComIPdu_type* IPdu)
 {
 	uint16 ComSignalId;
-	void * dataAddress = NULL;
+	uint64 data;
+	void * dataAddress = &data;
 	uint16 ComSignaGrouplId;
 	for(ComSignalId = 0; (IPdu->ComIPduSignalRef[ComSignalId] != NULL); ComSignalId++)
 	{
