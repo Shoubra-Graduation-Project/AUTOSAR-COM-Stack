@@ -519,7 +519,7 @@ Std_ReturnType Com_writeCounterValueToPduBuffer(ComIPdu_type *IPdu, uint8 counte
 		uint8 counterLength;
 		if(PduCounter != NULL)
 		{
-			BitPosition = PduCounter->ComIPduCounterStartPosition;;
+			BitPosition = PduCounter->ComIPduCounterStartPosition;
 			pduStartByte = BitPosition / 8;
 			BitOffsetInByte = BitPosition % 8;
 			pduBufferBytesptr = (uint8*)(IPdu->ComIPduDataPtr);
