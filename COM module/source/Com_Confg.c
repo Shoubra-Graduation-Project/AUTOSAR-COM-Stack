@@ -199,10 +199,10 @@ ComTxModeFalse_type ComTxModeFalse[2] =
 ComTxIPdu_type ComTxIPdu[] =
 {
 	{
-		1, CONFIRMATION, 255, &ComTxModeTrue[0], &ComTxModeFalse[0], 0, 1, 0, 0, 0, TIMERS_TIMER0A, 'A', 0
+		1, CONFIRMATION, 255, &ComTxModeTrue[0], &ComTxModeFalse[0], 0, 1, 0, 0, TIMERS_TIMER0A, 'A', 0
 	},
 	{
-		1, CONFIRMATION, 255, &ComTxModeTrue[1], &ComTxModeFalse[1], 0, 1, 0, 0, 0, TIMERS_TIMER0A, 'A', 0
+		1, CONFIRMATION, 255, &ComTxModeTrue[1], &ComTxModeFalse[1], 0, 1, 0, 0, TIMERS_TIMER0A, 'A', 0
 	}
 };
 

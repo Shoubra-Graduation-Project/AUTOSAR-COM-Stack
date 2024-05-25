@@ -1209,26 +1209,24 @@ void Com_TxConfirmation(PduIdType TxPduId, Std_ReturnType result)
 				}
 				else if(result == E_NOT_OK)
 				{
-					if(IPduGroup != NULL && IPduGroup->IpduGroupFlag == STOPPED)
+					
+					for(uint16 signalID=0; (IPdu->ComIPduSignalRef[signalID] != NULL); signalID++)
 					{
-						for(uint16 signalID=0; (IPdu->ComIPduSignalRef[signalID] != NULL); signalID++)
+						if(IPdu->ComIPduSignalRef[signalID]->ComErrorNotification != NULL)
 						{
-							if(IPdu->ComIPduSignalRef[signalID]->ComErrorNotification != NULL)
-							{
-								IPdu->ComIPduSignalRef[signalID]->ComErrorNotification();
-							}
-							else{}
+							IPdu->ComIPduSignalRef[signalID]->ComErrorNotification();
 						}
-						for(uint16 signalGroupID=0; (IPdu->ComIPduSignalGroupRef[signalGroupID] != NULL); signalGroupID++)
-						{
-							if(IPdu->ComIPduSignalGroupRef[signalGroupID]->ComErrorNotification != NULL)
-							{
-								IPdu->ComIPduSignalGroupRef[signalGroupID]->ComErrorNotification();
-							}
-							else{}
-						}
+						else{}
 					}
-					else{}
+					for(uint16 signalGroupID=0; (IPdu->ComIPduSignalGroupRef[signalGroupID] != NULL); signalGroupID++)
+					{
+						if(IPdu->ComIPduSignalGroupRef[signalGroupID]->ComErrorNotification != NULL)
+						{
+							IPdu->ComIPduSignalGroupRef[signalGroupID]->ComErrorNotification();
+						}
+						else{}
+					}
+					
 				}
 				else{}
 			}
