@@ -65,17 +65,17 @@ void Timer3B_LoadValue(unsigned long period);
 void Timer4B_LoadValue(unsigned long period);
 void Timer5B_LoadValue(unsigned long period);
 
-void Timer0_Enable();
-void Timer1_Enable();
-void Timer2_Enable();
-void Timer3_Enable();
-void Timer4_Enable();
-void Timer5_Enable();
-void Timer0_Disable();
-void Timer1_Disable();
-void Timer2_Disable();
-void Timer3_Disable();
-void Timer4_Disable();
-void Timer5_Disable();
+void Timer0_Enable(void);
+void Timer1_Enable(void);
+void Timer2_Enable(void);
+void Timer3_Enable(void);
+void Timer4_Enable(void);
+void Timer5_Enable(void);
+void Timer0_Disable(void);
+void Timer1_Disable(void);
+void Timer2_Disable(void);
+void Timer3_Disable(void);
+void Timer4_Disable(void);
+void Timer5_Disable(void);
 
 #endif // __TIMER2INTS_H__
