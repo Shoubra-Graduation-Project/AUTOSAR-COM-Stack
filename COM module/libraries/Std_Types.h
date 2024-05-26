@@ -2,7 +2,8 @@
 #define STD_TYPES_H_
 
 
-
+#define E_OK 0x01
+#define E_NOT_OK 0x00
 
 typedef unsigned char			boolean;
 typedef unsigned char         	uint8;         
@@ -16,11 +17,5 @@ typedef unsigned long long    	uint64;
 typedef float                 	float32;
 typedef double                	float64;
 
-
-typedef enum
-{
-	E_NOT_OK,
-  E_OK
-}Std_ReturnType;
 
 #endif 
