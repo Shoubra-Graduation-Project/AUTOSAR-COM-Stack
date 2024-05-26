@@ -1262,7 +1262,7 @@ uint8 Com_InvalidateSignal(Com_SignalIdType SignalId)
 		if(signal != NULL)
 		{
 			ComIPdu_type* IPdu = GET_IPDU(signal->ComIPduHandleId);
-			if(IPdu == NULL || signal->ComSignalDataInvalidValue == NULL || (IPdu->ComIPduGroupRef)->IpduGroupFlag == STOPPED)
+			if(IPdu == NULL || signal->ComSignalDataInvalidValue == NULL || (IPdu->ComIPduGroupRef != NULL && IPdu->ComIPduGroupRef->IpduGroupFlag == STOPPED) )
 			{
 				returnValue = COM_SERVICE_NOT_AVAILABLE;
 			}
