@@ -96,7 +96,7 @@ uint8 Com_InvalidateSignalGroup (Com_SignalGroupIdType SignalGroupId);
 
 void Com_RxIndication (PduIdType RxPduId, const PduInfoType* PduInfoPtr);
 
-void Com_TxConfirmation (PduIdType TxPduId, Std_ReturnType result);
+void Com_TxConfirmation (PduIdType TxPduId, uint8 result);
 
 
 

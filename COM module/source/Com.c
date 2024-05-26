@@ -1174,7 +1174,7 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 
 
 
-void Com_TxConfirmation(PduIdType TxPduId, Std_ReturnType result)
+void Com_TxConfirmation(PduIdType TxPduId, uint8 result)
 {
 	if(Com_GetStatus() == COM_INIT)
 	{

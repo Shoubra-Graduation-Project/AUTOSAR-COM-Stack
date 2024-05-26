@@ -15,6 +15,6 @@ uint8 com_pdu_transmissions_handle_signal(ComIPdu_type* IPdu, ComSignal_type* si
 uint8 com_pdu_transmissions_handle_signalGroup(ComIPdu_type* IPdu, ComSignalGroup_type* signalGroup);
 boolean com_pdu_transmissionsModeSelection(ComIPdu_type* IPdu);
 void com_packSignalsToPdu(ComIPdu_type* IPdu);
-Std_ReturnType Com_writeCounterValueToPduBuffer(ComIPdu_type *IPdu, uint8 counterdata);
+uint8 Com_writeCounterValueToPduBuffer(ComIPdu_type *IPdu, uint8 counterdata);
 uint8 check_Data_Sequence(ComIPdu_type *Ipdu);
 #endif
