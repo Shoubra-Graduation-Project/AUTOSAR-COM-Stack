@@ -1181,7 +1181,7 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 
 
 
-void Com_TxConfirmation(PduIdType TxPduId, Std_ReturnType result)
+void Com_TxConfirmation(PduIdType TxPduId, uint8 result)
 {
 	if(Com_GetStatus() == COM_INIT)
 	{
@@ -1281,7 +1281,7 @@ uint8 Com_InvalidateSignal(Com_SignalIdType SignalId)
 
 uint8 Com_InvalidateSignalGroup (Com_SignalGroupIdType SignalGroupId)
 {   uint8 flag=0;
-	 ComSignalGroup_type * SignalGroup= GET_SIGNALGROUP(GroupSignal->SignalGroupId);
+	 ComSignalGroup_type * SignalGroup= GET_SIGNALGROUP(SignalGroupId);
     ComIPdu_type *Ipdu=GET_IPDU(SignalGroup->ComIPduHandleId);
 		if(Ipdu->ComIPduGroupRef==NULL)
 	{

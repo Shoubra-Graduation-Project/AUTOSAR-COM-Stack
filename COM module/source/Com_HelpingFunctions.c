@@ -458,7 +458,7 @@ boolean com_pdu_transmissionsModeSelection(ComIPdu_type* IPdu)
 		{
 			if(oldMode==DIRECT && newMode!=DIRECT)
 			{
-				Std_ReturnType returnValue = Com_InitPeriodicModeForIPdu(IPdu);
+				uint8 returnValue = Com_InitPeriodicModeForIPdu(IPdu);
 				if(newMode == MIXED){IPdu->ComTxIPdu->ComNumberOfTransmissions +=1;}
 				else{IPdu->ComTxIPdu->ComFirstPeriodicModeEntry = 1;}
 			}
@@ -504,9 +504,9 @@ void com_packSignalsToPdu(ComIPdu_type* IPdu)
 
 
 
-Std_ReturnType Com_writeCounterValueToPduBuffer(ComIPdu_type *IPdu, uint8 counterdata)
+uint8 Com_writeCounterValueToPduBuffer(ComIPdu_type *IPdu, uint8 counterdata)
 {
-	Std_ReturnType returnValue = E_OK;
+	uint8 returnValue = E_OK;
 	// Get PDU
 	
 	if(IPdu != NULL)

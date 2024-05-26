@@ -93,9 +93,9 @@ void InitAllTimers()
 }
 
 //call when an IPdu enters Periodic mode
-Std_ReturnType Com_InitPeriodicModeForIPdu(ComIPdu_type *IPdu)
+uint8 Com_InitPeriodicModeForIPdu(ComIPdu_type *IPdu)
 {
-	Std_ReturnType returnVlaue = E_OK;
+	uint8 returnVlaue = E_OK;
 	if(FindAvailableTimer(IPdu) == E_OK)
 	{
 		AdjustTimerToIPdu(IPdu);
@@ -109,9 +109,9 @@ Std_ReturnType Com_InitPeriodicModeForIPdu(ComIPdu_type *IPdu)
 	return returnVlaue;
 }
 
-Std_ReturnType FindAvailableTimer(ComIPdu_type *IPdu)
+uint8 FindAvailableTimer(ComIPdu_type *IPdu)
 {
-	Std_ReturnType returnVlaue = E_OK;
+	uint8 returnVlaue = E_OK;
 	uint8 i, j, found=0;
 	for(i = 0; i<2; i++)
 	{
