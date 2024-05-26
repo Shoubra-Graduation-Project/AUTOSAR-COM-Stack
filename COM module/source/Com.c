@@ -1190,7 +1190,8 @@ void Com_TxConfirmation(PduIdType TxPduId, uint8 result)
 			{
 				if(result == E_OK)
 				{
-					for(uint16 signalID=0; (IPdu->ComIPduSignalRef[signalID] != NULL); signalID++)
+					uint16 signalID, signalGroupID;
+					for(signalID=0; (IPdu->ComIPduSignalRef[signalID] != NULL); signalID++)
 					{
 						if(IPdu->ComIPduSignalRef[signalID]->ComNotification != NULL)
 						{
@@ -1198,7 +1199,7 @@ void Com_TxConfirmation(PduIdType TxPduId, uint8 result)
 						}
 						else{}
 					}
-					for(uint16 signalGroupID=0; (IPdu->ComIPduSignalGroupRef[signalGroupID] != NULL); signalGroupID++)
+					for(signalGroupID=0; (IPdu->ComIPduSignalGroupRef[signalGroupID] != NULL); signalGroupID++)
 					{
 						if(IPdu->ComIPduSignalGroupRef[signalGroupID]->ComNotification != NULL)
 						{
