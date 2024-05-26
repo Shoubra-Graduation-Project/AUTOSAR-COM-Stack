@@ -504,9 +504,9 @@ void com_packSignalsToPdu(ComIPdu_type* IPdu)
 
 
 
-Std_ReturnType Com_writeCounterValueToPduBuffer(ComIPdu_type *IPdu, uint8 counterdata)
+uint8 Com_writeCounterValueToPduBuffer(ComIPdu_type *IPdu, uint8 counterdata)
 {
-	Std_ReturnType returnValue = E_OK;
+	uint8 returnValue = E_OK;
 	// Get PDU
 	
 	if(IPdu != NULL)
