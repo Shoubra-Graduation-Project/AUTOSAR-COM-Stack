@@ -1406,11 +1406,14 @@ void Com_SwitchIpduTxMode (PduIdType PduId, boolean Mode)
 			{
 				if(oldTMS==DIRECT && newTMS!=DIRECT)
 				{
-					IPdu->ComTxIPdu->ComNumberOfTransmissions +=1;
+					uint8 returnValue = Com_InitPeriodicModeForIPdu(IPdu);
+					if(newTMS == MIXED){IPdu->ComTxIPdu->ComNumberOfTransmissions +=1;}
+					else{IPdu->ComTxIPdu->ComFirstPeriodicModeEntry = 1;}
 				}
 				else if(oldTMS!=DIRECT && newTMS==DIRECT)
 				{
 					IPdu->ComTxIPdu->ComNumberOfTransmissions +=1;
+					DisableIPduTimer(IPdu);
 				}
 				else{}
 			}
