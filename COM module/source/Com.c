@@ -997,7 +997,7 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 
  uint8 Com_ReceiveSignalGroup (Com_SignalGroupIdType SignalGroupId)
  {
-     ComSignalGroup_type * SignalGroup= GET_SIGNALGROUP(GroupSignal->SignalGroupId);
+     ComSignalGroup_type * SignalGroup= GET_SIGNALGROUP(SignalGroupId);
      ComIPdu_type *Ipdu=GET_IPDU(SignalGroup->ComIPduHandleId);
 	
 	if(Ipdu->ComIPduDirection!=RECEIVE)
@@ -1014,7 +1014,7 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
         CopySignalGroupfromSBtoFG( SignalGroupId);
         return COM_SERVICE_NOT_AVAILABLE;
     }
-     else if((Ipdu->ComIPduGroupRef==NULL&&Com_GetStatus==COM_INIT)||(Ipdu->ComIPduGroupRef!=NULL&&Ipdu->ComIPduGroupRef->IpduGroupFlag==STARTED))
+     else if((Ipdu->ComIPduGroupRef==NULL&&Com_GetStatus()==COM_INIT)||(Ipdu->ComIPduGroupRef!=NULL&&Ipdu->ComIPduGroupRef->IpduGroupFlag==STARTED))
     {
         CopySignalGroupfromSBtoFG( SignalGroupId);
         return E_OK;
@@ -1039,34 +1039,38 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 	}
 	else
 	{
-       ComIPdu_type *Ipdu=GET_IPDU(RxPduId);
+		 uint16 signalid,signalgroupid;
+     ComIPdu_type *Ipdu=GET_IPDU(RxPduId);
 	   ComIPdu_type *Ipdu_Rx=(ComIPdu_type *)PduInfoPtr->SduDataPtr;
 	  
 	if(Ipdu->ComIPduGroupRef!=NULL&&Ipdu->ComIPduGroupRef->IpduGroupFlag==STOPPED)
 	{
 		return;
 	}
-	else if((Ipdu->ComIPduGroupRef==NULL&&Com_GetStatus==COM_INIT)||(Ipdu->ComIPduGroupRef!=NULL&&Ipdu->ComIPduGroupRef->IpduGroupFlag==STARTED))
+	else if((Ipdu->ComIPduGroupRef==NULL&&Com_GetStatus()==COM_INIT)||(Ipdu->ComIPduGroupRef!=NULL&&Ipdu->ComIPduGroupRef->IpduGroupFlag==STARTED))
 	{
+		uint8 excounter;
+		 uint8 recounter;
 		if (Ipdu->ComIPduCallout!=NULL)
 		{
-			Ipdu->ComIPduCallout();
+			Ipdu->ComIPduCallout(RxPduId,PduInfoPtr);
 		}
 		else
 		{
 
 		}
 		/*data sequence check*/
-		uint8 excounter=check_Data_Sequence(Ipdu);
-        uint8 recounter=check_Data_Sequence(Ipdu_Rx);
+		excounter=check_Data_Sequence(Ipdu);
+    recounter=check_Data_Sequence(Ipdu_Rx);
 		if(recounter>((excounter+(Ipdu->ComIPduCounter->ComIPduCounterThreshold))%power(Ipdu->ComIPduCounter->ComIPduCounterSize)))
 		{
 			return;
 		}
 		else
 		{
+			uint8 return1;
           excounter=(excounter+1)%power(Ipdu->ComIPduCounter->ComIPduCounterSize);
-		  Std_ReturnType return1 =Com_writeCounterValueToPduBuffer(Ipdu, excounter);
+		  return1 =Com_writeCounterValueToPduBuffer(Ipdu, excounter);
 		}
 		
 		
@@ -1075,14 +1079,15 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 	{
 
 	}
-	for(uint16 signalid=0;Ipdu_Rx->ComIPduSignalRef[signalid]!=NULL;signalid++)
+	
+	for( signalid=0;Ipdu_Rx->ComIPduSignalRef[signalid]!=NULL;signalid++)
 	{
 	
 			memcpy((uint8 *)Ipdu->ComIPduSignalRef[signalid]->ComBGBuffer,(uint8 *)Ipdu_Rx->ComIPduSignalRef[signalid]->ComSignalDataPtr,(Ipdu_Rx->ComIPduSignalRef[signalid]->ComBitSize)/8);
 		
 
 	}
-	for(uint16 signalgroupid=0;Ipdu_Rx->ComIPduSignalGroupRef[signalgroupid]!=NULL;signalgroupid++)
+	for(signalgroupid=0;Ipdu_Rx->ComIPduSignalGroupRef[signalgroupid]!=NULL;signalgroupid++)
 	{
 		
 			memcpy((uint8 *)Ipdu->ComIPduSignalGroupRef[signalgroupid]->ComBGBuffer,(uint8 *)Ipdu_Rx->ComIPduSignalGroupRef[signalgroupid]->SignalGroupDataPtr,Ipdu_Rx->ComIPduSignalGroupRef[signalgroupid]->signalGroupSize);
@@ -1097,26 +1102,28 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
  }
  uint8 Com_ReceiveSignal (Com_SignalIdType SignalId, void* SignalDataPtr)
  {
+	  
 		
    if( SignalId>=0 && SignalId<=COM_MAX_SIGNAL)
    {
         ComSignal_type * Signal = GET_SIGNAL(SignalId);
-	   if(Signal->containingIPDU->ComIPduDirection!=RECEIVE)
+		    ComIPdu_type *ipdu=GET_IPDU(Signal->ComIPduHandleId);
+	   if(ipdu->ComIPduDirection!=RECEIVE)
 	   {
 		  return E_NOT_OK;
 	   }
 	   else
 	   {
-		  if(Signal->containingIPDU->ComIPduGroupRef!=NULL&&Signal->containingIPDU->ComIPduGroupRef->IpduGroupFlag==STOPPED)
+		  if(ipdu->ComIPduGroupRef!=NULL&&ipdu->ComIPduGroupRef->IpduGroupFlag==STOPPED)
          {  
            return COM_SERVICE_NOT_AVAILABLE;
          }
-          else if(Signal->containingIPDU->ComIPduGroupRef!=NULL&&Signal->containingIPDU->ComIPduGroupRef->IpduGroupFlag==STARTED)
+          else if(ipdu->ComIPduGroupRef!=NULL&&ipdu->ComIPduGroupRef->IpduGroupFlag==STARTED)
         {    //CopySignalfromBGtoFG(SignalId);
             CopySignalFromFGtoAddress(SignalId,SignalDataPtr);
             return E_OK;
         }
-		else if(Signal->containingIPDU->ComIPduGroupRef==NULL&&Com_GetStatus()==COM_INIT)
+		else if(ipdu->ComIPduGroupRef==NULL&&Com_GetStatus()==COM_INIT)
 		{
 			 CopySignalFromFGtoAddress(SignalId,SignalDataPtr);
              return E_OK;
@@ -1128,7 +1135,7 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
        }
 	}
     
-     else if(SignalId >= COM_MIN_GROUPSIGNAL && SignalId <= COM_MAX_GROUPSIGNAL)
+     else if(SignalId >= 0 && SignalId <= COM_MAX_GROUPSIGNAL)
      {
          ComGroupSignal_type * GroupSignal = GET_GROUPSIGNALCNFG(SignalId);
          ComSignalGroup_type * SignalGroup = GET_SIGNALGROUP(GroupSignal->SignalGroupId);

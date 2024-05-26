@@ -193,7 +193,7 @@ void CopyGroupSignalFromFGtoAddress(const Com_SignalGroupIdType SignalGroup_id, 
     const ComSignalGroup_type * SignalGroup;
     const ComGroupSignal_type * GroupSignal;
 	  uint8* FGBuffer, *address;
-
+    uint8 signalLength;
    // Get signal
    SignalGroup = GET_SIGNALGROUP(SignalGroup_id);
 
@@ -209,7 +209,7 @@ void CopyGroupSignalFromFGtoAddress(const Com_SignalGroupIdType SignalGroup_id, 
     FGBuffer = (uint8*)SignalGroup->ComFGBuffer;
 		address = (uint8*)dataAddress;
 		FGBuffer += GroupSignalOffsetInBuffer;
-    uint8 signalLength = (GroupSignal->ComBitSize)/8;
+    signalLength = (GroupSignal->ComBitSize)/8;
 		
     for( i = 0; i<signalLength; i++)
     {
