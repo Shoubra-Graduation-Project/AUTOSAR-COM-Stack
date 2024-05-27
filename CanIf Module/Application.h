@@ -9,7 +9,7 @@
 #define	APPLICATION_H
 
  /* Section : Includes */
-#include "canif.h"
+/*#include "canif.h"*/
 
  /* Section : Macros Definition */
 

@@ -1,10 +1,11 @@
 #include "../inc/CanIf.h"
+#include "CanIf_Cfg.c"
 #include "../inc/CanIf_types.h"
 #include "../inc/CanIf_Cfg.h"
-#include "../../CanDrv/Inc/ComStack_Types.h"
+#include "../COM module/include/ComStack_Types.h"
 #include "../../Common/Std_Types.h"
 #include "../../Common/Common_Macros.h"
-#include "../../CanDrv/Inc/Can_GeneralTypes.h"
+#include "../CanDrv/Inc/Can_GeneralTypes.h"
 #include "../../CanDrv/Inc/Can.h"
 #include "../../Det/inc/Det.h"
 #include "../../Common/Lib/driverlib/pin_map.h"
@@ -18,6 +19,40 @@ static CanIf_ControllerModeType CanIfControllerMode[NUMBER_OF_CONTROLLERS] = {
         CANIF_CS_UNINIT, CANIF_CS_UNINIT };
 
 static CanIf_PduModeType CanIfPduMode[NUMBER_OF_CONTROLLERS];
+
+static inline int LockSave(void)
+{
+    return 0;
+}
+
+static inline void LockRestore(int msr)
+{
+}
+
+struct {
+#if CANIF_PUBLIC_TX_BUFFERING
+        PduIdType nextInQueue;
+        uint8 data[8];
+    // dlc set to -1 indicates empty buffer
+        uint8 dlc;
+#endif
+#if CANIF_PUBLIC_READTXPDU_NOTIFY_STATUS_API
+        bool txConfirmed;
+#endif
+    } txLpdu[CANIF_NUM_TX_PDU_ID];
+
+
+struct {
+#if CANIF_PUBLIC_READRXPDU_DATA_API
+        uint8 data[8];
+        uint8 dlc;
+#endif
+#if CANIF_PUBLIC_READRXPDU_NOTIFY_STATUS_API
+        bool rxInd;
+#endif
+    } rxLpdu[CANIF_NUM_RX_LPDU_ID];
+} CanIf_LPduDataType;
+
 
 #if(CanIfPublicReadRxPduDataApi == true)
 static PduInfoType RxBuffer[CanIfMaxRxPduCfg];
@@ -49,6 +84,40 @@ static CanIf_PduModeType CanIfPduMode[NUMBER_OF_CONTROLLERS];
 static const CanIf_ConfigType* CanIf_ConfigPtr;
 PduInfoType* CanifBuffer;
 
+static void ClearTxBuffers(uint8 controller) {
+    // reset all pending tx requests
+    for(PduIdType i = 0; i < CANIF_NUM_TX_PDU_ID; i++) {
+        if(CanIf_ConfigPtr->TxPduCfg[i].controller == controller) {
+#if CANIF_PUBLIC_READTXPDU_NOTIFY_STATUS_API
+      // clear notification status
+      lPduData.txLpdu[i].txConfirmed = CANIF_NO_NOTIFICATION;
+#endif
+#if CANIF_PUBLIC_TX_BUFFERING
+            // set nextInQueue to indicate empty queue
+            hthData.hth[CanIf_ConfigPtr->TxPduCfg[i].hth].nextInQueue = -1;
+          // set dlc to -1 to indicate empty buffer
+            lPduData.txLpdu[i].dlc = -1;
+#endif
+        }
+    }
+}
+
+
+static void ClearRxBuffers(uint8 controller) {
+    // reset buffers
+    for(PduIdType i = 0; i < CANIF_NUM_RX_LPDU_ID; i++) {
+        if(CanIf_ConfigPtr->RxLpduCfg[i].controller == controller) {
+#if CANIF_PUBLIC_READRXPDU_NOTIFY_STATUS_API
+      // clear notification status
+      lPduData.rxLpdu[i].rxInd = CANIF_NO_NOTIFICATION;
+#endif
+#if CANIF_PUBLIC_READRXPDU_DATA_API
+          // set dlc to -1 to indicate empty buffer
+            lPduData.rxLpdu[i].dlc = -1;
+#endif
+        }
+    }
+}
 /******************************************* CanIf_SetControllerMode ***********************************************/
 LOCAL VAR(CanIf_GlobalType ,AUTOMATIC) CanIf_Global;
 
@@ -107,8 +176,17 @@ FUNC(Std_ReturnType,CANIF_CODE) CanIf_SetControllerMode(VAR(uint8,AUTOMATIC) Con
     {
         /*MISRA*/
     }
-    
-    
+    CanIf_SetPduMode();
+    Can_SetControllerMode();
+     if (CAN_CS_SLEEP == ControllerMode)
+    {
+        CanIf_SetPduMode(controllerId, CANIF_OFFLINE);
+    }
+    else if (CAN_CS_STOPPED == ControllerMode)
+    {
+        CanIf_SetPduMode(controllerId, CANIF_TX_OFFLINE);
+    }
+
      if ( ErrorStatus == E_NOT_OK )
     {
 
@@ -127,7 +205,8 @@ FUNC(Std_ReturnType,CANIF_CODE) CanIf_SetControllerMode(VAR(uint8,AUTOMATIC) Con
     }
   
   
-   
+    return Can_SetControllerMode(controllerId, ControllerMode);
+
   
 }
 
@@ -240,6 +319,12 @@ is called() */
     {
         /*MISRA*/
     }
+// reset all buffers
+    int lock = LockSave();
+    ClearTxBuffers(ControllerId);
+    ClearRxBuffers(ControllerId);
+    LockRestore(lock);	
+	
    
 }
 
@@ -713,7 +798,7 @@ const CanIfRxPduCfg* CanIf_FindRxPduEntry(Can_HwHandleType Hoh)
             return (CanIfRxPduCfg* const)(&CanIf_ConfigPtr->CanIfInitCfg.CanIfRxPduCfg[i]);
         }
     }
-    return 0;
+    return 0
 }
 
 
@@ -723,7 +808,7 @@ Std_ReturnType CanIf_RxIndication(const Can_HwType* MailBox, const PduInfoType* 
     CanIf_PduModeType PduMode = (CanIf_PduModeType)0;
     const CanIfRxPduCfg* RxPduIndex = CanIf_FindRxPduEntry(MailBox->Hoh);
     uint8 ControllerID = (uint8)RxPduIndex->CanIfRxPduHrhIdRef->CanIfHrhCanCtrlIdRef->CanIfCtrlId;
-    const CanIfRxPduCfg* RxEntry;
+    const CanIfRxPduCfg* TxEntry;
 
  
     //Check CAN is INITIATE or Not
@@ -760,7 +845,7 @@ Std_ReturnType CanIf_RxIndication(const Can_HwType* MailBox, const PduInfoType* 
         return E_NOT_OK;
     }
 
-    uint8 Controller_ID = (uint8)RxEntry->CanIfRxPduHrhIdRef->CanIfHrhCanCtrlIdRef->CanIfCtrlId;
+    CanIf_Channel_t Controller_ID = (CanIf_Channel_t)TxEntry->CanIfTxPduBufferRef->CanIfBufferHthRef->CanIfHthCanCtrlIdRef->CanIfCtrlId;
 
     //Check PDU Mode
     if (CanIf_GetPduMode(Controller_ID, &PduMode) != E_OK) {
@@ -827,7 +912,7 @@ Std_ReturnType CanIf_ReadRxPduData(PduIdType CanIfRxSduId, PduInfoType* CanIfRxI
         return E_NOT_OK;
     }
 
-    uint8 Controller_ID = (uint8)RxEntry->CanIfRxPduHrhIdRef->CanIfHrhCanCtrlIdRef->CanIfCtrlId;
+    uint8 Controller_ID = (uint8)RxEntry->CanIfRxPduBufferRef->CanIfBufferHthRef->CanIfHthCanCtrlIdRef->CanIfCtrlId;
 
 
     //Check Controller Mode
