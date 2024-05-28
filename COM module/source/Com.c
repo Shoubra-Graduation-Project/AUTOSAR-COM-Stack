@@ -1192,6 +1192,7 @@ void Com_TxConfirmation(PduIdType TxPduId, uint8 result)
 			if(IPdu->ComIPduSignalProcessing == DEFERRED)
 			{
 				(IPdu->ComTxIPdu)->ComIsIPduDeferred = 1;
+				(IPdu->ComTxIPdu)->ComTransmissionResult = result;
 			}
 			else if(IPdu->ComIPduSignalProcessing == IMMEDIATE)
 			{

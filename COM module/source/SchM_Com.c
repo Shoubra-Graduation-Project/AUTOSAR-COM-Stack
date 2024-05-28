@@ -116,22 +116,48 @@ void Com_MainFunctionTx (void)
 				if(IPdu->ComIPduSignalProcessing == DEFERRED && (IPdu->ComTxIPdu)->ComIsIPduDeferred == 1)
 				{
 					IPdu->ComTxIPdu->ComIsIPduDeferred = 0;
-					for(uint16 signalID=0; (IPdu->ComIPduSignalRef[signalID] != NULL); signalID++)
+					if(IPdu->ComTxIPdu->ComTransmissionResult == E_OK)
 					{
-						if(IPdu->ComIPduSignalRef[signalID]->ComTimeoutNotification != NULL)
+						uint16 signalID,signalGroupID;
+						for(signalID=0; (IPdu->ComIPduSignalRef[signalID] != NULL); signalID++)
 						{
-							IPdu->ComIPduSignalRef[signalID]->ComTimeoutNotification();
+							if(IPdu->ComIPduSignalRef[signalID]->ComNotification != NULL)
+							{
+								IPdu->ComIPduSignalRef[signalID]->ComNotification();
+							}
+							else{}
 						}
-						else{}
+						for(signalGroupID=0; (IPdu->ComIPduSignalGroupRef[signalGroupID] != NULL); signalGroupID++)
+						{
+							if(IPdu->ComIPduSignalGroupRef[signalGroupID]->ComNotification != NULL)
+							{
+								IPdu->ComIPduSignalGroupRef[signalGroupID]->ComNotification();
+							}
+							else{}
+						}
 					}
-					for(uint16 signalGroupID=0; (IPdu->ComIPduSignalGroupRef[signalGroupID] != NULL); signalGroupID++)
+					else if(IPdu->ComTxIPdu->ComTransmissionResult == E_NOT_OK)
 					{
-						if(IPdu->ComIPduSignalGroupRef[signalGroupID]->ComTimeoutNotification != NULL)
+						uint16 signalID, signalGroupID;
+						for(signalID=0; (IPdu->ComIPduSignalRef[signalID] != NULL); signalID++)
 						{
-							IPdu->ComIPduSignalGroupRef[signalGroupID]->ComTimeoutNotification();
+							if(IPdu->ComIPduSignalRef[signalID]->ComErrorNotification != NULL)
+							{
+								IPdu->ComIPduSignalRef[signalID]->ComErrorNotification();
+							}
+							else{}
 						}
-						else{}
+						for(signalGroupID=0; (IPdu->ComIPduSignalGroupRef[signalGroupID] != NULL); signalGroupID++)
+						{
+							if(IPdu->ComIPduSignalGroupRef[signalGroupID]->ComErrorNotification != NULL)
+							{
+								IPdu->ComIPduSignalGroupRef[signalGroupID]->ComErrorNotification();
+							}
+							else{}
+						}
+						
 					}
+					else{}
 				
 				}
 				else{}

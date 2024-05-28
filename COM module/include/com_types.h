@@ -306,6 +306,8 @@ typedef struct
 	boolean ComCurrentTransmissionSelection;
 
 	boolean ComIsIPduDeferred;
+	
+	uint8 ComTransmissionResult;
 
 	boolean ComFirstPeriodicModeEntry;
 	
