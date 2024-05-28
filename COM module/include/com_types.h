@@ -396,14 +396,14 @@ typedef struct {
 /* I-PDU that contain this signal ---------> Not in SWS*/
 	const uint16 ComIPduHandleId;
     
-	void const * ComSignalDataPtr;
+	void  * ComSignalDataPtr;
 
 	const uint16 SignalGroupId;
     
 	uint16 ComGlobalGroupSignalID;
 	
 	void *ComFGBuffer;
-
+  ComRxDataTimeoutAction_type ComRxDataTimeoutAction;
  
 }ComGroupSignal_type;
 

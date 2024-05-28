@@ -44,7 +44,8 @@ static Com_StatusType initStatus = COM_UNINIT;
 
 void Com_Init (const Com_ConfigType* config)
 {
-			InitAllTimers();
+	   
+			
 	    ComIPdu_type *IPdu;
     	ComSignal_type *Signal;
 		ComSignalGroup_type *SignalGroup;
@@ -56,9 +57,10 @@ void Com_Init (const Com_ConfigType* config)
         uint8 ComInitSignalGroupId;
 
 		uint8 *ComShadowBuffer;
+  	InitAllTimers();
 	
         // Initialize global and static variables
-        ComConfig = config;
+   //     ComConfig = config;
     
 
 	    // Loop over all I-PDUs
@@ -66,7 +68,7 @@ void Com_Init (const Com_ConfigType* config)
 		 {
             
 			// Get IPdu
-		    IPdu = GET_IPdu(ComInitPduId);
+		    IPdu = GET_IPDU(ComInitPduId);
 	
           /*[SWS_Com_00015] The AUTOSAR COM module shall fill not used areas within an
             I-PDU with a value determined by configuration parameter ComTxIPduUnusedAreasDefault*/
@@ -186,7 +188,7 @@ void Com_DeInit( void )
     for (ComDeInitPduId = 0; ComDeInitPduId < COM_NUM_OF_IPDU ; ComDeInitPduId++)
 		 { 
 			// Get IPdu
-		    IPdu = GET_IPdu(ComDeInitPduId);
+		    IPdu = GET_IPDU(ComDeInitPduId);
 
 			if(IPdu->ComIPduGroupRef != NULL)
 			{
@@ -196,7 +198,7 @@ void Com_DeInit( void )
 			else
 			{
 				// NULL pointer (IPdu does not belongs to any IPdu group)
-				Det_ReportError(COM_MODULE_ID, COM_INSTANCE_ID, COM_DEINIT_ID, COM_E_PARAM_POINTER);
+				//(COM_MODULE_ID, COM_INSTANCE_ID, COM_DEINIT_ID, COM_E_PARAM_POINTER); /* no definition of it */
 			}
 
          }
@@ -237,7 +239,7 @@ void Com_IpduGroupStart(Com_IpduGroupIdType IpduGroupId , boolean Initialize)
     for (IpduId = 0; IpduId < COM_NUM_OF_IPDU ; IpduId++)
 		 {
 
-		    IPdu = GET_IPdu(IpduId);
+		    IPdu = GET_IPDU(IpduId);
 
 			if(IPdu->ComIPduGroupRef != NULL)
 
@@ -352,7 +354,7 @@ void Com_EnableReceptionDM (Com_IpduGroupIdType IpduGroupId)
       {
          for (ipduIndex = 0; ipduIndex < COM_NUM_OF_IPDU; ipduIndex++)
           {
-			  IPdu = GET_IPdu(ipduIndex);
+			  IPdu = GET_IPDU(ipduIndex);
 	
             /*
               [SWS_Com_00534] If Com_EnableReceptionDM is invoked on an I-PDU group
@@ -426,7 +428,7 @@ void Com_DisableReceptionDM (Com_IpduGroupIdType IpduGroupId)
       {
          for (ipduIndex = 0; ipduIndex < COM_NUM_OF_IPDU; ipduIndex++)
           {
-			  IPdu = GET_IPdu(ipduIndex);
+			  IPdu = GET_IPDU(ipduIndex);
 	
             /*
               [SWS_Com_00534] If Com_EnableReceptionDM is invoked on an I-PDU group
@@ -1293,7 +1295,8 @@ uint8 Com_InvalidateSignalGroup (Com_SignalGroupIdType SignalGroupId)
 	{
 		if (Com_GetStatus()==COM_INIT)
 		{
-			 for(uint16 group_signalId=0;SignalGroup->ComGroupSignal[group_signalId]!=NULL;group_signalId++)
+			uint16 group_signalId;
+			 for(group_signalId=0;SignalGroup->ComGroupSignal[group_signalId]!=NULL;group_signalId++)
 		{
           
 			if(SignalGroup->ComGroupSignal[group_signalId]->ComSignalDataInvalidValue!=NULL)
@@ -1339,7 +1342,8 @@ uint8 Com_InvalidateSignalGroup (Com_SignalGroupIdType SignalGroupId)
     }
 	else
 	{
-		 for(uint16 group_signalId=0;SignalGroup->ComGroupSignal[group_signalId]!=NULL;group_signalId++)
+		uint16 group_signalId;
+		 for(group_signalId=0;SignalGroup->ComGroupSignal[group_signalId]!=NULL;group_signalId++)
 		{
           
 			if(SignalGroup->ComGroupSignal[group_signalId]->ComSignalDataInvalidValue!=NULL)

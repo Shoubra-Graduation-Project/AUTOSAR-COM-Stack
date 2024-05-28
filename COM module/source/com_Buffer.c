@@ -126,6 +126,7 @@ void CopyGroupSignalFromSBtoAddress(const Com_SignalGroupIdType SignalGroup_id, 
     const ComSignalGroup_type * SignalGroup;
     const ComGroupSignal_type * GroupSignal;
     uint8* shadowBuffer;
+	  uint8* data=(uint8*)dataAddress;
     uint32 byteSteps;
     uint32 signalLength;
 		uint8 groupSignalByteOffsetInSB = 0;
@@ -148,9 +149,9 @@ void CopyGroupSignalFromSBtoAddress(const Com_SignalGroupIdType SignalGroup_id, 
 		
 		for(i=0; i<signalLength; i++)
 		{
-			*(uint8*)dataAddress = *shadowBuffer;
+			*data = *shadowBuffer;
 			shadowBuffer++;
-			dataAddress++;
+			data++;
 		}
     
 }
@@ -163,7 +164,7 @@ void Com_WriteSignalDataToShadowBuffer(const Com_SignalGroupIdType SignalGroup_i
     uint32 byteSteps;
     uint32 signalLength;
 		uint8 groupSignalByteOffsetInSB = 0;
-		uint8 * dataPointer = dataPtr;
+		uint8 * dataPointer = (uint8*)dataPtr;
   	int i;
     // Get signal
     SignalGroup = GET_SIGNALGROUP(SignalGroup_id);

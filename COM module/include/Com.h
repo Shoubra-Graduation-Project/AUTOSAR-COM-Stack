@@ -75,7 +75,8 @@ typedef struct{
 void Com_Init (const Com_ConfigType* config);
 
 Com_StatusType  Com_GetStatus(void);
-
+void Com_IpduGroupStop(Com_IpduGroupIdType IpduGroupId);
+void Com_IpduGroupStart(Com_IpduGroupIdType IpduGroupId , boolean Initialize);
 void Com_DeInit (void);
 
 void Com_EnableReceptionDM (Com_IpduGroupIdType IpduGroupId);

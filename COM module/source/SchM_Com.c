@@ -4,6 +4,7 @@
 
 
 #include "../include/Com.h"
+#include "../include/SchM_Com.h"
 #include "../include/Com_Types.h"
 #include "../include/Com_Cfg.h"
 #include "../include/ComMacros.h"
@@ -49,7 +50,7 @@ void Com_MainFunctionRx(void)
 	for ( ComMainRxPduId = 0; ComMainRxPduId < COM_NUM_OF_IPDU; ComMainRxPduId++)
 	{
         // Get IPDU
-	   	IPdu = GET_IPdu(ComMainRxPduId);
+	   	IPdu = GET_IPDU(ComMainRxPduId);
 
         if(IPdu != NULL)
         {
@@ -63,7 +64,7 @@ void Com_MainFunctionRx(void)
                {
                 
                 // Proceed to process this recieve IPDU
-                CheckRXIpdu(IPdu);
+                CheckRXIpdu(*IPdu);
 
                }
                else
@@ -76,7 +77,7 @@ void Com_MainFunctionRx(void)
             else
             // IPD-U does not belong to any IPDU group
             {
-                CheckRXIpdu(IPdu);
+                CheckRXIpdu(*IPdu);
             }     
            
         }
@@ -248,6 +249,33 @@ void Com_MainFunctionTx (void)
 				{
 					switch(IPdu->ComTxIPdu->ComTxModeFalse->ComTxMode->ComTxModeMode)
 					{
+						case DIRECT:
+								if(IPdu->ComTxIPdu->ComNumberOfTransmissions > 0)
+								{
+									com_packSignalsToPdu(IPdu);
+									if(IPdu->ComIPduCallout != NULL) {IPdu->ComIPduCallout(*(IPdu->ComPduIdRef), IPdu->PduInfo);}
+									else{}
+									while( IPdu->ComTxIPdu->ComNumberOfTransmissions > 0)
+									{
+										Com_writeCounterValueToPduBuffer(IPdu, IPdu->ComIPduCounter->ComCurrentCounterValue);
+										IPdu->ComIPduCounter->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue + 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
+										uint8 TransmisionReturnValue = E_OK;
+										if(PduR_ComTransmit(TransmisionReturnValue, IPdu->ComIPduHandleId, IPdu->ComIPduDataPtr) == E_NOT_OK)
+										{
+											IPdu->ComIPduCounter->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue - 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
+										}
+										IPdu->ComTxIPdu->ComNumberOfTransmissions--;
+										delay(IPdu->ComTxIPdu->ComTxModeFalse->ComTxMode->ComTxModeRepetitionPeriod);
+										if((IPdu->ComTxIPdu->ComNumberOfTransmissions) == 0)
+										{
+											if(IPdu->ComTxIPdu->ComMinimumDelayTime != 0){delay(IPdu->ComTxIPdu->ComMinimumDelayTime);}
+											else{}
+										}
+										else{}
+									}
+								}
+								else{}
+															
 						case MIXED:
 								if(IPdu->ComTxIPdu->ComNumberOfTransmissions > 0)
 								{
@@ -295,37 +323,15 @@ void Com_MainFunctionTx (void)
 										IPdu->ComIPduCounter->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue - 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
 									}
 									if(IPdu->ComTxIPdu->ComMinimumDelayTime != 0){delay(IPdu->ComTxIPdu->ComMinimumDelayTime);}
-									else{}
+									else
+										{
+											
+							      }
+										
 								}
-								break;
+							
 							}
-						case DIRECT:
-								if(IPdu->ComTxIPdu->ComNumberOfTransmissions > 0)
-								{
-									com_packSignalsToPdu(IPdu);
-									if(IPdu->ComIPduCallout != NULL) {IPdu->ComIPduCallout(*(IPdu->ComPduIdRef), IPdu->PduInfo);}
-									else{}
-									while( IPdu->ComTxIPdu->ComNumberOfTransmissions > 0)
-									{
-										Com_writeCounterValueToPduBuffer(IPdu, IPdu->ComIPduCounter->ComCurrentCounterValue);
-										IPdu->ComIPduCounter->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue + 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
-										uint8 TransmisionReturnValue = E_OK;
-										if(PduR_ComTransmit(TransmisionReturnValue, IPdu->ComIPduHandleId, IPdu->ComIPduDataPtr) == E_NOT_OK)
-										{
-											IPdu->ComIPduCounter->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue - 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
-										}
-										IPdu->ComTxIPdu->ComNumberOfTransmissions--;
-										delay(IPdu->ComTxIPdu->ComTxModeFalse->ComTxMode->ComTxModeRepetitionPeriod);
-										if((IPdu->ComTxIPdu->ComNumberOfTransmissions) == 0)
-										{
-											if(IPdu->ComTxIPdu->ComMinimumDelayTime != 0){delay(IPdu->ComTxIPdu->ComMinimumDelayTime);}
-											else{}
-										}
-										else{}
-									}
-								}
-								else{}
-															
+						
 					}
 				}
 				else{}
@@ -425,6 +431,7 @@ void Com_MainFunctionRxSignal(ComSignal_type Signal)
 void Com_MainFunctionRxSignalGroup(ComSignalGroup_type SignalGroup)
 {
     uint8 ComMainRxGroupSignalId;
+	  ComGroupSignal_type* GroupSignal;
     
     if (SignalGroup.ComTimeout > 0)
     {
@@ -442,8 +449,8 @@ void Com_MainFunctionRxSignalGroup(ComSignalGroup_type SignalGroup)
                     the AUTOSAR COM module shall replace the signal’s value by
                     its ComSignalInitValue when the reception deadline monitoring
                     timer of a signal expires*/
-                    case REPLACE:
-                    memcpy((uint8*)SignalGroup->ComShadowBuffer, (uint8*)GroupSignal->ComSignalInitValue,(GroupSignal->ComBitSize)/8);
+                    case TIMEOUT_REPLACE:
+                    memcpy((uint8*)SignalGroup.ComShadowBuffer, (uint8*)GroupSignal->ComSignalInitValue,(GroupSignal->ComBitSize)/8);
 
                     //Com_WriteSignalDataToPdu(GroupSignal->ComHandleId, GroupSignal->ComSignalInitValue);
                     break;
@@ -453,7 +460,7 @@ void Com_MainFunctionRxSignalGroup(ComSignalGroup_type SignalGroup)
                     its ComTimeoutSubstitutionValue when the reception deadline monitoring
                     timer of a signal expires*/
                     case SUBSTITUTE:
-                    memcpy((uint8*)SignalGroup->ComShadowBuffer, (uint8*)GroupSignal->ComTimeoutSubstitutionValue,(GroupSignal->ComBitSize)/8);
+                    memcpy((uint8*)SignalGroup.ComShadowBuffer, (uint8*)GroupSignal->ComTimeoutSubstitutionValue,(GroupSignal->ComBitSize)/8);
                     //Com_WriteSignalDataToPdu(GroupSignal->ComHandleId, GroupSignal->ComTimeoutSubstitutionValue);
                     break;
 

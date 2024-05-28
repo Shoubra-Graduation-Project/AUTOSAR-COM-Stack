@@ -9,6 +9,6 @@
 #define COM_SIGNAL_INIT_VALUE (uint8)0xFF
 #define COM_TIMEOUT_SUBSTITUTION_VALUE (uint8)0xAA
 
-extern const Com_ConfigType ComConfig;
+extern  Com_ConfigType ComConfig;
 
 #endif
