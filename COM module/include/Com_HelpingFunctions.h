@@ -17,4 +17,5 @@ boolean com_pdu_transmissionsModeSelection(ComIPdu_type* IPdu);
 void com_packSignalsToPdu(ComIPdu_type* IPdu);
 uint8 Com_writeCounterValueToPduBuffer(ComIPdu_type *IPdu, uint8 counterdata);
 uint8 check_Data_Sequence(ComIPdu_type *Ipdu);
+void timerDec(sint32 timer);   
 #endif

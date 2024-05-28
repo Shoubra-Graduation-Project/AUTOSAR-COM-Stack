@@ -16,11 +16,7 @@
 
 
 
-#define timerDec(timer)                         
-	if(timer > 0) {     
-                               
-		timer = timer - 1;                      
-	}
+
 
 
 /**********************************************************************************
@@ -41,54 +37,46 @@
  ***********************************************************************************/
 void Com_MainFunctionRx(void)
 {
-        ComIPdu_type *IPdu = NULL;
-        ComIPduGroup_type * IPduGroup; 
+    ComIPdu_type *IPdu = NULL;
+    ComIPduGroup_type *IPduGroup = NULL; // Initialize IPduGroup
 
-        uint8 ComMainRxPduId;
+    uint8 ComMainRxPduId;
     
     // Loop over all PDUs
-	for ( ComMainRxPduId = 0; ComMainRxPduId < COM_NUM_OF_IPDU; ComMainRxPduId++)
-	{
+    for (ComMainRxPduId = 0; ComMainRxPduId < COM_NUM_OF_IPDU; ComMainRxPduId++)
+    {
         // Get IPDU
-	   	IPdu = GET_IPDU(ComMainRxPduId);
+        IPdu = GET_IPDU(ComMainRxPduId);
 
-        if(IPdu != NULL)
+        if (IPdu != NULL)
         {
-            // If the Current IPD-U belongs to any IPDU group
-            if(IPdu->ComIPduGroupRef != NULL)
+            // If the Current IPDU belongs to any IPDU group
+            if (IPdu->ComIPduGroupRef != NULL)
             {
-               IPduGroup =  IPdu->ComIPduGroupRef;
+                IPduGroup = IPdu->ComIPduGroupRef;
 
-               // If the IPD-U group is started
-               if(IPduGroup->IpduGroupFlag == STARTED)
-               {
-                
-                // Proceed to process this recieve IPDU
-                CheckRXIpdu(*IPdu);
-
-               }
-               else
-               {
-                 /* IPDU group STOPPED*/
-               }
-
-                
+                // If the IPDU group is started
+                if (IPduGroup->IpduGroupFlag == STARTED)
+                {
+                    // Proceed to process this receive IPDU
+                    //CheckRXIpdu(*IPdu);
+                }
+                else
+                {
+                    /* IPDU group STOPPED */
+                }
             }
             else
-            // IPD-U does not belong to any IPDU group
             {
-                CheckRXIpdu(*IPdu);
-            }     
-           
+                // IPDU does not belong to any IPDU group
+               CheckRXIpdu(*IPdu);
+            }
         }
         else
         {
             /* IPDU is NULL */
-
         }
-
     }
-
 }
 
 
@@ -105,7 +93,8 @@ void Com_MainFunctionRx(void)
  ***************************************************************************************/
 void Com_MainFunctionTx (void)
 {
-	for(uint8 currentIPduID = 0; currentIPduID < COM_NUM_OF_IPDU; currentIPduID++)
+	uint8 currentIPduID ;
+	for(currentIPduID = 0; currentIPduID < COM_NUM_OF_IPDU; currentIPduID++)
 	{
 		ComIPdu_type* IPdu = GET_IPDU(currentIPduID);
 		if(IPdu !=NULL)
@@ -176,9 +165,10 @@ void Com_MainFunctionTx (void)
 									else{}
 									while( (IPdu->ComTxIPdu->ComNumberOfTransmissions) > 0)
 									{
+										uint8 TransmisionReturnValue = E_OK;
 										Com_writeCounterValueToPduBuffer(IPdu, (IPdu->ComIPduCounter)->ComCurrentCounterValue);
 										IPdu->ComIPduCounter->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue + 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
-										uint8 TransmisionReturnValue = E_OK;
+										
 										if(PduR_ComTransmit(TransmisionReturnValue, IPdu->ComIPduHandleId, IPdu->ComIPduDataPtr) == E_NOT_OK)
 										{
 											(IPdu->ComIPduCounter)->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue - 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
@@ -199,6 +189,7 @@ void Com_MainFunctionTx (void)
 						{
 								if(CheckPeriodicTimeFired(IPdu) || IPdu->ComTxIPdu->ComFirstPeriodicModeEntry)
 								{
+									uint8 TransmisionReturnValue = E_OK;
 									IPdu->ComTxIPdu->ComFirstPeriodicModeEntry = 0;
 									ClearPeriodicTimeFired(IPdu);
 									com_packSignalsToPdu(IPdu);
@@ -206,7 +197,7 @@ void Com_MainFunctionTx (void)
 									else{}
 									Com_writeCounterValueToPduBuffer(IPdu, IPdu->ComIPduCounter->ComCurrentCounterValue);
 									IPdu->ComIPduCounter->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue + 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
-									uint8 TransmisionReturnValue = E_OK;
+									
 									if(PduR_ComTransmit(TransmisionReturnValue, IPdu->ComIPduHandleId, IPdu->ComIPduDataPtr) == E_NOT_OK)
 									{
 										IPdu->ComIPduCounter->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue - 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
@@ -224,9 +215,10 @@ void Com_MainFunctionTx (void)
 									else{}
 									while( IPdu->ComTxIPdu->ComNumberOfTransmissions > 0)
 									{
+										uint8 TransmisionReturnValue = E_OK;
 										Com_writeCounterValueToPduBuffer(IPdu, IPdu->ComIPduCounter->ComCurrentCounterValue);
 										IPdu->ComIPduCounter->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue + 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
-										uint8 TransmisionReturnValue = E_OK;
+										
 										if(PduR_ComTransmit(TransmisionReturnValue, IPdu->ComIPduHandleId, IPdu->ComIPduDataPtr) == E_NOT_OK)
 										{
 											IPdu->ComIPduCounter->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue - 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
@@ -257,9 +249,10 @@ void Com_MainFunctionTx (void)
 									else{}
 									while( IPdu->ComTxIPdu->ComNumberOfTransmissions > 0)
 									{
+										uint8 TransmisionReturnValue = E_OK;
 										Com_writeCounterValueToPduBuffer(IPdu, IPdu->ComIPduCounter->ComCurrentCounterValue);
 										IPdu->ComIPduCounter->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue + 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
-										uint8 TransmisionReturnValue = E_OK;
+									
 										if(PduR_ComTransmit(TransmisionReturnValue, IPdu->ComIPduHandleId, IPdu->ComIPduDataPtr) == E_NOT_OK)
 										{
 											IPdu->ComIPduCounter->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue - 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
@@ -284,9 +277,10 @@ void Com_MainFunctionTx (void)
 									else{}
 									while( (IPdu->ComTxIPdu->ComNumberOfTransmissions) > 0)
 									{
+										uint8 TransmisionReturnValue = E_OK;
 										Com_writeCounterValueToPduBuffer(IPdu, IPdu->ComIPduCounter->ComCurrentCounterValue);
 										IPdu->ComIPduCounter->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue + 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
-										uint8 TransmisionReturnValue = E_OK;
+										
 										if(PduR_ComTransmit(TransmisionReturnValue, IPdu->ComIPduHandleId, IPdu->ComIPduDataPtr) == E_NOT_OK)
 										{
 											IPdu->ComIPduCounter->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue - 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
@@ -307,6 +301,7 @@ void Com_MainFunctionTx (void)
 						{
 								if(CheckPeriodicTimeFired(IPdu) || IPdu->ComTxIPdu->ComFirstPeriodicModeEntry)
 								{
+									uint8 TransmisionReturnValue = E_OK;
 									IPdu->ComTxIPdu->ComFirstPeriodicModeEntry = 0;
 									ClearPeriodicTimeFired(IPdu);
 									com_packSignalsToPdu(IPdu);
@@ -315,7 +310,7 @@ void Com_MainFunctionTx (void)
 									Com_writeCounterValueToPduBuffer(IPdu, IPdu->ComIPduCounter->ComCurrentCounterValue);
 									IPdu->ComIPduCounter->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue + 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
 
-						      uint8 TransmisionReturnValue = E_OK;
+						     
 
 								
 									if(PduR_ComTransmit(TransmisionReturnValue, IPdu->ComIPduHandleId, IPdu->ComIPduDataPtr) == E_NOT_OK)
@@ -374,7 +369,7 @@ void Com_MainFunctionRxSignal(ComSignal_type Signal)
 
     if (Signal.ComTimeout > 0)
     {
-        timerDec(Signal->DeadlineMonitoringTimer);
+        timerDec(Signal.DeadlineMonitoringTimer);
 
         if(Signal.DeadlineMonitoringTimer == 0)
         {
@@ -445,25 +440,16 @@ void Com_MainFunctionRxSignalGroup(ComSignalGroup_type SignalGroup)
 
                 switch(GroupSignal->ComRxDataTimeoutAction )
                 { 
-                    /* [SWS_Com_00470] If ComRxDataTimeoutAction is set to REPLACE, 
-                    the AUTOSAR COM module shall replace the signal’s value by
-                    its ComSignalInitValue when the reception deadline monitoring
-                    timer of a signal expires*/
-                    case TIMEOUT_REPLACE:
+                    
+                    
+	                  case TIMEOUT_REPLACE:
                     memcpy((uint8*)SignalGroup.ComShadowBuffer, (uint8*)GroupSignal->ComSignalInitValue,(GroupSignal->ComBitSize)/8);
-
-                    //Com_WriteSignalDataToPdu(GroupSignal->ComHandleId, GroupSignal->ComSignalInitValue);
-                    break;
-
-                    /*[SWS_Com_00875] If ComRxDataTimeoutAction is set to SUBSTITUTE,
-                    the AUTOSAR COM module shall replace the signal's value by 
-                    its ComTimeoutSubstitutionValue when the reception deadline monitoring
-                    timer of a signal expires*/
+										break;
                     case SUBSTITUTE:
                     memcpy((uint8*)SignalGroup.ComShadowBuffer, (uint8*)GroupSignal->ComTimeoutSubstitutionValue,(GroupSignal->ComBitSize)/8);
                     //Com_WriteSignalDataToPdu(GroupSignal->ComHandleId, GroupSignal->ComTimeoutSubstitutionValue);
                     break;
-
+										
                 }
 
             }
@@ -520,16 +506,16 @@ void CheckRXIpdu(ComIPdu_type IPdu)
             //Get signal
             Signal = IPdu.ComIPduSignalRef[ComMainRxSignalId];
 		
-            Com_MainFunctionRxSignal(Signal);
+            Com_MainFunctionRxSignal(*Signal);
             CopySignalfromBGtoFG(ComMainRxSignalId);
                
         }
 
-        for (ComMainRxSignalGroupId = 0; IPdu[ComMainRxSignalGroupId].ComIPduSignalGroupRef[ComMainRxSignalGroupId] != NULL; ComMainRxSignalGroupId++)
+        for (ComMainRxSignalGroupId = 0; IPdu.ComIPduSignalGroupRef[ComMainRxSignalGroupId] != NULL; ComMainRxSignalGroupId++)
         {
             SignalGroup = IPdu.ComIPduSignalGroupRef[ComMainRxSignalGroupId];
 
-            Com_MainFunctionRxSignalGroup(SignalGroup);
+            Com_MainFunctionRxSignalGroup(*SignalGroup);
 
             CopySignalGroupfromBGtoSB(ComMainRxSignalGroupId);
 

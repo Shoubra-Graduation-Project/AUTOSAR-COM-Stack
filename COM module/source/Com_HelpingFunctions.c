@@ -15,7 +15,12 @@
 /**********************************************************************************
  *                             Functions Definitions                              *
  **********************************************************************************/
- 
+ void timerDec(sint32 timer)    {                     
+	if(timer > 0) {     
+                               
+		timer = timer - 1;                      
+	}
+}
 void delay(uint32 seconds)
 {
 	uint64 volatile time;
