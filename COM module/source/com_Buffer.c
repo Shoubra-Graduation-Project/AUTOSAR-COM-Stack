@@ -154,6 +154,41 @@ void CopyGroupSignalFromSBtoAddress(const Com_SignalGroupIdType SignalGroup_id, 
 		}
     
 }
+
+void Com_WriteSignalDataToShadowBuffer(const Com_SignalGroupIdType SignalGroup_id, const Com_GroupSignalIdType GroupSignal_id, const void *dataPtr)
+{
+	const ComSignalGroup_type * SignalGroup;
+    const ComGroupSignal_type * GroupSignal;
+    uint8* shadowBuffer;
+    uint32 byteSteps;
+    uint32 signalLength;
+		uint8 groupSignalByteOffsetInSB = 0;
+		uint8 * dataPointer = dataPtr;
+  	int i;
+    // Get signal
+    SignalGroup = GET_SIGNALGROUP(SignalGroup_id);
+
+    // Get signal group
+    GroupSignal = GET_GROUPSIGNALCNFG(GroupSignal_id);
+
+
+    shadowBuffer = (uint8*)SignalGroup->ComShadowBuffer;
+
+		for(i=0; i<GroupSignal->ComHandleId; i++)
+		{
+			groupSignalByteOffsetInSB += (SignalGroup->ComGroupSignal[i]->ComBitSize)/8;
+		}
+    shadowBuffer += groupSignalByteOffsetInSB;
+    signalLength = (GroupSignal->ComBitSize)/8;
+		
+		for(i=0; i<signalLength; i++)
+		{
+			*(uint8*)shadowBuffer = *dataPointer;
+			shadowBuffer++;
+			dataPointer++;
+		}
+    
+}
 void CopyGroupSignalFromFGtoAddress(const Com_SignalGroupIdType SignalGroup_id, const Com_GroupSignalIdType GroupSignal_id, void *dataAddress)
 {
 		uint8 i;
