@@ -75,7 +75,7 @@ void HandleTimer_5B()
 	TIMER_FIRED[1][5] = 1;
 }
 
-/*
+
 void InitAllTimers()
 {
 	Timer0A_Init(HandleTimer_0A, 0);
@@ -90,7 +90,7 @@ void InitAllTimers()
 	Timer3B_Init(HandleTimer_3B, 0);
 	Timer4B_Init(HandleTimer_4B, 0);
 	Timer5B_Init(HandleTimer_5B, 0);
-}*/
+}
 
 //call when an IPdu enters Periodic mode
 uint8 Com_InitPeriodicModeForIPdu(ComIPdu_type *IPdu)
@@ -99,7 +99,7 @@ uint8 Com_InitPeriodicModeForIPdu(ComIPdu_type *IPdu)
 	if(FindAvailableTimer(IPdu) == E_OK)
 	{
 		AdjustTimerToIPdu(IPdu);
-		//EnableIPduTimer(IPdu);
+		EnableIPduTimer(IPdu);
 	}
 	else
 	{
@@ -131,7 +131,7 @@ uint8 FindAvailableTimer(ComIPdu_type *IPdu)
 	
 	if(found)
 	{
-		TIMER_BUSY[i][j] = 1;
+		TIMER_BUSY[i][j] = 0;
 		switch(j)
 		{
 			case 0:
@@ -233,21 +233,22 @@ void AdjustTimerToIPdu(ComIPdu_type *IPdu)
 	{
 		loadValue = IPdu->ComTxIPdu->ComTxModeTrue->ComTxMode->ComTxModeTimePeriod;
 	}
+	
 	if(IPdu->ComTxIPdu->ComTxTimerBlock == 'A')
 	{
 		switch(IPdu->ComTxIPdu->ComTxTimerNumber)
 		{
-			case 0: Timer0A_Init(HandleTimer_0A, loadValue);
+			case 0: Timer0A_LoadValue(loadValue);
 							break;
-			case 1: Timer1A_Init(HandleTimer_1A, loadValue);
+			case 1: Timer1A_LoadValue(loadValue);
 							break;
-			case 2: Timer2A_Init(HandleTimer_2A, loadValue);
+			case 2: Timer2A_LoadValue(loadValue);
 							break;
-			case 3: Timer3A_Init(HandleTimer_3A, loadValue);
+			case 3: Timer3A_LoadValue(loadValue);
 							break;
-			case 4: Timer4A_Init(HandleTimer_4A, loadValue);
+			case 4: Timer4A_LoadValue(loadValue);
 							break;
-			case 5: Timer5A_Init(HandleTimer_5A, loadValue);
+			case 5: Timer5A_LoadValue(loadValue);
 							break;
 		}
 	}
@@ -255,19 +256,18 @@ void AdjustTimerToIPdu(ComIPdu_type *IPdu)
 	{
 		switch(IPdu->ComTxIPdu->ComTxTimerNumber)
 		{
-			/*
-			case 0: Timer0B_Init(HandleTimer_0B, loadValue);
+			case 0: Timer0B_LoadValue(loadValue);
 							break;
-			case 1: Timer1B_Init(HandleTimer_1B, loadValue);
+			case 1: Timer1B_LoadValue(loadValue);
 							break;
-			case 2: Timer2B_Init(HandleTimer_2B, loadValue);
+			case 2: Timer2B_LoadValue(loadValue);
 							break;
-			case 3: Timer3B_Init(HandleTimer_3B, loadValue);
+			case 3: Timer3B_LoadValue(loadValue);
 							break;
-			case 4: Timer4B_Init(HandleTimer_4B, loadValue);
+			case 4: Timer4B_LoadValue(loadValue);
 							break;
-			case 5: Timer5B_Init(HandleTimer_5B, loadValue);
-							break;*/
+			case 5: Timer5B_LoadValue(loadValue);
+							break;
 		}
 	}
 	else{}
@@ -277,17 +277,17 @@ void EnableIPduTimer(ComIPdu_type *IPdu)
 {
 	switch(IPdu->ComTxIPdu->ComTxTimerNumber)
 	{
-		case 0:		Timer0_Enable();
+		case 0: Timer0_Enable();
 							break;
-		case 1:		Timer1_Enable();
+		case 1: Timer1_Enable();
 							break;
-		case 2: 	Timer2_Enable();
+		case 2: Timer2_Enable();
 							break;
-		case 3: 	Timer3_Enable();
+		case 3: Timer3_Enable();
 							break;
-		case 4: 	Timer4_Enable();
+		case 4: Timer4_Enable();
 							break;
-		case 5: 	Timer5_Enable();
+		case 5: Timer5_Enable();
 							break;
 	}
 }
