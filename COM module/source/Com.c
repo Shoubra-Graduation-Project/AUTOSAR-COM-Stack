@@ -1008,7 +1008,11 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 	}
 	else
 	{
-       if(Ipdu->ComIPduGroupRef!=NULL&&Ipdu->ComIPduGroupRef->IpduGroupFlag==STOPPED)
+		if(Com_GetStatus()!=COM_INIT)
+		{
+			return  COM_SERVICE_NOT_AVAILABLE;
+		}
+      else if((Ipdu->ComIPduGroupRef!=NULL&&Ipdu->ComIPduGroupRef->IpduGroupFlag==STOPPED))
     {
         /*[SWS_Com_00461] ⌈The AUTOSAR COM module shall always copy the last known 
          data, or the ComSignalInitValue(s) if not yet written, of the I-PDU to the shadow buffer by a call to Com_ReceiveSignalGroup even if the I-PDU is stopped and COM_-
@@ -1016,7 +1020,7 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
         CopySignalGroupfromSBtoFG( SignalGroupId);
         return COM_SERVICE_NOT_AVAILABLE;
     }
-     else if((Ipdu->ComIPduGroupRef==NULL&&Com_GetStatus()==COM_INIT)||(Ipdu->ComIPduGroupRef!=NULL&&Ipdu->ComIPduGroupRef->IpduGroupFlag==STARTED))
+     else if((Ipdu->ComIPduGroupRef==NULL&&Com_GetStatus()==COM_INIT)||((Ipdu->ComIPduGroupRef!=NULL&&Ipdu->ComIPduGroupRef->IpduGroupFlag==STARTED)&&Com_GetStatus()==COM_INIT))
     {
         CopySignalGroupfromSBtoFG( SignalGroupId);
         return E_OK;
@@ -1116,11 +1120,11 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 	   }
 	   else
 	   {
-		  if(ipdu->ComIPduGroupRef!=NULL&&ipdu->ComIPduGroupRef->IpduGroupFlag==STOPPED)
+		  if((ipdu->ComIPduGroupRef!=NULL&&ipdu->ComIPduGroupRef->IpduGroupFlag==STOPPED)||Com_GetStatus()!=COM_INIT)
          {  
            return COM_SERVICE_NOT_AVAILABLE;
          }
-          else if(ipdu->ComIPduGroupRef!=NULL&&ipdu->ComIPduGroupRef->IpduGroupFlag==STARTED)
+          else if(ipdu->ComIPduGroupRef!=NULL&&ipdu->ComIPduGroupRef->IpduGroupFlag==STARTED&&Com_GetStatus()==COM_INIT)
         {    //CopySignalfromBGtoFG(SignalId);
             CopySignalFromFGtoAddress(SignalId,SignalDataPtr);
             return E_OK;
@@ -1149,7 +1153,7 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 	     }
 	     else
 	     {
-            if(Ipdu->ComIPduGroupRef!=NULL&&Ipdu->ComIPduGroupRef->IpduGroupFlag==STOPPED)
+            if((Ipdu->ComIPduGroupRef!=NULL&&Ipdu->ComIPduGroupRef->IpduGroupFlag==STOPPED)||Com_GetStatus()!=COM_INIT)
             {
                return COM_SERVICE_NOT_AVAILABLE;
             }
@@ -1158,7 +1162,7 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 				CopyGroupSignalFromFGtoAddress(GroupSignal->SignalGroupId,SignalId,SignalDataPtr);
                 return E_OK;
 			}
-			else if (Ipdu->ComIPduGroupRef!=NULL&&Ipdu->ComIPduGroupRef->IpduGroupFlag==STARTED)
+			else if (Ipdu->ComIPduGroupRef!=NULL&&Ipdu->ComIPduGroupRef->IpduGroupFlag==STARTED&&Com_GetStatus()==COM_INIT)
 			{
 				CopyGroupSignalFromFGtoAddress(GroupSignal->SignalGroupId,SignalId,SignalDataPtr);
                 return E_OK;
