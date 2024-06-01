@@ -919,7 +919,7 @@ Std_ReturnType CanIf_ReadRxPduData(PduIdType CanIfRxSduId, PduInfoType* CanIfRxI
         return E_NOT_OK;
     }
 
-    uint8 Controller_ID = (uint8)RxEntry->CanIfRxPduBufferRef->CanIfBufferHthRef->CanIfHthCanCtrlIdRef->CanIfCtrlId;
+    uint8 Controller_ID = (uint8)RxEntry->CanIfRxPduHrhIdRef->CanIfHrhCanCtrlIdRef->CanIfCtrlId;
 
 
     //Check Controller Mode
