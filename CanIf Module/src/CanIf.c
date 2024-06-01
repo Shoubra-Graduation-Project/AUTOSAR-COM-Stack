@@ -789,16 +789,23 @@ Std_ReturnType CanIf_Transmit(PduIdType TxPduId, const PduInfoType* PduInfoPtr)
 }
 
 
-
 /* To Find RxPdu*/
-const CanIfRxPduCfg* CanIf_FindRxPduEntry(Can_HwHandleType Hoh)
-{
-    for (uint8 i = 0; i < CanIfMaxRxPduCfg; i++) {
-        if (Hoh == ((CanIf_ConfigPtr)->CanIfInitCfg.CanIfRxPduCfg[i].CanIfRxPduHrhIdRef->CanIfHrhIdSymRef->CanObjectId)) {
-            return (CanIfRxPduCfg* const)(&CanIf_ConfigPtr->CanIfInitCfg.CanIfRxPduCfg[i]);
+const CanIfRxPduCfg* CanIf_FindRxPduEntry(Can_HwHandleType Hoh) {
+    if (Hoh >= CanIfMaxRxPduCfg) {
+        return (CanIfRxPduCfg*)NULL;
+    }
+    uint32 Index = 0, i;
+    for (i = 0; i < CanIfMaxRxPduCfg; i++) {
+        printf("Entry of [%d] = [%d]\n", i, CanIf_ConfigPtr->CanIfInitCfg.CanIfRxPduCfg[i].CanIfRxPduHrhIdRef->CanIfHrhIdSymRef->CanObjectId);
+        if (Hoh == CanIf_ConfigPtr->CanIfInitCfg.CanIfRxPduCfg[i].CanIfRxPduHrhIdRef->CanIfHrhIdSymRef->CanObjectId) {
+            Index = i;
+            break;
         }
     }
-    return 0
+    if (i == CanIfMaxRxPduCfg) {
+        return (CanIfRxPduCfg*)NULL;
+    }
+    return &CanIf_ConfigPtr->CanIfInitCfg.CanIfRxPduCfg[Index];
 }
 
 
