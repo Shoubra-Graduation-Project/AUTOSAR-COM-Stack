@@ -1306,7 +1306,7 @@ uint8 Com_InvalidateSignalGroup (Com_SignalGroupIdType SignalGroupId)
 			if(SignalGroup->ComGroupSignal[group_signalId]->ComSignalDataInvalidValue!=NULL)
 			{
 				flag=1;
-				memcpy(SignalGroup->ComGroupSignal[group_signalId]->ComSignalDataPtr,SignalGroup->ComGroupSignal[group_signalId]->ComSignalDataInvalidValue,(SignalGroup->ComGroupSignal[group_signalId]->ComBitSize)/8);
+				memcpy((uint8*)SignalGroup->ComGroupSignal[group_signalId]->ComSignalDataPtr,(uint8*)SignalGroup->ComGroupSignal[group_signalId]->ComSignalDataInvalidValue,(SignalGroup->ComGroupSignal[group_signalId]->ComBitSize)/8);
 			}
 			else
 			{
@@ -1353,7 +1353,7 @@ uint8 Com_InvalidateSignalGroup (Com_SignalGroupIdType SignalGroupId)
 			if(SignalGroup->ComGroupSignal[group_signalId]->ComSignalDataInvalidValue!=NULL)
 			{
 				flag=1;
-				memcpy(SignalGroup->ComGroupSignal[group_signalId]->ComSignalDataPtr,SignalGroup->ComGroupSignal[group_signalId]->ComSignalDataInvalidValue,(SignalGroup->ComGroupSignal[group_signalId]->ComBitSize)/8);
+				memcpy((uint8*)SignalGroup->ComGroupSignal[group_signalId]->ComSignalDataPtr,(uint8*)SignalGroup->ComGroupSignal[group_signalId]->ComSignalDataInvalidValue,(SignalGroup->ComGroupSignal[group_signalId]->ComBitSize)/8);
 			}
 			else
 			{
