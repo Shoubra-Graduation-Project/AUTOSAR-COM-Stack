@@ -1334,17 +1334,17 @@ uint8 Com_InvalidateSignalGroup (Com_SignalGroupIdType SignalGroupId)
 		}
 		else
 		{
-
+              return COM_SERVICE_NOT_AVAILABLE;
 		}
 		
      
 	}
 	
-		else if(Ipdu->ComIPduGroupRef->IpduGroupFlag==STOPPED)
+		else if((Ipdu->ComIPduGroupRef->IpduGroupFlag==STOPPED)||Com_GetStatus()!=COM_INIT)
     {
         return COM_SERVICE_NOT_AVAILABLE;
     }
-	else
+	else if(Ipdu->ComIPduGroupRef->IpduGroupFlag==STARTED&&Com_GetStatus()==COM_INIT)
 	{
 		uint16 group_signalId;
 		 for(group_signalId=0;SignalGroup->ComGroupSignal[group_signalId]!=NULL;group_signalId++)
@@ -1378,6 +1378,10 @@ uint8 Com_InvalidateSignalGroup (Com_SignalGroupIdType SignalGroupId)
 				return E_NOT_OK;
 			}
 		}
+	}
+	else
+	{
+
 	}
 }
 
