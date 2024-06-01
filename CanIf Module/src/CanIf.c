@@ -808,7 +808,7 @@ Std_ReturnType CanIf_RxIndication(const Can_HwType* MailBox, const PduInfoType* 
     CanIf_PduModeType PduMode = (CanIf_PduModeType)0;
     const CanIfRxPduCfg* RxPduIndex = CanIf_FindRxPduEntry(MailBox->Hoh);
     uint8 ControllerID = (uint8)RxPduIndex->CanIfRxPduHrhIdRef->CanIfHrhCanCtrlIdRef->CanIfCtrlId;
-    const CanIfRxPduCfg* TxEntry;
+    const CanIfRxPduCfg* RxEntry;
 
  
     //Check CAN is INITIATE or Not
@@ -845,7 +845,7 @@ Std_ReturnType CanIf_RxIndication(const Can_HwType* MailBox, const PduInfoType* 
         return E_NOT_OK;
     }
 
-    CanIf_Channel_t Controller_ID = (CanIf_Channel_t)TxEntry->CanIfTxPduBufferRef->CanIfBufferHthRef->CanIfHthCanCtrlIdRef->CanIfCtrlId;
+    CanIf_Channel_t Controller_ID = (CanIf_Channel_t)RxEntry->CanIfRxPduHrhIdRef->CanIfBufferHthRef->CanIfHthCanCtrlIdRef->CanIfCtrlId;
 
     //Check PDU Mode
     if (CanIf_GetPduMode(Controller_ID, &PduMode) != E_OK) {
