@@ -765,7 +765,7 @@ Std_ReturnType CanIf_Transmit(PduIdType TxPduId, const PduInfoType* PduInfoPtr)
 
     // channel not started, report to Det and return
     /* SWS_CANIF_00317 */
-    if (ControllerMode != CANIF_CS_STARTED) {
+    if (ControllerMode != CAN_CS_STARTED) {
         Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, CANIF_SET_CONTROLLER_MODE_ID, CANIF_E_PARAM_CTRLMODE);
         return E_NOT_OK;
     }
@@ -922,7 +922,7 @@ Std_ReturnType CanIf_ReadRxPduData(PduIdType CanIfRxSduId, PduInfoType* CanIfRxI
 
     // channel not started, report to Det and return
     /* SWS_CANIF_00324 */
-    if (ControllerMode != CANIF_CS_STARTED) {
+    if (ControllerMode != CAN_CS_STARTED) {
         Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, CANIF_SET_CONTROLLER_MODE_ID, CANIF_E_PARAM_CTRLMODE);
         return E_NOT_OK;
     }
