@@ -713,7 +713,7 @@ const CanIfTxPduCfg* CanIf_FindTxPduEntry(PduIdType TxPduId)
 
     uint32 Index, i;
     for (i = 0; i < CanIfMaxTxPduCfg; i++) {
-        if (TxPduId == CanIf_ConfigPtr->CanIfInitCfg.CanIfTxPduCfg[i].CanIfTxPduId) {
+        if (TxPduId == (CanIf_ConfigPtr->CanIfInitCfg.CanIfTxPduCfg[i].CanIfTxPduId)) {
             Index = i;
             break;
         }
@@ -789,16 +789,23 @@ Std_ReturnType CanIf_Transmit(PduIdType TxPduId, const PduInfoType* PduInfoPtr)
 }
 
 
-
 /* To Find RxPdu*/
-const CanIfRxPduCfg* CanIf_FindRxPduEntry(Can_HwHandleType Hoh)
-{
-    for (uint8 i = 0; i < CanIfMaxRxPduCfg; i++) {
-        if (Hoh == (CanIf_ConfigPtr)->CanIfInitCfg.CanIfRxPduCfg[i].CanIfRxPduHrhIdRef->CanIfHrhIdSymRef->CanObjectId) {
-            return (CanIfRxPduCfg* const)(&CanIf_ConfigPtr->CanIfInitCfg.CanIfRxPduCfg[i]);
+const CanIfRxPduCfg* CanIf_FindRxPduEntry(Can_HwHandleType Hoh) {
+    if (Hoh >= CanIfMaxRxPduCfg) {
+        return (CanIfRxPduCfg*)NULL;
+    }
+    uint32 Index = 0, i;
+    for (i = 0; i < CanIfMaxRxPduCfg; i++) {
+        printf("Entry of [%d] = [%d]\n", i, CanIf_ConfigPtr->CanIfInitCfg.CanIfRxPduCfg[i].CanIfRxPduHrhIdRef->CanIfHrhIdSymRef->CanObjectId);
+        if (Hoh == CanIf_ConfigPtr->CanIfInitCfg.CanIfRxPduCfg[i].CanIfRxPduHrhIdRef->CanIfHrhIdSymRef->CanObjectId) {
+            Index = i;
+            break;
         }
     }
-    return 0
+    if (i == CanIfMaxRxPduCfg) {
+        return (CanIfRxPduCfg*)NULL;
+    }
+    return &CanIf_ConfigPtr->CanIfInitCfg.CanIfRxPduCfg[Index];
 }
 
 
@@ -808,7 +815,7 @@ Std_ReturnType CanIf_RxIndication(const Can_HwType* MailBox, const PduInfoType* 
     CanIf_PduModeType PduMode = (CanIf_PduModeType)0;
     const CanIfRxPduCfg* RxPduIndex = CanIf_FindRxPduEntry(MailBox->Hoh);
     uint8 ControllerID = (uint8)RxPduIndex->CanIfRxPduHrhIdRef->CanIfHrhCanCtrlIdRef->CanIfCtrlId;
-    const CanIfRxPduCfg* TxEntry;
+    const CanIfRxPduCfg* RxEntry;
 
  
     //Check CAN is INITIATE or Not
@@ -845,7 +852,7 @@ Std_ReturnType CanIf_RxIndication(const Can_HwType* MailBox, const PduInfoType* 
         return E_NOT_OK;
     }
 
-    CanIf_Channel_t Controller_ID = (CanIf_Channel_t)TxEntry->CanIfTxPduBufferRef->CanIfBufferHthRef->CanIfHthCanCtrlIdRef->CanIfCtrlId;
+    CanIf_Channel_t Controller_ID = (CanIf_Channel_t)RxEntry->CanIfRxPduHrhIdRef->CanIfBufferHthRef->CanIfHthCanCtrlIdRef->CanIfCtrlId;
 
     //Check PDU Mode
     if (CanIf_GetPduMode(Controller_ID, &PduMode) != E_OK) {
@@ -879,8 +886,8 @@ Std_ReturnType CanIf_RxIndication(const Can_HwType* MailBox, const PduInfoType* 
     CanifBuffer->SduDataPtr = PduInfoPtr->SduDataPtr;
     CanifBuffer->SduLength = PduInfoPtr->SduLength;
 
-    /* Confirmation to Upper Layer */
-    (RxPduIndex->CanIfRxPduUserRxIndicationUL)(RxPduIndex->CanIfRxPduId, &PduInfoPtr);
+    /* Confirmation to Upper Layer (COM)*/
+    (RxPduIndex->CanIfRxPduUserRxIndicationUL);
 	
     return RET;
 }
@@ -912,7 +919,7 @@ Std_ReturnType CanIf_ReadRxPduData(PduIdType CanIfRxSduId, PduInfoType* CanIfRxI
         return E_NOT_OK;
     }
 
-    uint8 Controller_ID = (uint8)RxEntry->CanIfRxPduBufferRef->CanIfBufferHthRef->CanIfHthCanCtrlIdRef->CanIfCtrlId;
+    uint8 Controller_ID = (uint8)RxEntry->CanIfRxPduHrhIdRef->CanIfHrhCanCtrlIdRef->CanIfCtrlId;
 
 
     //Check Controller Mode
