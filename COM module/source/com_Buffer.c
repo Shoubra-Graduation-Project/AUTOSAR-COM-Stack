@@ -217,7 +217,7 @@ void CopyGroupSignalFromFGtoAddress(const Com_SignalGroupIdType SignalGroup_id, 
 		
     for( i = 0; i<signalLength; i++)
     {
-			*FGBuffer = *(uint8*)address;
+			*address = *(uint8*)FGBuffer;
 			FGBuffer++;
 			address++;
     }
