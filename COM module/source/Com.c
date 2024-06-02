@@ -1106,32 +1106,44 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 	}
 
  }
- uint8 Com_ReceiveSignal (Com_SignalIdType SignalId, void* SignalDataPtr)
+uint8 Com_ReceiveSignal (Com_SignalIdType SignalId, void* SignalDataPtr)
  {
-	  
-		
+
+
    if( SignalId>=COM_MIN_SIGNAL && SignalId<=COM_MAX_SIGNAL)
    {
-        ComSignal_type * Signal = GET_SIGNAL(SignalId);
+        ComSignal_type * Signal = GET_SIGNAL(SignalId-COM_MIN_SIGNAL);
 		    ComIPdu_type *ipdu=GET_IPDU(Signal->ComIPduHandleId);
+
 	   if(ipdu->ComIPduDirection!=RECEIVE)
 	   {
-		  return E_NOT_OK;
+          uint8 retrun=E_NOT_OK;
+
+		  if(Com_GetStatus()!=COM_INIT)
+          {
+
+               retrun= COM_SERVICE_NOT_AVAILABLE;
+          }
+          return retrun;
 	   }
 	   else
 	   {
 		  if((ipdu->ComIPduGroupRef!=NULL&&ipdu->ComIPduGroupRef->IpduGroupFlag==STOPPED)||Com_GetStatus()!=COM_INIT)
-         {  
+         {
+
            return COM_SERVICE_NOT_AVAILABLE;
          }
           else if(ipdu->ComIPduGroupRef!=NULL&&ipdu->ComIPduGroupRef->IpduGroupFlag==STARTED&&Com_GetStatus()==COM_INIT)
         {    //CopySignalfromBGtoFG(SignalId);
-            CopySignalFromFGtoAddress(SignalId,SignalDataPtr);
+           CopySignalFromFGtoAddress(SignalId-COM_MIN_SIGNAL,SignalDataPtr);
+
             return E_OK;
         }
 		else if(ipdu->ComIPduGroupRef==NULL&&Com_GetStatus()==COM_INIT)
 		{
-			 CopySignalFromFGtoAddress(SignalId,SignalDataPtr);
+		     printf("hello");
+
+			 CopySignalFromFGtoAddress(SignalId-COM_MIN_SIGNAL,SignalDataPtr);
              return E_OK;
 		}
 		else
@@ -1140,17 +1152,24 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 		}
        }
 	}
-    
+
      else if(SignalId >= 0 && SignalId <= COM_MAX_GROUPSIGNAL)
      {
          ComGroupSignal_type * GroupSignal = GET_GROUPSIGNALCNFG(SignalId);
          ComSignalGroup_type * SignalGroup = GET_SIGNALGROUP(GroupSignal->SignalGroupId);
          ComIPdu_type *Ipdu=GET_IPDU(SignalGroup->ComIPduHandleId);
 
-	     if(Ipdu->ComIPduDirection!=RECEIVE)
-	     {
-		    return E_NOT_OK;
-	     }
+	      if(Ipdu->ComIPduDirection!=RECEIVE)
+	   {
+          uint8 retrun=E_NOT_OK;
+
+		  if(Com_GetStatus()!=COM_INIT)
+          {
+
+               retrun= COM_SERVICE_NOT_AVAILABLE;
+          }
+          return retrun;
+	   }
 	     else
 	     {
             if((Ipdu->ComIPduGroupRef!=NULL&&Ipdu->ComIPduGroupRef->IpduGroupFlag==STOPPED)||Com_GetStatus()!=COM_INIT)
@@ -1159,32 +1178,33 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
             }
             else if (Ipdu->ComIPduGroupRef==NULL&&Com_GetStatus()==COM_INIT)
 			{
+
 				CopyGroupSignalFromFGtoAddress(GroupSignal->SignalGroupId,SignalId,SignalDataPtr);
                 return E_OK;
 			}
 			else if (Ipdu->ComIPduGroupRef!=NULL&&Ipdu->ComIPduGroupRef->IpduGroupFlag==STARTED&&Com_GetStatus()==COM_INIT)
 			{
-				CopyGroupSignalFromFGtoAddress(GroupSignal->SignalGroupId,SignalId,SignalDataPtr);
+
+			  CopyGroupSignalFromFGtoAddress(GroupSignal->SignalGroupId,SignalId,SignalDataPtr);
                 return E_OK;
 			}
 			else
 			{
 
 			}
-			
-			
-            
-                
-             
+
+
+
+
+
 	     }
-     
+
      }
      else
      {
 	    return E_NOT_OK;
      }
  }
-
 
 
 void Com_TxConfirmation(PduIdType TxPduId, uint8 result)
