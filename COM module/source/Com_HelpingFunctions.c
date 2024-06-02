@@ -37,18 +37,18 @@ void delay(uint32 seconds)
 	}
 }
 
-uint8 power(unsigned n) 
-{ 
-    // Initialize result to 1 
-    uint8 pow = 1; 
+uint16 power(uint8 n)
+{
+    // Initialize result to 1
+    uint16 pow = 1;
 		uint8 i;
-    // Multiply x for n times 
-    for (i = 0; i < n; i++) { 
-        pow = pow * 2; 
-    } 
-    
-    return pow; 
-} 
+    // Multiply x for n times
+    for (i = 0; i < n; i++) {
+        pow = pow * 2;
+    }
+
+    return pow;
+}
 
 boolean Com_ProcessTxSignalFilter(ComSignal_type* signalStruct, uint64 oldData, uint64 newData)
 {

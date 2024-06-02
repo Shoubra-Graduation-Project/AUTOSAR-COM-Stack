@@ -49,10 +49,6 @@ uint8 ComIPduBuffer_4[8];
 uint8 ComIPduBuffer_5[8];
 uint8 ComIPduBuffer_6[8];
 
-uint8 SduDataPtr_0[8];
-uint8 SduDataPtr_1[8];
-uint8 SduDataPtr_2[8];
-uint8 SduDataPtr_3[8];
 
 uint8 ComShadowBuffer_0[4];
 uint8 ComShadowBuffer_1[4];
@@ -277,21 +273,14 @@ const ComSignalGroup_type* SignalGroupListIPdu_2[] =
 	&ComSignalGroup[1],
 		NULL
 };
-
+ComIPdu_type IPDU={ 0, &ComIPduCounter[0],/*3*/ RECEIVE, 0, DEFERRED, NULL, NORMAL, NULL, NULL,&ComIPduGroups[0], SignalGroupListIPdu_0,
+		SignalListIPdu_0, &PduIDs[0],  ComIPduBuffer_1, 64, 0};
 PduInfoType PduInfo[] =
 {
 	{
-		8, &SduDataPtr_0
-	},
-	{
-		8, &SduDataPtr_1
-	},
-	{
-		8, &SduDataPtr_2
-	},
-	{
-		8, &SduDataPtr_3
+		68, &IPDU
 	}
+
   
 };
 

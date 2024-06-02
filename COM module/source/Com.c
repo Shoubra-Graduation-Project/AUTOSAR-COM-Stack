@@ -1045,7 +1045,7 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
   {
 	return initStatus;
   }
- void Com_RxIndication (PduIdType RxPduId, const PduInfoType* PduInfoPtr)
+void Com_RxIndication (PduIdType RxPduId, const PduInfoType* PduInfoPtr)
  {
 	if(Com_GetStatus()!= COM_INIT)
 	{
@@ -1056,18 +1056,22 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 		 uint16 signalid,signalgroupid;
      ComIPdu_type *Ipdu=GET_IPDU(RxPduId);
 	   ComIPdu_type *Ipdu_Rx=(ComIPdu_type *)PduInfoPtr->SduDataPtr;
-	  
+
 	if(Ipdu->ComIPduGroupRef!=NULL&&Ipdu->ComIPduGroupRef->IpduGroupFlag==STOPPED)
 	{
+
 		return;
 	}
 	else if((Ipdu->ComIPduGroupRef==NULL&&Com_GetStatus()==COM_INIT)||(Ipdu->ComIPduGroupRef!=NULL&&Ipdu->ComIPduGroupRef->IpduGroupFlag==STARTED))
 	{
+        uint16 result,totcounter;
 		uint8 excounter;
 		 uint8 recounter;
 		if (Ipdu->ComIPduCallout!=NULL)
 		{
-			Ipdu->ComIPduCallout(RxPduId,PduInfoPtr);
+
+			 boolean x = Ipdu->ComIPduCallout(RxPduId,PduInfoPtr);
+
 		}
 		else
 		{
@@ -1075,45 +1079,51 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
 		}
 		/*data sequence check*/
 		excounter=check_Data_Sequence(Ipdu);
-    recounter=check_Data_Sequence(Ipdu_Rx);
-		if(recounter>((excounter+(Ipdu->ComIPduCounter->ComIPduCounterThreshold))%power(Ipdu->ComIPduCounter->ComIPduCounterSize)))
+        recounter=check_Data_Sequence(Ipdu_Rx);
+        result=power(Ipdu->ComIPduCounter->ComIPduCounterSize);
+     totcounter= excounter+(Ipdu->ComIPduCounter->ComIPduCounterThreshold);
+		if(recounter>(totcounter%result))
 		{
 			return;
 		}
 		else
 		{
+
    			uint8 return1;
-          excounter=(excounter+1)%power(Ipdu->ComIPduCounter->ComIPduCounterSize);
+          excounter=(excounter+1)%result;
+
 		  return1 =Com_writeCounterValueToPduBuffer(Ipdu, excounter);
 		}
-		
-		
+
+
 	}
 	else
 	{
 
 	}
-	
+
+
 	for( signalid=0;Ipdu_Rx->ComIPduSignalRef[signalid]!=NULL;signalid++)
 	{
-	
+
 			memcpy((uint8 *)Ipdu->ComIPduSignalRef[signalid]->ComBGBuffer,(uint8 *)Ipdu_Rx->ComIPduSignalRef[signalid]->ComSignalDataPtr,(Ipdu_Rx->ComIPduSignalRef[signalid]->ComBitSize)/8);
-		
+
 
 	}
 	for(signalgroupid=0;Ipdu_Rx->ComIPduSignalGroupRef[signalgroupid]!=NULL;signalgroupid++)
 	{
-		
+            
 			memcpy((uint8 *)Ipdu->ComIPduSignalGroupRef[signalgroupid]->ComBGBuffer,(uint8 *)Ipdu_Rx->ComIPduSignalGroupRef[signalgroupid]->SignalGroupDataPtr,Ipdu_Rx->ComIPduSignalGroupRef[signalgroupid]->signalGroupSize);
 
-	
-		
+
+
 	}
 	return;
-		
+
 	}
 
  }
+
 uint8 Com_ReceiveSignal (Com_SignalIdType SignalId, void* SignalDataPtr)
  {
 
