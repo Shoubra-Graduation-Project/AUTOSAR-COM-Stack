@@ -1141,7 +1141,7 @@ uint8 Com_ReceiveSignal (Com_SignalIdType SignalId, void* SignalDataPtr)
         }
 		else if(ipdu->ComIPduGroupRef==NULL&&Com_GetStatus()==COM_INIT)
 		{
-		     printf("hello");
+		    
 
 			 CopySignalFromFGtoAddress(SignalId-COM_MIN_SIGNAL,SignalDataPtr);
              return E_OK;
