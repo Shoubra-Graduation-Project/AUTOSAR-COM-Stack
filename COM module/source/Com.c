@@ -1002,10 +1002,18 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
      ComSignalGroup_type * SignalGroup= GET_SIGNALGROUP(SignalGroupId);
      ComIPdu_type *Ipdu=GET_IPDU(SignalGroup->ComIPduHandleId);
 	
-	if(Ipdu->ComIPduDirection!=RECEIVE)
-	{
-		return E_NOT_OK;
-	}
+	  if(Ipdu->ComIPduDirection!=RECEIVE)
+	   {
+          uint8 retrun=E_NOT_OK;
+
+		  if(Com_GetStatus()!=COM_INIT)
+          {
+
+
+               retrun= COM_SERVICE_NOT_AVAILABLE;
+          }
+          return retrun;
+	   }
 	else
 	{
 		if(Com_GetStatus()!=COM_INIT)
