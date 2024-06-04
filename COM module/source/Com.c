@@ -57,7 +57,7 @@ void Com_Init (const Com_ConfigType* config)
         uint8 ComInitSignalGroupId;
 
 		uint8 *ComShadowBuffer;
-  	InitAllTimers();
+  	//InitAllTimers();
 	
         // Initialize global and static variables
    //     ComConfig = config;
