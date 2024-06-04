@@ -44,111 +44,91 @@ static Com_StatusType initStatus = COM_UNINIT;
 
 void Com_Init (const Com_ConfigType* config)
 {
-	   
-			
-	    ComIPdu_type *IPdu;
-    	ComSignal_type *Signal;
+	  ComIPdu_type *IPdu;
+		ComSignal_type *Signal;
 		ComSignalGroup_type *SignalGroup;
-	    ComGroupSignal_type *GroupSignal;
-
-	    uint8 ComInitPduId;
+	  ComGroupSignal_type *GroupSignal;
+	  uint8 ComInitPduId;
 		uint8 ComInitSignalId;
-        uint8 ComInitGroupSignalId;
-        uint8 ComInitSignalGroupId;
-
+    uint8 ComInitGroupSignalId;
+    uint8 ComInitSignalGroupId;
 		uint8 *ComShadowBuffer;
-  	//InitAllTimers();
 	
-        // Initialize global and static variables
-   //     ComConfig = config;
+    //ComConfig = config; // Initialize global and static variables
     
 
-	    // Loop over all I-PDUs
-        for (ComInitPduId = 0; ComInitPduId < COM_NUM_OF_IPDU ; ComInitPduId++)
-		 {
-            
+	  // Loop over all I-PDUs
+		for(ComInitPduId = 0; ComInitPduId < COM_NUM_OF_IPDU ; ComInitPduId++)
+		{    
 			// Get IPdu
-		    IPdu = GET_IPDU(ComInitPduId);
-	
-          /*[SWS_Com_00015] The AUTOSAR COM module shall fill not used areas within an
-            I-PDU with a value determined by configuration parameter ComTxIPduUnusedAreasDefault*/
-	       if (IPdu->ComIPduDirection == SEND)
-		    {
-			   memset((void *)IPdu->ComIPduDataPtr, IPdu->ComTxIPdu->ComTxIPduUnusedAreasDefault, IPdu->ComIPduLength);
-	    	}
-			else
-			{
+			IPdu = GET_IPDU(ComInitPduId);
 
+			/*[SWS_Com_00015] The AUTOSAR COM module shall fill not used areas within an
+			I-PDU with a value determined by configuration parameter ComTxIPduUnusedAreasDefault*/
+			if(IPdu->ComIPduDirection == SEND)
+			{
+				memset((void *)IPdu->ComIPduDataPtr, IPdu->ComTxIPdu->ComTxIPduUnusedAreasDefault, IPdu->ComIPduLength);
 			}
+			else{}
 			/*[SWS_Com_00444] ⌈By default, all I-PDU groups shall be in the state stopped and
-               they shall not be started automatically by a call to Com_Init*/
-			if (IPdu->ComIPduGroupRef != NULL)
+			they shall not be started automatically by a call to Com_Init*/
+			if(IPdu->ComIPduGroupRef != NULL)
 			{
 				IPdu->ComIPduGroupRef->IpduGroupFlag = STOPPED;
 			}
-            // For each signal at the I-PDU
-			for ( ComInitSignalId = 0; (IPdu->ComIPduSignalRef[ComInitSignalId] != NULL); ComInitSignalId++)
+			else{}
+			
+			// For each signal at the I-PDU
+			for(ComInitSignalId = 0; (IPdu->ComIPduSignalRef[ComInitSignalId] != NULL); ComInitSignalId++)
 			{
-			   // Get Signal
-               Signal = IPdu->ComIPduSignalRef[ComInitSignalId];
+					// Get Signal
+					Signal = IPdu->ComIPduSignalRef[ComInitSignalId];
 
-               /*
-                 initialize each signal of n-bit sized signal type on sender and receiver side
-                 with the lower n-bits of its configuration parameter ComSignalInitValue
-               */
-              memcpy(Signal->ComSignalDataPtr, Signal->ComSignalInitValue, Signal->ComBitSize/8);
+					/*initialize each signal of n-bit sized signal type on sender and receiver side
+					 with the lower n-bits of its configuration parameter ComSignalInitValue*/
+					memcpy(Signal->ComSignalDataPtr, Signal->ComSignalInitValue, Signal->ComBitSize/8);
 
 
-              /*uint8 *dest = (uint8 *) Signal->ComSignalDataPtr;
-               uint8 *src =  (uint8 *) config->ComSignal[ComInitSignalId].ComSignalInitValue;
-				       
-
-                    for(int i= 0; i < (Signal->ComBitSize)/8 ; i++)
-                   {
-                       *dest = src++;
-                        dest++;
-                   }
-				   */
-               //[SWS_Com_00117] The AUTOSAR COM module shall clear all update-bits during initialization
-			   CLEARBIT(IPdu->ComIPduDataPtr, Signal->ComUpdateBitPosition);
-
-
+					/*uint8 *dest = (uint8 *) Signal->ComSignalDataPtr;
+					 uint8 *src =  (uint8 *) config->ComSignal[ComInitSignalId].ComSignalInitValue;
+			
+					for(int i= 0; i < (Signal->ComBitSize)/8 ; i++)
+					{
+							 *dest = src++;
+								dest++;
+					}*/
+					//[SWS_Com_00117] The AUTOSAR COM module shall clear all update-bits during initialization
+					CLEARBIT(IPdu->ComIPduDataPtr, Signal->ComUpdateBitPosition);
 			}
-            // For each signal group at the I-PDU
-		    for (ComInitSignalGroupId = 0; IPdu[ComInitSignalGroupId].ComIPduSignalGroupRef[ComInitSignalGroupId] != NULL; ComInitSignalGroupId++)
-            {
-                /* Get SignalGroup */
-                SignalGroup = IPdu[ComInitSignalGroupId].ComIPduSignalGroupRef[ComInitSignalGroupId];
-    
-                //[SWS_Com_00117] The AUTOSAR COM module shall clear all update-bits during initialization
-                CLEARBIT(IPdu->ComIPduDataPtr, SignalGroup->ComUpdateBitPosition);
-                
-				/*[SWS_Com_00484] By a call to Com_Init, the AUTOSAR COM module shall initialize 
-				  the shadow buffer of a signal group on sender-side*/
-	            ComShadowBuffer = (uint8*)SignalGroup->ComShadowBuffer;
-            
+			
+			// For each signal group at the I-PDU
+			for (ComInitSignalGroupId = 0; IPdu[ComInitSignalGroupId].ComIPduSignalGroupRef[ComInitSignalGroupId] != NULL; ComInitSignalGroupId++)
+			{
+					/* Get SignalGroup */
+					SignalGroup = IPdu[ComInitSignalGroupId].ComIPduSignalGroupRef[ComInitSignalGroupId];
 
-                // For each group signal at signal group
-                for(ComInitGroupSignalId=0 ;(SignalGroup->ComGroupSignal != NULL && SignalGroup->ComGroupSignal[ComInitGroupSignalId] != NULL) ; ComInitGroupSignalId++)
-	            {
-					// Get group signal
-	                GroupSignal = SignalGroup->ComGroupSignal[ComInitGroupSignalId];
+					//[SWS_Com_00117] The AUTOSAR COM module shall clear all update-bits during initialization
+					CLEARBIT(IPdu->ComIPduDataPtr, SignalGroup->ComUpdateBitPosition);
+					
+					/*[SWS_Com_00484] By a call to Com_Init, the AUTOSAR COM module shall initialize 
+						the shadow buffer of a signal group on sender-side*/
+					ComShadowBuffer = (uint8*)SignalGroup->ComShadowBuffer;
+			
+					// For each group signal at signal group
+					for(ComInitGroupSignalId=0; SignalGroup->ComGroupSignal[ComInitGroupSignalId] != NULL; ComInitGroupSignalId++)
+					{
+							// Get group signal
+							GroupSignal = SignalGroup->ComGroupSignal[ComInitGroupSignalId];
 
-                    /*
-                       initialize each signal of n-bit sized signal type on sender and receiver side
-                       with the lower n-bits of its configuration parameter ComSignalInitValue
-                    */
-                  
-                  memcpy(GroupSignal->ComSignalDataPtr, GroupSignal->ComSignalInitValue, GroupSignal->ComBitSize/8); 
-                  
-	            }
-
+							/*initialize each signal of n-bit sized signal type on sender and receiver side
+							with the lower n-bits of its configuration parameter ComSignalInitValue*/
+							memcpy(GroupSignal->ComSignalDataPtr, GroupSignal->ComSignalInitValue, GroupSignal->ComBitSize/8); 		
+					}
 			}
 
 
-         }
-   initStatus = COM_INIT;
-
+	}
+  initStatus = COM_INIT;
 }
 
 
