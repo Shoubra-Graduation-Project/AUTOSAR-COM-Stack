@@ -9,9 +9,6 @@
 
 
 void InitAllTimers();
-
-
-
 uint8 Com_InitPeriodicModeForIPdu(ComIPdu_type *IPdu);
 uint8 FindAvailableTimer(ComIPdu_type *IPdu);
 void AdjustTimerToIPdu(ComIPdu_type *IPdu);

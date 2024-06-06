@@ -87,7 +87,7 @@ void Com_Init (const Com_ConfigType* config)
 					/*initialize each signal of n-bit sized signal type on sender and receiver side
 					 with the lower n-bits of its configuration parameter ComSignalInitValue*/
 					memcpy(Signal->ComSignalDataPtr, Signal->ComSignalInitValue, Signal->ComBitSize/8);
-
+					memcpy(Signal->ComFGBuffer , Signal->ComSignalInitValue, Signal->ComBitSize/8);
 
 					/*uint8 *dest = (uint8 *) Signal->ComSignalDataPtr;
 					 uint8 *src =  (uint8 *) config->ComSignal[ComInitSignalId].ComSignalInitValue;
@@ -122,7 +122,8 @@ void Com_Init (const Com_ConfigType* config)
 
 							/*initialize each signal of n-bit sized signal type on sender and receiver side
 							with the lower n-bits of its configuration parameter ComSignalInitValue*/
-							memcpy(GroupSignal->ComSignalDataPtr, GroupSignal->ComSignalInitValue, GroupSignal->ComBitSize/8); 		
+							memcpy(GroupSignal->ComSignalDataPtr, GroupSignal->ComSignalInitValue, GroupSignal->ComBitSize/8);
+							memcpy(GroupSignal->ComFGBuffer, GroupSignal->ComSignalInitValue, GroupSignal->ComBitSize/8);
 					}
 			}
 
@@ -220,7 +221,7 @@ void Com_IpduGroupStart(Com_IpduGroupIdType IpduGroupId , boolean Initialize)
 					/*[SWS_Com_00787] If an I-PDU is started by Com_IpduGroupStart, the AUTOSAR
 					COM module shall always initialize the following attributes of this I-PDU:*/
 					
-					if(IPdu->ComIPduGroupRef->ComIPduGroupHandleId == IPduGroup->ComIPduGroupHandleId)
+					if(IPdu->ComIPduGroupRef->ComIPduGroupHandleId == IpduGroupId)
 					{
 						if(Initialize)
 						{
@@ -311,14 +312,36 @@ void Com_IpduGroupStart(Com_IpduGroupIdType IpduGroupId , boolean Initialize)
 void Com_IpduGroupStop(Com_IpduGroupIdType IpduGroupId)
  {
 	ComIPduGroup_type * IPduGroup; 
+	ComIPdu_type * IPdu;
+	uint8 IpduId;
 
 	IPduGroup = GET_IpduGroup(IpduGroupId);
-
+	
+	for(IpduId = 0; IpduId < COM_NUM_OF_IPDU ; IpduId++)
+	{
+			IPdu = GET_IPDU(IpduId);
+			if(IPdu->ComIPduGroupRef != NULL)
+			{
+					/*[SWS_Com_00777] ⌈If an I-PDU is stopped by Com_IpduGroupStop, the AUTOSAR 
+					COM module shall cancel any outstanding transmission requests for this I-PDU. This 
+					includes cancelling any potential retries with respect to ComRetryFailedTransmitRequests.*/
+					if(IPdu->ComIPduGroupRef->ComIPduGroupHandleId == IPduGroup->ComIPduGroupHandleId)
+					{
+						IPdu->ComTxIPdu->ComNumberOfTransmissions = 0;
+						if((IPdu->ComTxIPdu->ComCurrentTransmissionSelection == 0 && IPdu->ComTxIPdu->ComTxModeFalse->ComTxMode->ComTxModeMode == PERIODIC) || (IPdu->ComTxIPdu->ComCurrentTransmissionSelection == 1 && IPdu->ComTxIPdu->ComTxModeTrue->ComTxMode->ComTxModeMode == PERIODIC))
+						{
+							DisableIPduTimer(IPdu);
+						}
+					}
+					else{}
+			}
+			else{}
+	}
 	if(IPduGroup != NULL)
 	{
 		IPduGroup->IpduGroupFlag = STOPPED;
 	}
- }
+}
 
  
 /***********************************************************************************
@@ -339,61 +362,42 @@ void Com_IpduGroupStop(Com_IpduGroupIdType IpduGroupId)
  *********************************************************************************/
 void Com_EnableReceptionDM (Com_IpduGroupIdType IpduGroupId)
 {   
-     uint16 ipduIndex;
-     uint16  ComSignalIndex ;
+	 uint16 ipduIndex;
+	 uint16  ComSignalIndex ;
+	 ComIPduGroup_type *ipduGroup;
+	 ComIPdu_type *IPdu;
+	 ComSignal_type *Signal;
 
-     ComIPduGroup_type *ipduGroup;
-     ComIPdu_type *IPdu;
-     ComSignal_type *Signal;
+   ipduGroup = GET_IpduGroup(IpduGroupId);
 
-    ipduGroup = GET_IpduGroup(IpduGroupId);
+	 if (ipduGroup != NULL) 
+	 {
+		 for (ipduIndex = 0; ipduIndex < COM_NUM_OF_IPDU; ipduIndex++)
+		 {
+				IPdu = GET_IPDU(ipduIndex);
 
-      if (ipduGroup != NULL) 
-      {
-         for (ipduIndex = 0; ipduIndex < COM_NUM_OF_IPDU; ipduIndex++)
-          {
-			  IPdu = GET_IPDU(ipduIndex);
-	
-            /*
-              [SWS_Com_00534] If Com_EnableReceptionDM is invoked on an I-PDU group
-              containing Tx-I-PDUs, then the AUTOSAR COM module shall silently ignore 
-              this request.
-            */
-            if(IPdu->ComIPduGroupRef->ComIPduGroupHandleId == IpduGroupId)
-            {
-				if(IPdu->ComIPduDirection != SEND)
+				/*[SWS_Com_00534] If Com_EnableReceptionDM is invoked on an I-PDU group
+					containing Tx-I-PDUs, then the AUTOSAR COM module shall silently ignore 
+					this request.*/
+				/*[SWS_Com_00486] The AUTOSAR COM module shall silently ignore setting the
+					reception deadline monitoring of an I-PDU to enabled by Com_EnableReceptionDM,
+					in case the reception deadline monitoring is already enabled for this I-PDU*/
+				if(IPdu->ComIPduGroupRef->ComIPduGroupHandleId == IpduGroupId)
 				{
-					 if(!IPdu[ipduIndex].ReceptionDMEnabled)
-                     {
-                        IPdu[ipduIndex].ReceptionDMEnabled = 1;
-                
-                     }
-                     else
-                    {
-
-                    }
-
-
+						if(IPdu->ComIPduDirection != SEND)
+						{
+							 if(!IPdu[ipduIndex].ReceptionDMEnabled)
+							 {
+									IPdu[ipduIndex].ReceptionDMEnabled = 1;
+							 }
+							 else{}
+						}
+						else{}
 				}
-            /*
-              [SWS_Com_00486] The AUTOSAR COM module shall silently ignore setting the
-              reception deadline monitoring of an I-PDU to enabled by Com_EnableReceptionDM,
-              in case the reception deadline monitoring is already enabled for this I-PDU
-            */
-              
-            }
-            else
-            {
-
-            }
-
-          }
-      }
-      else
-      {
-
-      }
-
+				else{}
+		 }
+	 }
+	 else{}
 }
 
 /***********************************************************************************
@@ -413,61 +417,43 @@ void Com_EnableReceptionDM (Com_IpduGroupIdType IpduGroupId)
  *********************************************************************************/
 void Com_DisableReceptionDM (Com_IpduGroupIdType IpduGroupId)
 {   
-     uint16 ipduIndex;
-     uint16  ComSignalIndex ;
-
-     ComIPduGroup_type *ipduGroup;
-     ComIPdu_type *IPdu;
-     ComSignal_type *Signal;
-
-    ipduGroup = GET_IpduGroup(IpduGroupId);
-
-      if (ipduGroup != NULL) 
-      {
-         for (ipduIndex = 0; ipduIndex < COM_NUM_OF_IPDU; ipduIndex++)
-          {
-			  IPdu = GET_IPDU(ipduIndex);
+	uint16 ipduIndex;
+	uint16  ComSignalIndex ;
+	ComIPduGroup_type *ipduGroup;
+	ComIPdu_type *IPdu;
+	ComSignal_type *Signal;
 	
-            /*
-              [SWS_Com_00534] If Com_EnableReceptionDM is invoked on an I-PDU group
-              containing Tx-I-PDUs, then the AUTOSAR COM module shall silently ignore 
-              this request.
-            */
-            if(IPdu->ComIPduGroupRef->ComIPduGroupHandleId == IpduGroupId)
-            {
+  ipduGroup = GET_IpduGroup(IpduGroupId);
+
+	if(ipduGroup != NULL) 
+	{
+		for (ipduIndex = 0; ipduIndex < COM_NUM_OF_IPDU; ipduIndex++)
+		{
+			IPdu = GET_IPDU(ipduIndex);
+
+			/*[SWS_Com_00534] If Com_EnableReceptionDM is invoked on an I-PDU group
+			containing Tx-I-PDUs, then the AUTOSAR COM module shall silently ignore 
+			this request.*/
+			/*[SWS_Com_00486] The AUTOSAR COM module shall silently ignore setting the
+			reception deadline monitoring of an I-PDU to enabled by Com_EnableReceptionDM,
+			in case the reception deadline monitoring is already enabled for this I-PDU*/
+			if(IPdu->ComIPduGroupRef->ComIPduGroupHandleId == IpduGroupId)
+			{
 				if(IPdu->ComIPduDirection != SEND)
 				{
 					 if(!IPdu[ipduIndex].ReceptionDMEnabled)
-                     {
-                        IPdu[ipduIndex].ReceptionDMEnabled = 0;
-                
-                     }
-                     else
-                    {
+					 {
+							IPdu[ipduIndex].ReceptionDMEnabled = 0;
+					 }
+					 else{}
 
-                    }
+				}				
+			}
+			else{}
 
-
-				}
-            /*
-              [SWS_Com_00486] The AUTOSAR COM module shall silently ignore setting the
-              reception deadline monitoring of an I-PDU to enabled by Com_EnableReceptionDM,
-              in case the reception deadline monitoring is already enabled for this I-PDU
-            */
-              
-            }
-            else
-            {
-
-            }
-
-          }
-      }
-      else
-      {
-
-      }
-
+		}
+	}
+	else{}
 }
 
 
