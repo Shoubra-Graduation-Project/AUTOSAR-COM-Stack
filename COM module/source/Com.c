@@ -68,9 +68,15 @@ void Com_Init (const Com_ConfigType* config)
 			if(IPdu->ComIPduDirection == SEND)
 			{
 				memset((void *)IPdu->ComIPduDataPtr, IPdu->ComTxIPdu->ComTxIPduUnusedAreasDefault, IPdu->ComIPduLength);
+				/*[SWS_Com_00687] For all I-PDUs with ComIPduDirection configured to SEND that 
+				have a configured ComIPduCounter, the AUTOSAR COM module shall set the I-PDU counter 
+				to 0, after the I-PDU was initialized by Com_Init or reinitialized by Com_IpduGroupStart.*/
+				IPdu->ComIPduCounter->ComCurrentCounterValue = 0;
+				Com_writeCounterValueToPduBuffer(IPdu, IPdu->ComIPduCounter->ComCurrentCounterValue);
+				IPdu->ComIPduCounter->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue + 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
 			}
 			else{}
-			/*[SWS_Com_00444] ⌈By default, all I-PDU groups shall be in the state stopped and
+			/*[SWS_Com_00444] By default, all I-PDU groups shall be in the state stopped and
 			they shall not be started automatically by a call to Com_Init*/
 			if(IPdu->ComIPduGroupRef != NULL)
 			{
@@ -99,31 +105,55 @@ void Com_Init (const Com_ConfigType* config)
 					}*/
 					//[SWS_Com_00117] The AUTOSAR COM module shall clear all update-bits during initialization
 					CLEARBIT(IPdu->ComIPduDataPtr, Signal->ComUpdateBitPosition);
+					
+					/*[SWS_Com_00840]If an I-PDU is not assigned to any I-PDU group, the AUTOSAR COM shall start this 
+					I-PDU within Com_Init as if it would be started by Com_IpduGroupStart with parameter 
+					Initialize set to true*/
+					if(Signal->ComFilter->ComFilterAlgorithm == ONE_EVERY_N)
+					{
+						Signal->ComFilter->ComFilterOccurrence = 0;
+					}
 			}
 			
 			// For each signal group at the I-PDU
 			for (ComInitSignalGroupId = 0; IPdu[ComInitSignalGroupId].ComIPduSignalGroupRef[ComInitSignalGroupId] != NULL; ComInitSignalGroupId++)
 			{
+					uint8 shadowBufferSize = 0;
+					uint8 i;
 					/* Get SignalGroup */
 					SignalGroup = IPdu[ComInitSignalGroupId].ComIPduSignalGroupRef[ComInitSignalGroupId];
 
 					//[SWS_Com_00117] The AUTOSAR COM module shall clear all update-bits during initialization
 					CLEARBIT(IPdu->ComIPduDataPtr, SignalGroup->ComUpdateBitPosition);
-					
-					/*[SWS_Com_00484] By a call to Com_Init, the AUTOSAR COM module shall initialize 
-						the shadow buffer of a signal group on sender-side*/
-					ComShadowBuffer = (uint8*)SignalGroup->ComShadowBuffer;
 			
 					// For each group signal at signal group
 					for(ComInitGroupSignalId=0; SignalGroup->ComGroupSignal[ComInitGroupSignalId] != NULL; ComInitGroupSignalId++)
 					{
 							// Get group signal
 							GroupSignal = SignalGroup->ComGroupSignal[ComInitGroupSignalId];
+							
+							shadowBufferSize += (GroupSignal->ComBitSize)/8;
 
 							/*initialize each signal of n-bit sized signal type on sender and receiver side
 							with the lower n-bits of its configuration parameter ComSignalInitValue*/
 							memcpy(GroupSignal->ComSignalDataPtr, GroupSignal->ComSignalInitValue, GroupSignal->ComBitSize/8);
 							memcpy(GroupSignal->ComFGBuffer, GroupSignal->ComSignalInitValue, GroupSignal->ComBitSize/8);
+					}
+					/*[SWS_Com_00484] By a call to Com_Init, the AUTOSAR COM module shall initialize 
+						the shadow buffer of a signal group on sender-side*/
+					ComShadowBuffer = (uint8*)SignalGroup->ComShadowBuffer;
+					for(i=0; i<shadowBufferSize; i++)
+					{
+						*ComShadowBuffer = 0;
+						ComShadowBuffer++;
+					}
+					
+					/*[SWS_Com_00840]If an I-PDU is not assigned to any I-PDU group, the AUTOSAR COM shall start this 
+					I-PDU within Com_Init as if it would be started by Com_IpduGroupStart with parameter 
+					Initialize set to true*/
+					if(SignalGroup->ComFilter->ComFilterAlgorithm == ONE_EVERY_N)
+					{
+						SignalGroup->ComFilter->ComFilterOccurrence = 0;
 					}
 			}
 
@@ -232,6 +262,14 @@ void Com_IpduGroupStart(Com_IpduGroupIdType IpduGroupId , boolean Initialize)
 								else{}
 						}
 						else{}
+							
+						//6) set the I-PDU counter to 0 for I-PDUs with ComIPduDirection configured to SEND
+						if(IPdu->ComIPduDirection == SEND)
+						{
+							IPdu->ComIPduCounter->ComCurrentCounterValue = 0;
+							Com_writeCounterValueToPduBuffer(IPdu, IPdu->ComIPduCounter->ComCurrentCounterValue);
+							IPdu->ComIPduCounter->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue + 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
+						}
 						for (ComSignalId = 0; (IPdu->ComIPduSignalRef[ComSignalId] != NULL); ComSignalId++)
 						{
 								//Get signal
@@ -256,13 +294,6 @@ void Com_IpduGroupStart(Com_IpduGroupIdType IpduGroupId , boolean Initialize)
 									Signal->ComFilter->ComFilterOccurrence = 0;
 								}
 								
-								//6) set the I-PDU counter to 0 for I-PDUs with ComIPduDirection configured to SEND
-								if(IPdu->ComIPduDirection == SEND)
-								{
-									IPdu->ComIPduCounter->ComCurrentCounterValue = 0;
-									Com_writeCounterValueToPduBuffer(IPdu, IPdu->ComIPduCounter->ComCurrentCounterValue);
-									IPdu->ComIPduCounter->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue + 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
-								}
 						}
 						for (ComSignalGroupId = 0; (IPdu->ComIPduSignalGroupRef[ComSignalGroupId] != NULL); ComSignalGroupId++)
 						{

@@ -273,16 +273,8 @@ const ComSignalGroup_type* SignalGroupListIPdu_2[] =
 	&ComSignalGroup[1],
 		NULL
 };
-ComIPdu_type IPDU={ 0, &ComIPduCounter[0],/*3*/ RECEIVE, 0, DEFERRED, NULL, NORMAL, NULL, NULL,&ComIPduGroups[0], SignalGroupListIPdu_0,
-		SignalListIPdu_0, &PduIDs[0],  ComIPduBuffer_1, 64, 0};
-PduInfoType PduInfo[] =
-{
-	{
-		68, &IPDU
-	}
 
-  
-};
+
 
 const ComIPdu_type ComIPdu[6] = 
 {
@@ -303,6 +295,13 @@ const ComIPdu_type ComIPdu[6] =
 		&ComTxIPdu[1], ComIPduBuffer_4, 64, 0, &PduInfo[0]
   }
 
+};
+
+PduInfoType PduInfo[] =
+{
+	{
+		68, (void *)&ComIPdu[2]
+	}
 };
 
 const ComIPdu_type* IPduList[] =

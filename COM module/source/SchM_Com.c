@@ -51,31 +51,13 @@ void Com_MainFunctionRx(void)
         if (IPdu != NULL)
         {
             // If the Current IPDU belongs to any IPDU group
-            if (IPdu->ComIPduGroupRef != NULL)
+            if (IPdu->ComIPduGroupRef == NULL || IPdu->ComIPduGroupRef->IpduGroupFlag == STARTED)
             {
-                IPduGroup = IPdu->ComIPduGroupRef;
-
-                // If the IPDU group is started
-                if (IPduGroup->IpduGroupFlag == STARTED)
-                {
-                    // Proceed to process this receive IPDU
-                    //CheckRXIpdu(*IPdu);
-                }
-                else
-                {
-                    /* IPDU group STOPPED */
-                }
+                CheckRXIpdu(*IPdu);
             }
-            else
-            {
-                // IPDU does not belong to any IPDU group
-               CheckRXIpdu(*IPdu);
-            }
+            else{}
         }
-        else
-        {
-            /* IPDU is NULL */
-        }
+        else{}
     }
 }
 
@@ -359,59 +341,54 @@ void Com_MainFunctionRxSignal(ComSignal_type Signal)
         the PduR into COM. Then the AUTOSAR COM module shall invoke the configured
         ComNotifications for the included signals and signal groups asynchronously during
         the next call to Com_MainFunctionRx*/
-		if (Signal.ComNotification != NULL)
-		{
-			Signal.ComNotification();
-		}
-		Signal.ComSignalUpdated = 0;
+				if (Signal.ComNotification != NULL)
+				{
+					Signal.ComNotification();
+				}
+				Signal.ComSignalUpdated = 0;
+  }
+	/*
+	if (Signal.ComTimeout > 0)
+	{
+			timerDec(Signal.DeadlineMonitoringTimer);
 
-    }
+			if(Signal.DeadlineMonitoringTimer == 0)
+			{
+					 switch(Signal.ComRxDataTimeoutAction )
+					{ 
+							 [SWS_Com_00470] If ComRxDataTimeoutAction is set to REPLACE, 
+							the AUTOSAR COM module shall replace the signal’s value by
+							its ComSignalInitValue when the reception deadline monitoring
+							timer of a signal expires
 
-    if (Signal.ComTimeout > 0)
-    {
-        timerDec(Signal.DeadlineMonitoringTimer);
+							case TIMEOUT_REPLACE:
+																		memcpy((uint8*)Signal.ComFGBuffer, (uint8*)Signal.ComSignalInitValue,(Signal.ComBitSize)/8);
+																		break;
 
-        if(Signal.DeadlineMonitoringTimer == 0)
-        {
-             switch(Signal.ComRxDataTimeoutAction )
-            { 
-                /* [SWS_Com_00470] If ComRxDataTimeoutAction is set to REPLACE, 
-                the AUTOSAR COM module shall replace the signal’s value by
-                its ComSignalInitValue when the reception deadline monitoring
-                timer of a signal expires*/
-                case TIMEOUT_REPLACE:
-                memcpy((uint8*)Signal.ComFGBuffer, (uint8*)Signal.ComSignalInitValue,(Signal.ComBitSize)/8);
-                break;
+							[SWS_Com_00875] If ComRxDataTimeoutAction is set to SUBSTITUTE,
+							the AUTOSAR COM module shall replace the signal's value by 
+							its ComTimeoutSubstitutionValue when the reception deadline monitoring
+							timer of a signal expires
+							
+							case SUBSTITUTE:
+																		memcpy((uint8*)Signal.ComFGBuffer, (uint8*)Signal.ComTimeoutSubstitutionValue,(Signal.ComBitSize)/8);
+																		break;
 
-                /*[SWS_Com_00875] If ComRxDataTimeoutAction is set to SUBSTITUTE,
-                the AUTOSAR COM module shall replace the signal's value by 
-                its ComTimeoutSubstitutionValue when the reception deadline monitoring
-                timer of a signal expires*/
-                case SUBSTITUTE:
-                memcpy((uint8*)Signal.ComFGBuffer, (uint8*)Signal.ComTimeoutSubstitutionValue,(Signal.ComBitSize)/8);
-                break;
+					}
 
-            }
+					if (Signal.ComTimeoutNotification != NULL)
+					{
+							Signal.ComTimeoutNotification();
+					}			 
+					else{}
+					
+					// Restart the timer
+					Signal.DeadlineMonitoringTimer = Signal.ComTimeout;
+			}
+			else{}
 
-            if (Signal.ComTimeoutNotification != NULL)
-            {
-				Signal.ComTimeoutNotification();
-		    }
-                       
-            else
-            {
-            }
-            // Restart the timer
-            Signal.DeadlineMonitoringTimer = Signal.ComTimeout;
-        }
-        else
-        {
-        }
-
-    }
-    else
-    {
-    }
+	}
+	else{}*/
 }
 
 /***************************************************************************************
@@ -427,7 +404,7 @@ void Com_MainFunctionRxSignalGroup(ComSignalGroup_type SignalGroup)
 {
     uint8 ComMainRxGroupSignalId;
 	  ComGroupSignal_type* GroupSignal;
-    
+    /*
     if (SignalGroup.ComTimeout > 0)
     {
         timerDec(SignalGroup.DeadlineMonitoringTimer);
@@ -440,15 +417,13 @@ void Com_MainFunctionRxSignalGroup(ComSignalGroup_type SignalGroup)
 
                 switch(GroupSignal->ComRxDataTimeoutAction )
                 { 
-                    
-                    
 	                  case TIMEOUT_REPLACE:
-                    memcpy((uint8*)SignalGroup.ComShadowBuffer, (uint8*)GroupSignal->ComSignalInitValue,(GroupSignal->ComBitSize)/8);
-										break;
+														memcpy((uint8*)SignalGroup.ComShadowBuffer, (uint8*)GroupSignal->ComSignalInitValue,(GroupSignal->ComBitSize)/8);
+														break;
                     case SUBSTITUTE:
-                    memcpy((uint8*)SignalGroup.ComShadowBuffer, (uint8*)GroupSignal->ComTimeoutSubstitutionValue,(GroupSignal->ComBitSize)/8);
-                    //Com_WriteSignalDataToPdu(GroupSignal->ComHandleId, GroupSignal->ComTimeoutSubstitutionValue);
-                    break;
+														memcpy((uint8*)SignalGroup.ComShadowBuffer, (uint8*)GroupSignal->ComTimeoutSubstitutionValue,(GroupSignal->ComBitSize)/8);
+														//Com_WriteSignalDataToPdu(GroupSignal->ComHandleId, GroupSignal->ComTimeoutSubstitutionValue);
+														break;
 										
                 }
 
@@ -456,23 +431,16 @@ void Com_MainFunctionRxSignalGroup(ComSignalGroup_type SignalGroup)
 
             if (SignalGroup.ComTimeoutNotification != NULL)
             {
-				SignalGroup.ComTimeoutNotification();
-		    }
-            else
-            {
-
-            }
+								SignalGroup.ComTimeoutNotification();
+						}
+            else{}
 
             // Restart the timer
             SignalGroup.DeadlineMonitoringTimer = SignalGroup.ComTimeout;
-
         }
 
     }
-    else
-    {
-
-    }
+    else{}*/
 
 }
 
@@ -492,40 +460,32 @@ void CheckRXIpdu(ComIPdu_type IPdu)
 {
         
 	const ComSignal_type *Signal = NULL;
-    const ComSignalGroup_type *SignalGroup =NULL;
-        
-
+  const ComSignalGroup_type *SignalGroup =NULL;
 	uint8 ComMainRxSignalId;
-    uint8 ComMainRxSignalGroupId;
+  uint8 ComMainRxSignalGroupId;
 
-    if (IPdu.ComIPduSignalProcessing == DEFERRED && IPdu.ComIPduDirection == RECEIVE)
-    {
-        // For each signal at PDU
-        for ( ComMainRxSignalId = 0; (IPdu.ComIPduSignalRef[ComMainRxSignalId] != NULL); ComMainRxSignalId++)
-        {
-            //Get signal
-            Signal = IPdu.ComIPduSignalRef[ComMainRxSignalId];
-		
-            Com_MainFunctionRxSignal(*Signal);
-            CopySignalfromBGtoFG(ComMainRxSignalId);
-               
-        }
+	if (IPdu.ComIPduSignalProcessing == DEFERRED && IPdu.ComIPduDirection == RECEIVE)
+	{
+			//For each signal at PDU
+			for ( ComMainRxSignalId = 0; (IPdu.ComIPduSignalRef[ComMainRxSignalId] != NULL); ComMainRxSignalId++)
+			{
+					//Get signal
+					Signal = IPdu.ComIPduSignalRef[ComMainRxSignalId];
+	
+					Com_MainFunctionRxSignal(*Signal);
+					CopySignalfromBGtoFG(ComMainRxSignalId);	 
+			}
 
-        for (ComMainRxSignalGroupId = 0; IPdu.ComIPduSignalGroupRef[ComMainRxSignalGroupId] != NULL; ComMainRxSignalGroupId++)
-        {
-            SignalGroup = IPdu.ComIPduSignalGroupRef[ComMainRxSignalGroupId];
+			for (ComMainRxSignalGroupId = 0; IPdu.ComIPduSignalGroupRef[ComMainRxSignalGroupId] != NULL; ComMainRxSignalGroupId++)
+			{
+					SignalGroup = IPdu.ComIPduSignalGroupRef[ComMainRxSignalGroupId];
 
-            Com_MainFunctionRxSignalGroup(*SignalGroup);
+					Com_MainFunctionRxSignalGroup(*SignalGroup);
 
-            CopySignalGroupfromBGtoSB(ComMainRxSignalGroupId);
+					CopySignalGroupfromBGtoSB(ComMainRxSignalGroupId);
 
-        }         
+			}         
 
-              
-
-    } 
-    else
-    {
-
-    }
+	} 
+	else{}
 }
