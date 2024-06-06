@@ -152,37 +152,33 @@ void Com_Init (const Com_ConfigType* config)
  * 
  *********************************************************************************/
 
-void Com_DeInit( void ) 
+void Com_DeInit(void) 
 {
 	ComIPdu_type *IPdu;
 	uint8 ComDeInitPduId;
-
-    if( initStatus != COM_INIT ) 
+	
+	if(initStatus != COM_INIT) 
 	{
-
-        /*Det_ReportError(COM_MODULE_ID, COM_INSTANCE_ID, COM_DEINIT_ID, COM_E_UNINIT);*/
-
-        return;
-    }
+			/*Det_ReportError(COM_MODULE_ID, COM_INSTANCE_ID, COM_DEINIT_ID, COM_E_UNINIT);*/
+			return;
+  }
     
-    for (ComDeInitPduId = 0; ComDeInitPduId < COM_NUM_OF_IPDU ; ComDeInitPduId++)
-		 { 
-			// Get IPdu
-		    IPdu = GET_IPDU(ComDeInitPduId);
+	for (ComDeInitPduId = 0; ComDeInitPduId < COM_NUM_OF_IPDU ; ComDeInitPduId++)
+	{ 
+		// Get IPdu
+		IPdu = GET_IPDU(ComDeInitPduId);
+		if(IPdu->ComIPduGroupRef != NULL)
+		{
+			Com_IpduGroupStop(IPdu->ComIPduGroupRef->ComIPduGroupHandleId);
+		}
+		else
+		{
+			// NULL pointer (IPdu does not belongs to any IPdu group)
+			//Det_ReportError(COM_MODULE_ID, COM_INSTANCE_ID, COM_DEINIT_ID, COM_E_PARAM_POINTER); /* no definition of it */
+		}
 
-			if(IPdu->ComIPduGroupRef != NULL)
-			{
-				Com_IpduGroupStop(IPdu->ComIPduGroupRef->ComIPduGroupHandleId);
-
-			}
-			else
-			{
-				// NULL pointer (IPdu does not belongs to any IPdu group)
-				//(COM_MODULE_ID, COM_INSTANCE_ID, COM_DEINIT_ID, COM_E_PARAM_POINTER); /* no definition of it */
-			}
-
-         }
-    initStatus = COM_UNINIT;
+	}
+	initStatus = COM_UNINIT;
 }
 
 
@@ -205,75 +201,75 @@ void Com_DeInit( void )
 void Com_IpduGroupStart(Com_IpduGroupIdType IpduGroupId , boolean Initialize) 
 {
 	ComIPduGroup_type * IPduGroup;
-    ComSignal_type *Signal = NULL;
+  ComSignal_type *Signal = NULL;
+	ComSignalGroup_type *SignalGroup;
 	ComIPdu_type * IPdu;
-
 	uint8 IpduId;
 	uint8 ComSignalId;
-
-	float MDT ;
-
+	uint8 ComSignalGroupId;
 
 	IPduGroup = GET_IpduGroup(IpduGroupId);
 
-    for (IpduId = 0; IpduId < COM_NUM_OF_IPDU ; IpduId++)
-		 {
-
-		    IPdu = GET_IPDU(IpduId);
-
+	for(IpduId = 0; IpduId < COM_NUM_OF_IPDU ; IpduId++)
+	 {
+			IPdu = GET_IPDU(IpduId);
 			if(IPdu->ComIPduGroupRef != NULL)
-
 			{
-				/*[SWS_Com_00787] If an I-PDU is started by Com_IpduGroupStart, the AUTOSAR
-                COM module shall always initialize the following attributes of this I-PDU:
-                
-                3) cancel all transmission deadline monitoring timers and use ComFirstTimeout (if
-                configured) as value when a transmission timer is started the first time after the
-                I-PDU activation
-              
-                5) reset OCCURRENCE of filters with ComFilterAlgorithm ONE_EVERY_N
-                6) set the I-PDU counter to 0 for I-PDUs with ComIPduDirection configured to
-                SEND
-                7) accept for I-PDUs with ComIPduDirection configured to RECEIVED any next
-                incoming I-PDU counter*/
-				if(IPdu->ComIPduGroupRef->ComIPduGroupHandleId == IpduGroupId)
-				{
-					//1) ComMinimumDelayTime of I-PDUs in transmission mode DIRECT or MIXED
-					IPdu->ComTxIPdu->ComMinimumDelayTime = MDT;
-
-					for (ComSignalId = 0; (IPdu->ComIPduSignalRef[ComSignalId] != NULL); ComSignalId++)
-                    {
-                        //Get signal
-                        Signal = IPdu->ComIPduSignalRef[ComSignalId];
-                        // 2) restart all reception deadline monitoring timers for all signals with a non-zero configured ComFirstTimeout
-						if (Signal->ComFirstTimeout > 0)
+					/*[SWS_Com_00787] If an I-PDU is started by Com_IpduGroupStart, the AUTOSAR
+					COM module shall always initialize the following attributes of this I-PDU:*/
+					
+					if(IPdu->ComIPduGroupRef->ComIPduGroupHandleId == IpduGroupId)
+					{
+						for (ComSignalId = 0; (IPdu->ComIPduSignalRef[ComSignalId] != NULL); ComSignalId++)
 						{
-							Signal->DeadlineMonitoringTimer = Signal->ComFirstTimeout;
+								//Get signal
+								Signal = IPdu->ComIPduSignalRef[ComSignalId];
+							
+								//2) restart all reception deadline monitoring timers for all signals with a non-zero configured ComFirstTimeout
+								/*if(Signal->ComFirstTimeout > 0)
+								{
+									Signal->DeadlineMonitoringTimer = Signal->ComFirstTimeout;
+								}*/
+								
+								// 4) all included update-bits shall be cleared
+								CLEARBIT(IPdu->ComIPduDataPtr, Signal->ComUpdateBitPosition);
+							
+								//5) reset OCCURRENCE of filters with ComFilterAlgorithm ONE_EVERY_N
+								if(Signal->ComFilter->ComFilterAlgorithm == ONE_EVERY_N)
+								{
+									Signal->ComFilter->ComFilterOccurrence = 0;
+								}
+								else{}
+								
+								//6) set the I-PDU counter to 0 for I-PDUs with ComIPduDirection configured to SEND
+								if(IPdu->ComIPduDirection == SEND)
+								{
+									IPdu->ComIPduCounter->ComCurrentCounterValue = 0;
+									Com_writeCounterValueToPduBuffer(IPdu, IPdu->ComIPduCounter->ComCurrentCounterValue);
+									IPdu->ComIPduCounter->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue + 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
+								}
+								else{}
 						}
-                        // 4) all included update-bits shall be cleared
-						CLEARBIT(IPdu->ComIPduDataPtr, Signal->ComUpdateBitPosition);
-		
-          
-                    }
-				
-
+						for (ComSignalGroupId = 0; (IPdu->ComIPduSignalGroupRef[ComSignalGroupId] != NULL); ComSignalGroupId++)
+						{
+							SignalGroup = IPdu->ComIPduSignalGroupRef[ComSignalGroupId];
+							if(SignalGroup->ComFilter->ComFilterAlgorithm == ONE_EVERY_N)
+							{
+								SignalGroup->ComFilter->ComFilterOccurrence = 0;
+							}
+							else{}
+						}
+					}
+					else{}
 				}
-				else
-				{
+		else{}
+	 }
 
-				}
-			}
-			else
-			{
-
-			}
-
-		 }
-
-	if(IPduGroup != NULL)
-	{
-		IPduGroup->IpduGroupFlag = STARTED;
-	}
+	 if(IPduGroup != NULL)
+	 {
+		 IPduGroup->IpduGroupFlag = STARTED;
+	 }
+	 else{}
 }
 
 /***********************************************************************************
