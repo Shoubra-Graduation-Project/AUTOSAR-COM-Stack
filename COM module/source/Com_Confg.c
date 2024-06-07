@@ -148,7 +148,7 @@ const ComGroupSignal_type* GroupSignalListSignalGroup_1[] =
 const ComSignalGroup_type  ComSignalGroup[2]=
 {
   {
-			INVALIDATE_REPLACE, NULL, 0, 0, 0, NULL, NULL, TIMEOUT_REPLACE, 0, NULL, 1, TRIGGERED, 24,
+			INVALIDATE_REPLACE, NULL, 0, 0, 0, NULL, NULL, TIMEOUT_REPLACE, 0, NULL, 2, TRIGGERED, 24,
 			GroupSignalListSignalGroup_0, ComShadowBuffer_0, ComFGBuffer_0, ComBGBuffer_0, 0, &ComSignalGroupBuffer_0[0], 0, 1, 0, &Filters[0]
 	},
 	{
@@ -274,7 +274,21 @@ const ComSignalGroup_type* SignalGroupListIPdu_2[] =
 		NULL
 };
 
-
+PduInfoType PduInfo[4] =
+{
+	{
+		68, (void *)ComIPduBuffer_1
+	},
+	{
+		68, (void *)ComIPduBuffer_2
+	},
+	{
+		68, (void *)ComIPduBuffer_3
+	},
+	{
+		68, (void *)ComIPduBuffer_4
+	}
+};
 
 const ComIPdu_type ComIPdu[6] = 
 {
@@ -284,25 +298,20 @@ const ComIPdu_type ComIPdu[6] =
   },
 	{ // IPdu 2
 		0, &ComIPduCounter[1], SEND, 1, DEFERRED, NULL, NORMAL, NULL, NULL, &ComIPduGroups[0], NULL, SignalListIPdu_1, 
-		&PduIDs[1], &ComTxIPdu[0], ComIPduBuffer_2, 64, 0, &PduInfo[0]
+		&PduIDs[1], &ComTxIPdu[0], ComIPduBuffer_2, 64, 0, &PduInfo[1]
 	},
   { // IPdu 3
     0, &ComIPduCounter[0], RECEIVE, 2, DEFERRED, NULL, NORMAL, NULL, NULL, NULL, SignalGroupListIPdu_2, SignalListIPdu_2, 
-		&PduIDs[2], &ComTxIPdu[1], ComIPduBuffer_3, 64, 0, &PduInfo[0]
+		&PduIDs[2], &ComTxIPdu[1], ComIPduBuffer_3, 64, 0, &PduInfo[2]
   },
 	{ // IPdu 4
 		0, &ComIPduCounter[1], RECEIVE, 3, DEFERRED, NULL, NORMAL, NULL, NULL, NULL, NULL, SignalListIPdu_3, &PduIDs[3], 
-		&ComTxIPdu[1], ComIPduBuffer_4, 64, 0, &PduInfo[0]
+		&ComTxIPdu[1], ComIPduBuffer_4, 64, 0, &PduInfo[3]
   }
 
 };
 
-PduInfoType PduInfo[] =
-{
-	{
-		68, (void *)&ComIPdu[2]
-	}
-};
+
 
 const ComIPdu_type* IPduList[] =
 {
