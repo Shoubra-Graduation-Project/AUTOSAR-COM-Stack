@@ -61,7 +61,65 @@ void Com_MainFunctionRx(void)
     }
 }
 
+void DirectModeSequence(ComIPdu_type *IPdu)
+{
+	if(IPdu->ComTxIPdu->ComNumberOfTransmissions > 0)
+	{
+			com_packSignalsToPdu(IPdu);
+			if(IPdu->ComIPduCallout != NULL) {IPdu->ComIPduCallout(*(IPdu->ComPduIdRef), IPdu->PduInfo);}
+			else{}
+			while( (IPdu->ComTxIPdu->ComNumberOfTransmissions) > 0)
+			{
+				uint8 TransmisionReturnValue = E_OK;
+				Com_writeCounterValueToPduBuffer(IPdu, (IPdu->ComIPduCounter)->ComCurrentCounterValue);
+				IPdu->ComIPduCounter->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue + 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
+				
+				if(PduR_ComTransmit(TransmisionReturnValue, IPdu->ComIPduHandleId, IPdu->ComIPduDataPtr) == E_NOT_OK)
+				{
+					(IPdu->ComIPduCounter)->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue - 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
+				}
+				IPdu->ComTxIPdu->ComNumberOfTransmissions--;
+				if(IPdu->ComTxIPdu->ComCurrentTransmissionSelection == 1)
+				{
+					delay(IPdu->ComTxIPdu->ComTxModeTrue->ComTxMode->ComTxModeRepetitionPeriod);
+				}
+				else
+				{
+					delay(IPdu->ComTxIPdu->ComTxModeFalse->ComTxMode->ComTxModeRepetitionPeriod);
+				}
+			}
+			
+			if((IPdu->ComTxIPdu->ComNumberOfTransmissions) == 0)
+			{
+				if(IPdu->ComTxIPdu->ComMinimumDelayTime != 0){delay(IPdu->ComTxIPdu->ComMinimumDelayTime);}
+				else{}
+			}
+			else{}
+	}
+	else{}
+}
 
+void PeriodicModeSequence(ComIPdu_type *IPdu)
+{
+	if(CheckPeriodicTimeFired(IPdu) || IPdu->ComTxIPdu->ComFirstPeriodicModeEntry)
+	{
+		uint8 TransmisionReturnValue = E_OK;
+		IPdu->ComTxIPdu->ComFirstPeriodicModeEntry = 0;
+		ClearPeriodicTimeFired(IPdu);
+		com_packSignalsToPdu(IPdu);
+		if(IPdu->ComIPduCallout != NULL) {IPdu->ComIPduCallout(*(IPdu->ComPduIdRef), IPdu->PduInfo);}
+		else{}
+		Com_writeCounterValueToPduBuffer(IPdu, IPdu->ComIPduCounter->ComCurrentCounterValue);
+		IPdu->ComIPduCounter->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue + 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
+		
+		if(PduR_ComTransmit(TransmisionReturnValue, IPdu->ComIPduHandleId, IPdu->ComIPduDataPtr) == E_NOT_OK)
+		{
+			IPdu->ComIPduCounter->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue - 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
+		}
+		if(IPdu->ComTxIPdu->ComMinimumDelayTime != 0){delay(IPdu->ComTxIPdu->ComMinimumDelayTime);}
+		else{}
+	}
+}
 /***************************************************************************************
  Service name:               Com_MainFunctionTx
  Service Id:                    0x19
@@ -140,83 +198,14 @@ void Com_MainFunctionTx (void)
 					switch(IPdu->ComTxIPdu->ComTxModeTrue->ComTxMode->ComTxModeMode)
 					{
 						case MIXED:
-								if(IPdu->ComTxIPdu->ComNumberOfTransmissions > 0)
-								{
-									com_packSignalsToPdu(IPdu);
-									if(IPdu->ComIPduCallout != NULL) {IPdu->ComIPduCallout(*(IPdu->ComPduIdRef), IPdu->PduInfo);}
-									else{}
-									while( (IPdu->ComTxIPdu->ComNumberOfTransmissions) > 0)
-									{
-										uint8 TransmisionReturnValue = E_OK;
-										Com_writeCounterValueToPduBuffer(IPdu, (IPdu->ComIPduCounter)->ComCurrentCounterValue);
-										IPdu->ComIPduCounter->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue + 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
-										
-										if(PduR_ComTransmit(TransmisionReturnValue, IPdu->ComIPduHandleId, IPdu->ComIPduDataPtr) == E_NOT_OK)
-										{
-											(IPdu->ComIPduCounter)->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue - 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
-										}
-										IPdu->ComTxIPdu->ComNumberOfTransmissions--;
-										delay(IPdu->ComTxIPdu->ComTxModeTrue->ComTxMode->ComTxModeRepetitionPeriod);
-										if((IPdu->ComTxIPdu->ComNumberOfTransmissions) == 0)
-										{
-											if(IPdu->ComTxIPdu->ComMinimumDelayTime != 0){delay(IPdu->ComTxIPdu->ComMinimumDelayTime);}
-											else{}
-										}
-										else{}
-									}
-								}
-								else{}
+								DirectModeSequence(IPdu);
 								
 						case PERIODIC:
-						{
-								if(CheckPeriodicTimeFired(IPdu) || IPdu->ComTxIPdu->ComFirstPeriodicModeEntry)
-								{
-									uint8 TransmisionReturnValue = E_OK;
-									IPdu->ComTxIPdu->ComFirstPeriodicModeEntry = 0;
-									ClearPeriodicTimeFired(IPdu);
-									com_packSignalsToPdu(IPdu);
-									if(IPdu->ComIPduCallout != NULL) {IPdu->ComIPduCallout(*(IPdu->ComPduIdRef), IPdu->PduInfo);}
-									else{}
-									Com_writeCounterValueToPduBuffer(IPdu, IPdu->ComIPduCounter->ComCurrentCounterValue);
-									IPdu->ComIPduCounter->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue + 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
-									
-									if(PduR_ComTransmit(TransmisionReturnValue, IPdu->ComIPduHandleId, IPdu->ComIPduDataPtr) == E_NOT_OK)
-									{
-										IPdu->ComIPduCounter->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue - 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
-									}
-									if(IPdu->ComTxIPdu->ComMinimumDelayTime != 0){delay(IPdu->ComTxIPdu->ComMinimumDelayTime);}
-									else{}
-								}
+								PeriodicModeSequence(IPdu);
 								break;
-							}
+							
 						case DIRECT:
-								if(IPdu->ComTxIPdu->ComNumberOfTransmissions > 0)
-								{
-									com_packSignalsToPdu(IPdu);
-									if(IPdu->ComIPduCallout != NULL) {IPdu->ComIPduCallout(*(IPdu->ComPduIdRef), IPdu->PduInfo);}
-									else{}
-									while( IPdu->ComTxIPdu->ComNumberOfTransmissions > 0)
-									{
-										uint8 TransmisionReturnValue = E_OK;
-										Com_writeCounterValueToPduBuffer(IPdu, IPdu->ComIPduCounter->ComCurrentCounterValue);
-										IPdu->ComIPduCounter->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue + 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
-										
-										if(PduR_ComTransmit(TransmisionReturnValue, IPdu->ComIPduHandleId, IPdu->ComIPduDataPtr) == E_NOT_OK)
-										{
-											IPdu->ComIPduCounter->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue - 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
-										}
-										IPdu->ComTxIPdu->ComNumberOfTransmissions--;
-										delay(IPdu->ComTxIPdu->ComTxModeTrue->ComTxMode->ComTxModeRepetitionPeriod);
-										if((IPdu->ComTxIPdu->ComNumberOfTransmissions) == 0)
-										{
-											if(IPdu->ComTxIPdu->ComMinimumDelayTime != 0){delay(IPdu->ComTxIPdu->ComMinimumDelayTime);}
-											else{}
-										}
-										else{}
-									}
-								}
-								else{}
-					
+								DirectModeSequence(IPdu);
 					}
 				}
 				else if(IPdu->ComTxIPdu->ComCurrentTransmissionSelection == 0)
@@ -224,90 +213,13 @@ void Com_MainFunctionTx (void)
 					switch(IPdu->ComTxIPdu->ComTxModeFalse->ComTxMode->ComTxModeMode)
 					{
 						case DIRECT:
-								if(IPdu->ComTxIPdu->ComNumberOfTransmissions > 0)
-								{
-									com_packSignalsToPdu(IPdu);
-									if(IPdu->ComIPduCallout != NULL) {IPdu->ComIPduCallout(*(IPdu->ComPduIdRef), IPdu->PduInfo);}
-									else{}
-									while( IPdu->ComTxIPdu->ComNumberOfTransmissions > 0)
-									{
-										uint8 TransmisionReturnValue = E_OK;
-										Com_writeCounterValueToPduBuffer(IPdu, IPdu->ComIPduCounter->ComCurrentCounterValue);
-										IPdu->ComIPduCounter->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue + 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
-									
-										if(PduR_ComTransmit(TransmisionReturnValue, IPdu->ComIPduHandleId, IPdu->ComIPduDataPtr) == E_NOT_OK)
-										{
-											IPdu->ComIPduCounter->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue - 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
-										}
-										IPdu->ComTxIPdu->ComNumberOfTransmissions--;
-										delay(IPdu->ComTxIPdu->ComTxModeFalse->ComTxMode->ComTxModeRepetitionPeriod);
-										if((IPdu->ComTxIPdu->ComNumberOfTransmissions) == 0)
-										{
-											if(IPdu->ComTxIPdu->ComMinimumDelayTime != 0){delay(IPdu->ComTxIPdu->ComMinimumDelayTime);}
-											else{}
-										}
-										else{}
-									}
-								}
-								else{}
-															
+								DirectModeSequence(IPdu);
+								break;						
 						case MIXED:
-								if(IPdu->ComTxIPdu->ComNumberOfTransmissions > 0)
-								{
-									com_packSignalsToPdu(IPdu);
-									if(IPdu->ComIPduCallout != NULL) {IPdu->ComIPduCallout(*(IPdu->ComPduIdRef), IPdu->PduInfo);}
-									else{}
-									while( (IPdu->ComTxIPdu->ComNumberOfTransmissions) > 0)
-									{
-										uint8 TransmisionReturnValue = E_OK;
-										Com_writeCounterValueToPduBuffer(IPdu, IPdu->ComIPduCounter->ComCurrentCounterValue);
-										IPdu->ComIPduCounter->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue + 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
-										
-										if(PduR_ComTransmit(TransmisionReturnValue, IPdu->ComIPduHandleId, IPdu->ComIPduDataPtr) == E_NOT_OK)
-										{
-											IPdu->ComIPduCounter->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue - 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
-										}
-										IPdu->ComTxIPdu->ComNumberOfTransmissions--;
-										delay(IPdu->ComTxIPdu->ComTxModeFalse->ComTxMode->ComTxModeRepetitionPeriod);
-										if((IPdu->ComTxIPdu->ComNumberOfTransmissions) == 0)
-										{
-											if(IPdu->ComTxIPdu->ComMinimumDelayTime != 0){delay(IPdu->ComTxIPdu->ComMinimumDelayTime);}
-											else{}
-										}
-										else{}
-									}
-								}
-								else{}
+								DirectModeSequence(IPdu);
 									
 						case PERIODIC:
-						{
-								if(CheckPeriodicTimeFired(IPdu) || IPdu->ComTxIPdu->ComFirstPeriodicModeEntry)
-								{
-									uint8 TransmisionReturnValue = E_OK;
-									IPdu->ComTxIPdu->ComFirstPeriodicModeEntry = 0;
-									ClearPeriodicTimeFired(IPdu);
-									com_packSignalsToPdu(IPdu);
-									if(IPdu->ComIPduCallout != NULL) {IPdu->ComIPduCallout(*(IPdu->ComPduIdRef), IPdu->PduInfo);}
-									else{}
-									Com_writeCounterValueToPduBuffer(IPdu, IPdu->ComIPduCounter->ComCurrentCounterValue);
-									IPdu->ComIPduCounter->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue + 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
-
-						     
-
-								
-									if(PduR_ComTransmit(TransmisionReturnValue, IPdu->ComIPduHandleId, IPdu->ComIPduDataPtr) == E_NOT_OK)
-									{
-										IPdu->ComIPduCounter->ComCurrentCounterValue = (IPdu->ComIPduCounter->ComCurrentCounterValue - 1)%(power(IPdu->ComIPduCounter->ComIPduCounterSize));
-									}
-									if(IPdu->ComTxIPdu->ComMinimumDelayTime != 0){delay(IPdu->ComTxIPdu->ComMinimumDelayTime);}
-									else
-										{
-											
-							      }
-										
-								}
-							
-							}
+								PeriodicModeSequence(IPdu);
 						
 					}
 				}
@@ -333,7 +245,7 @@ void Com_MainFunctionTx (void)
 
 void Com_MainFunctionRxSignal(ComSignal_type Signal)
 {
-    if (Signal.ComSignalUpdated)
+  if (Signal.ComSignalUpdated)
 	{
         /*[SWS_Com_00301] If ComIPduSignalProcessing for an I-PDU is configured to DEFERRED, 
         the AUTOSAR COM module shall first copy the I-PDU’s data within the
@@ -404,6 +316,28 @@ void Com_MainFunctionRxSignalGroup(ComSignalGroup_type SignalGroup)
 {
     uint8 ComMainRxGroupSignalId;
 	  ComGroupSignal_type* GroupSignal;
+		boolean SGupdated = 0;
+		for(ComMainRxGroupSignalId=0 ; SignalGroup.ComGroupSignal[ComMainRxGroupSignalId] != NULL; ComMainRxGroupSignalId++)
+    {
+			GroupSignal = SignalGroup.ComGroupSignal[ComMainRxGroupSignalId];
+			
+			if (GroupSignal->ComSignalUpdated)
+			{
+						/*[SWS_Com_00301] If ComIPduSignalProcessing for an I-PDU is configured to DEFERRED, 
+						the AUTOSAR COM module shall first copy the I-PDU’s data within the
+						Com_RxIndication function or the related TP reception functions respectively from 
+						the PduR into COM. Then the AUTOSAR COM module shall invoke the configured
+						ComNotifications for the included signals and signal groups asynchronously during
+						the next call to Com_MainFunctionRx*/
+						SGupdated = 1;
+						GroupSignal->ComSignalUpdated = 0;
+			}
+		}
+		if (SGupdated && SignalGroup.ComNotification != NULL)
+		{
+			SignalGroup.ComNotification();
+		}
+		
     /*
     if (SignalGroup.ComTimeout > 0)
     {

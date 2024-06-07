@@ -85,11 +85,11 @@ const ComGroupSignal_type ComGSignals[2] =
 {
 		
    {    
-       0, 16, 0, NULL, LITTLE_ENDIAN, NULL, 1, UINT16, NULL, TRIGGERED, 0, ComGSignalBuffer_0, 0, 0, ComGSignalFGBuffer_0,TIMEOUT_REPLACE
+       0, 16, 0, NULL, LITTLE_ENDIAN, NULL, 1, UINT16, NULL, TRIGGERED, 0, ComGSignalBuffer_0, 0, 0, ComGSignalFGBuffer_0,TIMEOUT_REPLACE, 0
    },
 		
    {
-       32, 8, 0, NULL, LITTLE_ENDIAN, NULL, 1, UINT8, NULL, TRIGGERED, 2, ComGSignalBuffer_1, 1, 1, ComGSignalFGBuffer_1,TIMEOUT_REPLACE
+       32, 8, 0, NULL, LITTLE_ENDIAN, NULL, 1, UINT8, NULL, TRIGGERED, 2, ComGSignalBuffer_1, 1, 1, ComGSignalFGBuffer_1,TIMEOUT_REPLACE, 0
    }
 	 
    

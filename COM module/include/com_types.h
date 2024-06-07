@@ -404,6 +404,8 @@ typedef struct {
 	
 	void *ComFGBuffer;
   ComRxDataTimeoutAction_type ComRxDataTimeoutAction;
+	
+	boolean ComSignalUpdated;
  
 }ComGroupSignal_type;
 
