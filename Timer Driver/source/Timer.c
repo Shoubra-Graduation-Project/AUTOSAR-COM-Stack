@@ -233,7 +233,7 @@ void (*PeriodicTask0B)(void);   // user function
 // Inputs:  task is a pointer to a user function
 //          period in units (1/clockfreq)
 // Outputs: none
-
+/*
 void Timer0B_Init(void(*task)(void), unsigned long period){
 	SYSCTL_RCGCTIMER_R |= 0x01;   // 0) activate TIMER0
 	PeriodicTask0B = task;          // user function
@@ -428,7 +428,7 @@ void Timer5A_LoadValue(unsigned long period)
 {
 	TIMER5_TAILR_R = period-1;
 }
-/*
+
 void Timer0B_LoadValue(unsigned long period)
 {
 	TIMER0_TBILR_R = period-1;

@@ -261,7 +261,7 @@ typedef struct
 	 Defines the repetition period in seconds
 	 in case ComTxModeMode is configured to PERIODIC or MIXED
 	 */
-	const float32 ComTxModeTimePeriod;
+	float32 ComTxModeTimePeriod;
 
 	boolean comPeriodicTimeFired;
 

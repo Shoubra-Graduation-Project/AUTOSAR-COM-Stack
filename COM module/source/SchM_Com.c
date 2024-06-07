@@ -12,6 +12,7 @@
 #include "../include/Com_HelpingFunctions.h"
 #include "../include/PeriodicMode_HelpingFunctions.h"
 #include "../libraries/Std_Types.h"
+#include "../../Common/Integrator.h"
 #include <stdio.h>
 
 

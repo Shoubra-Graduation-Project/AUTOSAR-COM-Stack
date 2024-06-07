@@ -12,6 +12,8 @@ function to check if ipdu timer is fired
 #include "../include/PeriodicMode_HelpingFUnctions.h"
 #include "../include/Com_Types.h"
 
+void Timer0_Enable(void);
+
 boolean TIMER_BUSY[2][6] = {{0,0,0,0,0,0}, {0,0,0,0,0,0}};
 boolean TIMER_FIRED[2][6] = {{0,0,0,0,0,0}, {0,0,0,0,0,0}};
 

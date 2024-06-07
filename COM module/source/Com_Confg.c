@@ -7,64 +7,64 @@
 #include "../../Timer Driver/include/Timer.h"
 
 
-uint8 ComSignalBuffer_0 [1];
-uint8 ComSignalBuffer_1 [1];
-uint8 ComSignalBuffer_2 [1];
-uint8 ComSignalBuffer_3 [1];
-uint8 ComSignalBuffer_4 [1];
-uint8 ComSignalBuffer_5 [1];
-uint8 ComSignalBuffer_6 [1];
-uint8 ComSignalBuffer_7 [1];
+uint8 ComSignalBuffer_0 [1] = {0};
+uint8 ComSignalBuffer_1 [1] = {0};
+uint8 ComSignalBuffer_2 [1] = {0};
+uint8 ComSignalBuffer_3 [1] = {0};
+uint8 ComSignalBuffer_4 [1] = {0};
+uint8 ComSignalBuffer_5 [1] = {0};
+uint8 ComSignalBuffer_6 [1] = {0};
+uint8 ComSignalBuffer_7 [1] = {0};
 
-uint8 ComSignalFGBuffer_0 [1];
-uint8 ComSignalFGBuffer_1 [1];
-uint8 ComSignalFGBuffer_2 [1];
-uint8 ComSignalFGBuffer_3 [1];
-uint8 ComSignalFGBuffer_4 [1];
-uint8 ComSignalFGBuffer_5 [1];
-uint8 ComSignalFGBuffer_6 [1];
-uint8 ComSignalFGBuffer_7 [1];
-
-
-uint8 ComSignalBGBuffer_0 [1];
-uint8 ComSignalBGBuffer_1 [1];
-uint8 ComSignalBGBuffer_2 [1];
-uint8 ComSignalBGBuffer_3 [1];
-uint8 ComSignalBGBuffer_4 [1];
-uint8 ComSignalBGBuffer_5 [1];
-uint8 ComSignalBGBuffer_6 [1];
-uint8 ComSignalBGBuffer_7 [1];
-
-uint8 ComGSignalBuffer_0[1];
-uint8 ComGSignalBuffer_1[1];
-
-uint8 ComGSignalFGBuffer_0[1];
-uint8 ComGSignalFGBuffer_1[1];
+uint8 ComSignalFGBuffer_0 [1] = {0};
+uint8 ComSignalFGBuffer_1 [1] = {0};
+uint8 ComSignalFGBuffer_2 [1] = {0};
+uint8 ComSignalFGBuffer_3 [1] = {0};
+uint8 ComSignalFGBuffer_4 [1] = {0};
+uint8 ComSignalFGBuffer_5 [1] = {0};
+uint8 ComSignalFGBuffer_6 [1] = {0};
+uint8 ComSignalFGBuffer_7 [1] = {0};
 
 
-uint8 ComIPduBuffer_1[8];
-uint8 ComIPduBuffer_2[8];
-uint8 ComIPduBuffer_3[8];
-uint8 ComIPduBuffer_4[8];
-uint8 ComIPduBuffer_5[8];
-uint8 ComIPduBuffer_6[8];
+uint8 ComSignalBGBuffer_0 [1] = {0};
+uint8 ComSignalBGBuffer_1 [1] = {0};
+uint8 ComSignalBGBuffer_2 [1] = {0};
+uint8 ComSignalBGBuffer_3 [1] = {0};
+uint8 ComSignalBGBuffer_4 [1] = {0};
+uint8 ComSignalBGBuffer_5 [1] = {0};
+uint8 ComSignalBGBuffer_6 [1] = {0};
+uint8 ComSignalBGBuffer_7 [1] = {0};
+
+uint8 ComGSignalBuffer_0[1] = {0};
+uint8 ComGSignalBuffer_1[1] = {0};
+
+uint8 ComGSignalFGBuffer_0[1] = {0};
+uint8 ComGSignalFGBuffer_1[1] = {0};
 
 
-uint8 ComShadowBuffer_0[4];
-uint8 ComShadowBuffer_1[4];
-uint8 ComShadowBuffer_2[4];
+uint8 ComIPduBuffer_1[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+uint8 ComIPduBuffer_2[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+uint8 ComIPduBuffer_3[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+uint8 ComIPduBuffer_4[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+uint8 ComIPduBuffer_5[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+uint8 ComIPduBuffer_6[8] = {0, 0, 0, 0, 0, 0, 0, 0};
 
 
-uint8 ComFGBuffer_0[4];
-uint8 ComFGBuffer_1[4];
-uint8 ComFGBuffer_2[4];
-uint8 ComFGBuffer_3[4];
+uint8 ComShadowBuffer_0[4] = {0, 0, 0, 0};
+uint8 ComShadowBuffer_1[4] = {0, 0, 0, 0};
+uint8 ComShadowBuffer_2[4] = {0, 0, 0, 0};
 
-uint8 ComBGBuffer_0[4];
-uint8 ComBGBuffer_1[4];
-uint8 ComBGBuffer_2[4];
 
-uint8 ComSignalGroupBuffer_0[5];
+uint8 ComFGBuffer_0[4] = {0, 0, 0, 0};
+uint8 ComFGBuffer_1[4] = {0, 0, 0, 0};
+uint8 ComFGBuffer_2[4] = {0, 0, 0, 0};
+uint8 ComFGBuffer_3[4] = {0, 0, 0, 0};
+
+uint8 ComBGBuffer_0[4] = {0, 0, 0, 0};
+uint8 ComBGBuffer_1[4] = {0, 0, 0, 0};
+uint8 ComBGBuffer_2[4] = {0, 0, 0, 0};
+
+uint8 ComSignalGroupBuffer_0[5] = {0, 0, 0, 0, 0};
 
 PduIdType PduIDs[4];
 
