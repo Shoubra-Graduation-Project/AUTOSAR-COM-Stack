@@ -164,9 +164,13 @@ const CanIf_ConfigType CanIf_Config =
 };
 
 const CanIf_PduModeType pdu_mode = {
-	CANIF_ONLINE,
+	CANIF_OFFLINE,
 };
 
 const CanIf_ControllerModeType controller_mode = {
-	CANIF_CS_STARTED,
+	CANIF_CS_UNINIT,
+};
+
+const CanIf_Channel_t canif_channel = {
+	CANIF_CHANNEL_1,
 };
