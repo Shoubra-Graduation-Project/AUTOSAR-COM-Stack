@@ -163,7 +163,10 @@ const CanIf_ConfigType CanIf_Config =
   //.Arc_ChannelDefaultConfIndex = CanIf_Arc_ChannelDefaultConfIndex,
 };
 
+const CanIf_PduModeType pdu_mode = {
+	CANIF_ONLINE,
+};
 
-
-
-
+const CanIf_ControllerModeType controller_mode = {
+	CANIF_CS_STARTED,
+};
