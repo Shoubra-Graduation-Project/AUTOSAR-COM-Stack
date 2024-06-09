@@ -12,6 +12,7 @@
 #include "../../Common/Lib/driverlib/gpio.h"
 #include "../../Common/Lib/driverlib/sysctl.h"
 #include "../../Common/Lib/driverlib/uart.h"
+#include "../../Common/Integrator.h"
 
 extern CanIf_ConfigType CanIf;
 
@@ -686,7 +687,7 @@ void CanIf_TxConfirmation (PduIdType CanTxPduId)
                 called in CanIf_TxConfirmation().*/
                 if (TxPduPtr->CanIfTxPduUserTxConfirmationUL == COM)
                 {
-                    Com_TxConfirmation(CanTxPduId);
+                    Com_TxConfirmation(CanTxPduId, E_OK);
                 }
                 else if (TxPduPtr->CanIfTxPduUserTxConfirmationUL
                         == PDUR)
