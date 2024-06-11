@@ -888,7 +888,8 @@ Std_ReturnType CanIf_RxIndication(const Can_HwType* MailBox, const PduInfoType* 
     CanifBuffer->SduLength = PduInfoPtr->SduLength;
 
     /* Confirmation to Upper Layer (COM)*/
-    (RxPduIndex->CanIfRxPduUserRxIndicationUL);
+    //(RxPduIndex->CanIfRxPduUserRxIndicationUL);
+		Com_RxIndication (RxPduIndex.CanifRxPduId, PduInfoPtr);
 	
     return RET;
 }
