@@ -421,15 +421,7 @@ typedef struct{
 
 
 /*************************************************************************************************/
-	typedef struct {
-	/* Everything in this structure is implementation specific */
-    const CanIf_TxPduConfigType* TxPduCfg;
-	const CanIf_RxLPduConfigType* RxLpduCfg;
-
-    const CanIf_ControllerConfigType* ControllerConfig;
-    const CanIf_DispatchConfigType* DispatchConfig;
-    const CanIf_HrHConfigType** canIfHrhCfg;  // This is an array of Hrh objects, for each controller ID
-} CanIf_ConfigType;
+	
 
 //extern const CanIf_ConfigType CanIf_Config;
 /**************************************************************************************************
@@ -715,18 +707,7 @@ Description:
 					 which is necessary for initialization.
 																								**
 **************************************************************************************************/
-typedef struct{
-	/* Configuration parameters for all the underlying CAN
-	Driver modules are aggregated under this container.
-	For each CAN Driver module a seperate instance of
-	this container has to be provided. */
-	CanIfCtrlDrvCfg CanIfCtrlDrvCfg;
-	
-	/* This container contains the init parameters of the CAN
-	Interface. */
-	CanIfInitCfg CanIfInitCfg;
-	
-}CanIf_ConfigType;
+
 
 /**************************************************************************************************
 **
