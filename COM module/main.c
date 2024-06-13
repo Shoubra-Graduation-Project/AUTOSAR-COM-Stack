@@ -1,6 +1,6 @@
 
 
-#include "libraries/Std_Types.h"
+#include "../Common/Std_Types.h"
 #include "include/Com.h"
 #include "include/Com_Cfg.h"
 #include "./PLL.h"

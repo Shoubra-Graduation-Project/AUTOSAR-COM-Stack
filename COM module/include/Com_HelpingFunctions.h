@@ -2,7 +2,7 @@
 #define _COM_HELPINGFUNCTIONS_H_
 
 
-#include "../libraries/Std_Types.h"
+#include "../../Common/Std_Types.h"
 #include "../include/com_types.h"
 
 void delay(uint32 seconds);

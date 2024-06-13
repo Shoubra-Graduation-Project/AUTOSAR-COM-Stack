@@ -1,6 +1,6 @@
 
 #include "../COM module/include/Com_Types.h"
-#include "../COM module/libraries/Std_Types.h"
+#include "Std_Types.h"
 #include "../COM module/include/Com.h"
 #include "../CanIf Module/inc/CanIf.h"
 

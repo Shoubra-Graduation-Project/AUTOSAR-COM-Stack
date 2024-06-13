@@ -12,7 +12,7 @@
 #include "../include/ComMacros.h"
 #include "../../Det/inc/Det.h"
 #include "../../Det/inc/Com_Det.h"
-#include "../libraries/Std_Types.h"
+#include "../../Common/Std_Types.h"
 #include <string.h>
 #include <cstddef>
 
@@ -65,7 +65,7 @@ void Com_Init (const Com_ConfigType* config)
 
 			/*[SWS_Com_00015] The AUTOSAR COM module shall fill not used areas within an
 			I-PDU with a value determined by configuration parameter ComTxIPduUnusedAreasDefault*/
-			if(IPdu->ComIPduDirection == SEND)
+			if(IPdu->ComIPduDirection == COM_SEND)
 			{
 				memset((void *)IPdu->ComIPduDataPtr, IPdu->ComTxIPdu->ComTxIPduUnusedAreasDefault, IPdu->ComIPduLength);
 				/*[SWS_Com_00687] For all I-PDUs with ComIPduDirection configured to SEND that 
@@ -255,7 +255,7 @@ void Com_IpduGroupStart(Com_IpduGroupIdType IpduGroupId , boolean Initialize)
 					{
 						if(Initialize)
 						{
-								if(IPdu->ComIPduDirection == SEND)
+								if(IPdu->ComIPduDirection == COM_SEND)
 								{
 										memset((void *)IPdu->ComIPduDataPtr, IPdu->ComTxIPdu->ComTxIPduUnusedAreasDefault, IPdu->ComIPduLength);
 								}
@@ -264,7 +264,7 @@ void Com_IpduGroupStart(Com_IpduGroupIdType IpduGroupId , boolean Initialize)
 						else{}
 							
 						//6) set the I-PDU counter to 0 for I-PDUs with ComIPduDirection configured to SEND
-						if(IPdu->ComIPduDirection == SEND)
+						if(IPdu->ComIPduDirection == COM_SEND)
 						{
 							IPdu->ComIPduCounter->ComCurrentCounterValue = 0;
 							Com_writeCounterValueToPduBuffer(IPdu, IPdu->ComIPduCounter->ComCurrentCounterValue);
@@ -415,7 +415,7 @@ void Com_EnableReceptionDM (Com_IpduGroupIdType IpduGroupId)
 					in case the reception deadline monitoring is already enabled for this I-PDU*/
 				if(IPdu->ComIPduGroupRef->ComIPduGroupHandleId == IpduGroupId)
 				{
-						if(IPdu->ComIPduDirection != SEND)
+						if(IPdu->ComIPduDirection != COM_SEND)
 						{
 							 if(!IPdu[ipduIndex].ReceptionDMEnabled)
 							 {
@@ -470,7 +470,7 @@ void Com_DisableReceptionDM (Com_IpduGroupIdType IpduGroupId)
 			in case the reception deadline monitoring is already enabled for this I-PDU*/
 			if(IPdu->ComIPduGroupRef->ComIPduGroupHandleId == IpduGroupId)
 			{
-				if(IPdu->ComIPduDirection != SEND)
+				if(IPdu->ComIPduDirection != COM_SEND)
 				{
 					 if(!IPdu[ipduIndex].ReceptionDMEnabled)
 					 {
@@ -1017,7 +1017,7 @@ uint8 Com_SendSignalGroup (Com_SignalGroupIdType SignalGroupId)
      ComSignalGroup_type * SignalGroup= GET_SIGNALGROUP(SignalGroupId);
      ComIPdu_type *Ipdu=GET_IPDU(SignalGroup->ComIPduHandleId);
 	
-	  if(Ipdu->ComIPduDirection!=RECEIVE)
+	  if(Ipdu->ComIPduDirection!= COM_RECEIVE)
 	   {
           uint8 retrun=E_NOT_OK;
 
@@ -1148,7 +1148,7 @@ uint8 Com_ReceiveSignal (Com_SignalIdType SignalId, void* SignalDataPtr)
         ComSignal_type * Signal = GET_SIGNAL(SignalId-COM_MIN_SIGNAL);
 		    ComIPdu_type *ipdu=GET_IPDU(Signal->ComIPduHandleId);
 
-	   if(ipdu->ComIPduDirection!=RECEIVE)
+	   if(ipdu->ComIPduDirection!= COM_RECEIVE)
 	   {
           uint8 retrun=E_NOT_OK;
 
@@ -1192,7 +1192,7 @@ uint8 Com_ReceiveSignal (Com_SignalIdType SignalId, void* SignalDataPtr)
          ComSignalGroup_type * SignalGroup = GET_SIGNALGROUP(GroupSignal->SignalGroupId);
          ComIPdu_type *Ipdu=GET_IPDU(SignalGroup->ComIPduHandleId);
 
-	      if(Ipdu->ComIPduDirection!=RECEIVE)
+	      if(Ipdu->ComIPduDirection!= COM_RECEIVE)
 	   {
           uint8 retrun=E_NOT_OK;
 

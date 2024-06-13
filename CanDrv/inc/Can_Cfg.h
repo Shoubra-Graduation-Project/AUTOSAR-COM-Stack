@@ -26,7 +26,7 @@ OFF.
 #define CanDevErrorDetection    false
 
 #if !(((CAN_SW_MAJOR_VERSION == 1) && (CAN_SW_MINOR_VERSION == 0)) )
-#error Can: Configuration file expected BSW module version to be 1.0.*
+//#error Can: Configuration file expected BSW module version to be 1.0.*
 #endif
 	
 

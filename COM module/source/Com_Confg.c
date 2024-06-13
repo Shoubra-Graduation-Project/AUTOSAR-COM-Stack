@@ -3,7 +3,7 @@
 #include "../include/Com_Cfg.h"
 #include "../include/Com.h"
 #include "../include/Com_types.h"
-#include "../include/ComStack_Types.h"
+#include "../../Common/ComStack_Types.h"
 #include "../../Timer Driver/include/Timer.h"
 
 
@@ -293,19 +293,19 @@ PduInfoType PduInfo[4] =
 const ComIPdu_type ComIPdu[6] = 
 {
   { // IPdu 1
-	  0, &ComIPduCounter[0], SEND, 0, DEFERRED, NULL, NORMAL, NULL, NULL, &ComIPduGroups[0], SignalGroupListIPdu_0, 
+	  0, &ComIPduCounter[0], COM_SEND, 0, DEFERRED, NULL, NORMAL, NULL, NULL, &ComIPduGroups[0], SignalGroupListIPdu_0, 
 		SignalListIPdu_0, &PduIDs[0], &ComTxIPdu[0], ComIPduBuffer_1, 64, 0, &PduInfo[0]
   },
 	{ // IPdu 2
-		0, &ComIPduCounter[1], SEND, 1, DEFERRED, NULL, NORMAL, NULL, NULL, &ComIPduGroups[0], NULL, SignalListIPdu_1, 
+		0, &ComIPduCounter[1], COM_SEND, 1, DEFERRED, NULL, NORMAL, NULL, NULL, &ComIPduGroups[0], NULL, SignalListIPdu_1, 
 		&PduIDs[1], &ComTxIPdu[0], ComIPduBuffer_2, 64, 0, &PduInfo[1]
 	},
   { // IPdu 3
-    0, &ComIPduCounter[0], RECEIVE, 2, DEFERRED, NULL, NORMAL, NULL, NULL, NULL, SignalGroupListIPdu_2, SignalListIPdu_2, 
+    0, &ComIPduCounter[0], COM_RECEIVE, 2, DEFERRED, NULL, NORMAL, NULL, NULL, NULL, SignalGroupListIPdu_2, SignalListIPdu_2, 
 		&PduIDs[2], &ComTxIPdu[1], ComIPduBuffer_3, 64, 0, &PduInfo[2]
   },
 	{ // IPdu 4
-		0, &ComIPduCounter[1], RECEIVE, 3, DEFERRED, NULL, NORMAL, NULL, NULL, NULL, NULL, SignalListIPdu_3, &PduIDs[3], 
+		0, &ComIPduCounter[1], COM_RECEIVE, 3, DEFERRED, NULL, NORMAL, NULL, NULL, NULL, NULL, SignalListIPdu_3, &PduIDs[3], 
 		&ComTxIPdu[1], ComIPduBuffer_4, 64, 0, &PduInfo[3]
   }
 

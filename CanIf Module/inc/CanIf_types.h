@@ -431,7 +431,7 @@ typedef struct{
     const CanIf_HrHConfigType** canIfHrhCfg;  // This is an array of Hrh objects, for each controller ID
 } CanIf_ConfigType;
 
-extern const CanIf_ConfigType CanIf_Config;
+//extern const CanIf_ConfigType CanIf_Config;
 /**************************************************************************************************
 **
 Name:                                     CanIfRxPduCfg

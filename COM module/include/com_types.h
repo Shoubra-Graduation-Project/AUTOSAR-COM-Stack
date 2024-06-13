@@ -2,8 +2,8 @@
 #ifndef _COM_TYPES_H_
 #define _COM_TYPES_H_
 
-#include "../libraries/Std_Types.h"
-#include "../include/ComStack_Types.h"
+#include "../../Common/Std_Types.h"
+#include "../../Common/ComStack_Types.h"
 
 
 /***************************************************************************************************
@@ -68,8 +68,8 @@ Type: EcucEnumerationParamDef
 Description: IPDU Directions
 ****************************************************************************************************/
 typedef enum {
-	RECEIVE,
-	SEND
+	COM_RECEIVE,
+	COM_SEND
 } ComIPduDirection_type;
 
 
@@ -129,7 +129,7 @@ Description:
 ****************************************************************************************************/
 typedef enum {
 	CONFIRMATION,
-	TRANSMIT,
+	COM_TRANSMIT,
 	TRIGGER_TRANSMIT
 }ComTxIPduClearUpdateBit_type;
 

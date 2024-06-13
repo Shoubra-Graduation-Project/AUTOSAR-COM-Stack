@@ -1,7 +1,7 @@
 #ifndef INCLUDE_COM_BUFFERS_H_
 #define INCLUDE_COM_BUFFERS_H_
 
-#include "../libraries/Std_Types.h"
+#include "../../Common/Std_Types.h"
 #include "./com.h"
 
 void Com_CopyShadowBufferToIPDU (const uint16 signalGroupId);

@@ -6,8 +6,10 @@
  */
 
 #include "Application.h"
+#include "../Common/Std_Types.h"
+#define EXIT_SUCCESS 0
 
-STD_ReturnType ret = E_OK;
+Std_ReturnType ret = E_OK;
 void Application_initialize(void);
 
 

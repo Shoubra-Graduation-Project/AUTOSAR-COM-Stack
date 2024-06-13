@@ -1,7 +1,7 @@
 #ifndef _COM_HELPINGFUNCTIONS_H_
 #define _COM_HELPINGFUNCTIONS_H_
 
-#include "../libraries/Std_Types.h"
+#include "../../Common/Std_Types.h"
 #include "../include/Com_Types.h"
 #include "../../Timer Driver/include/Timer.h"
 

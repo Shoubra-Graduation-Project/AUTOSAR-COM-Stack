@@ -21,21 +21,21 @@
 #include <stddef.h>
 #include <string.h>
 
-#include <inc/hw_ints.h>
-#include <inc/hw_types.h>
-#include <inc/hw_memmap.h>
-#include <inc/hw_can.h>
-#include <inc/hw_timer.h>
+#include "Lib/inc/hw_ints.h"
+#include "Lib/inc/hw_types.h"
+#include "Lib/inc/hw_memmap.h"
+#include "Lib/inc/hw_can.h"
+#include "Lib/inc/hw_timer.h"
 
-#include <driverlib/pin_map.h>
-#include <driverlib/can.h>
-#include <driverlib/interrupt.h>
-#include <driverlib/sysctl.h>
-#include <driverlib/gpio.h>
-#include <driverlib/debug.h>
-#include <utils/uartstdio.h>
-#include <driverlib/uart.h>
-#include <driverlib/timer.h>
+#include "Lib/driverlib/pin_map.h"
+#include "Lib/driverlib/can.h"
+#include "Lib/driverlib/interrupt.h"
+#include "Lib/driverlib/sysctl.h"
+#include "Lib/driverlib/gpio.h"
+#include "Lib/driverlib/debug.h"
+#include "Lib/utils/uartstdio.h"
+#include "Lib/driverlib/uart.h"
+#include "Lib/driverlib/timer.h"
 
 /*****************************************************************************/
 /* AUTOSAR Release: 4.3.1                                                      */
@@ -77,7 +77,7 @@
 /*****************************************************************************/
 /* TYPE DEFINITIONS                                                          */
 /*****************************************************************************/
-typedef unsigned char       boolean;
+/*typedef unsigned char       boolean;
 
 typedef unsigned char       uint8;
 typedef unsigned short      uint16;
@@ -98,6 +98,6 @@ typedef signed int          sint16_least;
 typedef signed int          sint32_least;
 
 typedef float               float32;
-typedef double              float64;
+typedef double              float64;*/
 
 #endif /* _PLATFORM_TYPES_H_ */

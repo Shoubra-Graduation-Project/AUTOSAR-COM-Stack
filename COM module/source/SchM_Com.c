@@ -11,7 +11,7 @@
 #include "../include/com_buffers.h"
 #include "../include/Com_HelpingFunctions.h"
 #include "../include/PeriodicMode_HelpingFunctions.h"
-#include "../libraries/Std_Types.h"
+#include "../../Common/Std_Types.h"
 #include "../../Common/Integrator.h"
 #include <stdio.h>
 
@@ -141,7 +141,7 @@ void Com_MainFunctionTx (void)
 		if(IPdu !=NULL)
 		{
 			ComIPduGroup_type * IPduGroup =  IPdu->ComIPduGroupRef;
-			if((IPduGroup == NULL || IPduGroup->IpduGroupFlag == STARTED) && IPdu->ComIPduDirection == SEND)
+			if((IPduGroup == NULL || IPduGroup->IpduGroupFlag == STARTED) && IPdu->ComIPduDirection == COM_SEND)
 			{	
 				/*-----------------------------------------------Notify RTE layer if IPDU is DEFERED--------------------------------------------------------*/
 				if(IPdu->ComIPduSignalProcessing == DEFERRED && (IPdu->ComTxIPdu)->ComIsIPduDeferred == 1)
@@ -399,7 +399,7 @@ void CheckRXIpdu(ComIPdu_type IPdu)
 	uint8 ComMainRxSignalId;
   uint8 ComMainRxSignalGroupId;
 
-	if (IPdu.ComIPduSignalProcessing == DEFERRED && IPdu.ComIPduDirection == RECEIVE)
+	if (IPdu.ComIPduSignalProcessing == DEFERRED && IPdu.ComIPduDirection == COM_RECEIVE)
 	{
 			//For each signal at PDU
 			for ( ComMainRxSignalId = 0; (IPdu.ComIPduSignalRef[ComMainRxSignalId] != NULL); ComMainRxSignalId++)
