@@ -6,7 +6,7 @@
 #include "./CanIf_cfg.h"
 #include "../../Common/Platform_Types.h"
 #include "../../Common/Common_Macros.h"
-#include "../../CanDrv/inc/ComStack_Types.h"
+#include "../../Common/ComStack_Types.h"
 #include "../../CanDrv/inc/Can_GeneralTypes.h"
 #include "../../CanDrv/inc/Can_Cfg.h"
 #include "../../CanDrv/inc/Can.h"
@@ -305,15 +305,15 @@ typedef enum {
   CANTRCV_TRCVMODE_SLEEP
 } CanTrcv_TrcvModeType ;
 /****************************************************************************/
-typedef struct {
-	/* Everything in this structure is implementation specific */
+/*typedef struct {
+	//Everything in this structure is implementation specific
         const CanIf_TxPduConfigType* TxPduCfg;
 	const CanIf_RxLPduConfigType* RxLpduCfg;
 
     const CanIf_ControllerConfigType* ControllerConfig;
     const CanIf_DispatchConfigType* DispatchConfig;
     const CanIf_HrHConfigType** canIfHrhCfg;  // This is an array of Hrh objects, for each controller ID
-} CanIf_ConfigType;
+} CanIf_ConfigType;*/
 /**************************************************************************************************
 **
 Name:                                	CanIfPduCanIdType
@@ -421,7 +421,15 @@ typedef struct{
 
 
 /*************************************************************************************************/
-	
+	/*typedef struct {
+	//Everything in this structure is implementation specific
+    const CanIf_TxPduConfigType* TxPduCfg;
+	const CanIf_RxLPduConfigType* RxLpduCfg;
+
+    const CanIf_ControllerConfigType* ControllerConfig;
+    const CanIf_DispatchConfigType* DispatchConfig;
+    const CanIf_HrHConfigType** canIfHrhCfg;  // This is an array of Hrh objects, for each controller ID
+} CanIf_ConfigType;*/
 
 //extern const CanIf_ConfigType CanIf_Config;
 /**************************************************************************************************
@@ -547,7 +555,7 @@ typedef struct{
 	/* 
     Reference to the Init Hoh Configuration 
     */
-	CanIfInitHohCfg* CanIfCtrlDrvInitHohConfigRef;
+	CanIfInitHohCfg * CanIfCtrlDrvInitHohConfigRef;
 	
 
 	/* 
@@ -707,7 +715,18 @@ Description:
 					 which is necessary for initialization.
 																								**
 **************************************************************************************************/
-
+typedef struct{
+	/* Configuration parameters for all the underlying CAN
+	Driver modules are aggregated under this container.
+	For each CAN Driver module a seperate instance of
+	this container has to be provided. */
+	CanIfCtrlDrvCfg CanIfCtrlDrvCfg;
+	
+	/* This container contains the init parameters of the CAN
+	Interface. */
+	CanIfInitCfg CanIfInitCfg;
+	
+}CanIf_ConfigType;
 
 /**************************************************************************************************
 **
@@ -734,4 +753,3 @@ typedef struct{
 extern const CanIf_ConfigType CanIf_Config;
 
 #endif /* CANIF_TYPES_H_ */
-
