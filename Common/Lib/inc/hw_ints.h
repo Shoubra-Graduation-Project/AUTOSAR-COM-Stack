@@ -41,6 +41,7 @@
 #ifndef __HW_INTS_H__
 #define __HW_INTS_H__
 
+#define PART_TM4C123GH6PM
 //*****************************************************************************
 //
 // The following are defines for the fault assignments.
@@ -314,7 +315,7 @@
     defined(PART_TM4C1237H6PGE) || defined(PART_TM4C123BH6PGE) || \
     defined(PART_TM4C123BH6ZRB) || defined(PART_TM4C123GH6PGE) || \
     defined(PART_TM4C123GH6ZRB) || defined(PART_TM4C123GH6ZXR)
-#define INT_RESOLVE(intname, class) intname##TM4C123
+#define INT_RESOLVE(intname, class) intname//##TM4C123
 
 //*****************************************************************************
 //
@@ -342,6 +343,7 @@
 // Macros to resolve the INT_PERIPH_CLASS name to a common INT_PERIPH name.
 //
 //*****************************************************************************
+
 #define INT_CONCAT(intname, class)  INT_RESOLVE(intname, class)
 
 //*****************************************************************************
