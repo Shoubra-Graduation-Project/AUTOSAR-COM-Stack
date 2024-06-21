@@ -38,7 +38,7 @@ void UserTask(void){
 //debug code
 int x = 5;
 int main(void){
-	ComTxMode_type mode1_struct;
+	/*ComTxMode_type mode1_struct;
 	ComTxMode_type * mode1 = & mode1_struct;
 	
 	ComTxMode_type mode2_struct;
@@ -61,9 +61,7 @@ int main(void){
 	
 	ComIPdu_type pdu2_struct;
 	ComIPdu_type * pdu2 = &pdu2_struct;
-	
-	volatile unsigned long delay;
-	
+		
 	mode1_struct.ComTxModeTimePeriod = 1000;
 	mode2_struct.ComTxModeTimePeriod = 1000;
 	true_struct.ComTxMode = mode1;
@@ -80,7 +78,11 @@ int main(void){
 	//txPdu2_struct.ComTxTimerBlock = 'A';
 	//txPdu2_struct.ComTxTimerNumber = 0;
 	txPdu2_struct.ComTxModeFalse = False;
-	pdu2_struct.ComTxIPdu = txPdu2;
+	pdu2_struct.ComTxIPdu = txPdu2;*/
+	
+	volatile unsigned long delay;
+	ComIPdu_type * pdu = ComConfig.ComIPdu[0];
+	ComIPdu_type * pdu2 = ComConfig.ComIPdu[1];
 	
   PLL_Init();                      // bus clock at 80 MHz
   SYSCTL_RCGC2_R |= SYSCTL_RCGC2_GPIOF; // activate port F
@@ -93,12 +95,6 @@ int main(void){
   GPIO_PORTF_AMSEL_R = 0;          // disable analog functionality on PF
   LEDS = 0;                        // turn all LEDs off
 	
-	//InitAllTimers();
-	//Com_InitPeriodicModeForIPdu(pdu);
-//  Timer1_Init(&UserTask, 4000);    // initialize timer2 (20,000 Hz)
-  //Timer0_Init(&UserTask, 1000); // initialize timer1 (16 Hz)
-//  Timer1_Init(&UserTask, 80000000);// initialize timer1 (1 Hz)
-//  Timer1_Init(&UserTask, 0xFFFFFFFF); // initialize timer1 (slowest rate)
 	
   EnableInterrupts();
 	Com_InitPeriodicModeForIPdu(pdu);
