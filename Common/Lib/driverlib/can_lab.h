@@ -413,29 +413,29 @@ tMsgObjType;
 // API Function prototypes
 //
 //*****************************************************************************
-extern void CANBitTimingGet(uint32_t ui32Base, tCANBitClkParms *psClkParms);
-extern void CANBitTimingSet(uint32_t ui32Base, tCANBitClkParms *psClkParms);
-extern uint32_t CANBitRateSet(uint32_t ui32Base, uint32_t ui32SourceClock,
+void CANBitTimingGet(uint32_t ui32Base, tCANBitClkParms *psClkParms);
+void CANBitTimingSet(uint32_t ui32Base, tCANBitClkParms *psClkParms);
+uint32_t CANBitRateSet(uint32_t ui32Base, uint32_t ui32SourceClock,
                               uint32_t ui32BitRate);
-extern void CANDisable(uint32_t ui32Base);
-extern void CANEnable(uint32_t ui32Base);
-extern bool CANErrCntrGet(uint32_t ui32Base, uint32_t *pui32RxCount,
+void CANDisable(uint32_t ui32Base);
+void CANEnable(uint32_t ui32Base);
+bool CANErrCntrGet(uint32_t ui32Base, uint32_t *pui32RxCount,
                           uint32_t *pui32TxCount);
-extern void CANInit(uint32_t ui32Base);
-extern void CANIntClear(uint32_t ui32Base, uint32_t ui32IntClr);
-extern void CANIntDisable(uint32_t ui32Base, uint32_t ui32IntFlags);
-extern void CANIntEnable(uint32_t ui32Base, uint32_t ui32IntFlags);
-extern void CANIntRegister(uint32_t ui32Base, void (*pfnHandler)(void));
-extern uint32_t CANIntStatus(uint32_t ui32Base, tCANIntStsReg eIntStsReg);
-extern void CANIntUnregister(uint32_t ui32Base);
-extern void CANMessageClear(uint32_t ui32Base, uint32_t ui32ObjID);
-extern void CANMessageGet(uint32_t ui32Base, uint32_t ui32ObjID,
+void CANInit(uint32_t ui32Base);
+void CANIntClear(uint32_t ui32Base, uint32_t ui32IntClr);
+void CANIntDisable(uint32_t ui32Base, uint32_t ui32IntFlags);
+void CANIntEnable(uint32_t ui32Base, uint32_t ui32IntFlags);
+void CANIntRegister(uint32_t ui32Base, void (*pfnHandler)(void));
+uint32_t CANIntStatus(uint32_t ui32Base, tCANIntStsReg eIntStsReg);
+void CANIntUnregister(uint32_t ui32Base);
+ void CANMessageClear(uint32_t ui32Base, uint32_t ui32ObjID);
+ void CANMessageGet(uint32_t ui32Base, uint32_t ui32ObjID,
                           tCANMsgObject *psMsgObject, bool bClrPendingInt);
-extern void CANMessageSet(uint32_t ui32Base, uint32_t ui32ObjID,
+ void CANMessageSet(uint32_t ui32Base, uint32_t ui32ObjID,
                           tCANMsgObject *psMsgObject, tMsgObjType eMsgType);
-extern bool CANRetryGet(uint32_t ui32Base);
-extern void CANRetrySet(uint32_t ui32Base, bool bAutoRetry);
-extern uint32_t CANStatusGet(uint32_t ui32Base, tCANStsReg eStatusReg);
+ bool CANRetryGet(uint32_t ui32Base);
+ void CANRetrySet(uint32_t ui32Base, bool bAutoRetry);
+ uint32_t CANStatusGet(uint32_t ui32Base, tCANStsReg eStatusReg);
 
 //*****************************************************************************
 //

@@ -148,6 +148,39 @@ typedef enum {
 } CanIf_ControllerModeType;
 
 typedef struct {
+
+    struct {
+    PduIdType nextInQueue; // next tx l-pduid
+    }hth[1]; //hth[CANIF_NUM_HTHS];
+} CanIf_HthDataType;
+
+typedef struct {
+#if CANIF_PUBLIC_SETDYNAMICTXID_API
+        Can_IdType dynCanId[CANIF_NUMBER_OF_DYNAMIC_CANTXPDUIDS];
+#endif
+    struct {
+#if CANIF_PUBLIC_TX_BUFFERING
+        PduIdType nextInQueue;
+        uint8 data[8];
+    // dlc set to -1 indicates empty buffer
+        uint8 dlc;
+#endif
+#if CANIF_PUBLIC_READTXPDU_NOTIFY_STATUS_API
+        bool txConfirmed;
+#endif
+    } txLpdu[CANIF_NUM_TX_PDU_ID];
+    struct {
+#if CANIF_PUBLIC_READRXPDU_DATA_API
+        uint8 data[8];
+        uint8 dlc;
+#endif
+#if CANIF_PUBLIC_READRXPDU_NOTIFY_STATUS_API
+        bool rxInd;
+#endif
+    } rxLpdu[CANIF_NUM_RX_LPDU_ID];
+} CanIf_LPduDataType;
+
+typedef struct {
     /// can id used for transmission, msb indicates extended id
     Can_IdType id;
 
@@ -218,7 +251,7 @@ typedef struct
 	uint8 WakeupSupport;
 	uint8 CanIfControllerIdRef;
 	uint8 CanIfDriverNameRef[30];
-	const Can_ControllerConfigType* CanIfInitControllerRef;
+	const CanController* CanIfInitControllerRef;
 } CanIf_ControllerConfigType;
 
 
@@ -306,7 +339,7 @@ typedef enum {
 } CanTrcv_TrcvModeType ;
 /****************************************************************************/
 /*typedef struct {
-	//Everything in this structure is implementation specific
+	/* Everything in this structure is implementation specific 
         const CanIf_TxPduConfigType* TxPduCfg;
 	const CanIf_RxLPduConfigType* RxLpduCfg;
 
@@ -420,16 +453,7 @@ typedef struct{
 }CanIfRxPduCanIdRange;
 
 
-/*************************************************************************************************/
-	/*typedef struct {
-	//Everything in this structure is implementation specific
-    const CanIf_TxPduConfigType* TxPduCfg;
-	const CanIf_RxLPduConfigType* RxLpduCfg;
 
-    const CanIf_ControllerConfigType* ControllerConfig;
-    const CanIf_DispatchConfigType* DispatchConfig;
-    const CanIf_HrHConfigType** canIfHrhCfg;  // This is an array of Hrh objects, for each controller ID
-} CanIf_ConfigType;*/
 
 //extern const CanIf_ConfigType CanIf_Config;
 /**************************************************************************************************
@@ -555,7 +579,7 @@ typedef struct{
 	/* 
     Reference to the Init Hoh Configuration 
     */
-	CanIfInitHohCfg * CanIfCtrlDrvInitHohConfigRef;
+	CanIfInitHohCfg* CanIfCtrlDrvInitHohConfigRef;
 	
 
 	/* 
@@ -715,18 +739,18 @@ Description:
 					 which is necessary for initialization.
 																								**
 **************************************************************************************************/
-typedef struct{
+/*typedef struct{
 	/* Configuration parameters for all the underlying CAN
 	Driver modules are aggregated under this container.
 	For each CAN Driver module a seperate instance of
 	this container has to be provided. */
-	CanIfCtrlDrvCfg CanIfCtrlDrvCfg;
+	//CanIfCtrlDrvCfg CanIfCtrlDrvCfg;
 	
 	/* This container contains the init parameters of the CAN
-	Interface. */
+	Interface. 
 	CanIfInitCfg CanIfInitCfg;
 	
-}CanIf_ConfigType;
+}CanIf_ConfigType;*/
 
 /**************************************************************************************************
 **
@@ -750,6 +774,24 @@ typedef struct{
 	True: Stored*/
 	boolean CanIfTxBufferPduAvailable[CanIfMaxTxPduCfg];
 }CanIf_TxBufferType;
-extern const CanIf_ConfigType CanIf_Config;
+
+/*************************************************************************************************/
+	typedef struct {
+	/* Everything in this structure is implementation specific */
+    const CanIf_TxPduConfigType* TxPduCfg;
+	const CanIf_RxLPduConfigType* RxLpduCfg;
+
+    const CanIf_ControllerConfigType* ControllerConfig;
+    const CanIf_DispatchConfigType* DispatchConfig;
+    const CanIf_HrHConfigType** canIfHrhCfg;  // This is an array of Hrh objects, for each controller ID
+		
+		CanIfCtrlDrvCfg CanIfCtrlDrvCfg;
+	
+		/* This container contains the init parameters of the CAN
+		Interface. */
+		CanIfInitCfg CanIfInitCfg;
+} CanIf_ConfigType;
+	
+//extern const CanIf_ConfigType CanIf_Config;
 
 #endif /* CANIF_TYPES_H_ */

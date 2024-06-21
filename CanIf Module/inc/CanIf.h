@@ -9,18 +9,14 @@
 #define	CANIF_H
 
  /* Section : Includes */
-#include "../../Common/Std_Types.h"
-/*#include "../COM module/include/ComStack_Types.h"*/
-#include "./CanIf_types.h"
-#include "./CanIf_cfg.h"
+/*#include "../../Common/Std_Types.h"
+#include "../../Common/ComStack_Types.h"
+#include "CanIf_types.h"
+#include "../../Det/inc/Det.h"*/
 
-#if defined(USE_PDUR)
-#include "PduR.h"
-#endif
 
-#if defined(USE_COM)
-#include "../COM module/include/Com.h"
-#endif
+
+
 
  /* Section : Macros Definition */
 #define CANIF_VENDOR_ID          (VENDOR_ID_ARCCORE)
@@ -34,25 +30,25 @@
 
 #define  NUMBER_OF_CONTROLLERS        (uint8)2
 
-#if defined(USE_DET)
-#include "Det.h"
-#endif
+
+
+
  /* Section : Macros Functions Declaration */
 
  /* Section : Data Types Declaration */
-CanIf_ControllerModeType CurrentCanState[NUMBER_OF_CONTROLLERS];
+//CanIf_ControllerModeType CurrentCanState[NUMBER_OF_CONTROLLERS];
 
  /* Section : Function Declaration */
-FUNC(Std_ReturnType,CANIF_CODE) CanIf_SetControllerMode(VAR(uint8_t,AUTOMATIC) ControllerId,VAR(Can_ControllerStateType , AUTOMATIC) ControllerMode);
+/*FUNC(Std_ReturnType,CANIF_CODE) CanIf_SetControllerMode(VAR(uint8_t,AUTOMATIC) ControllerId,VAR(Can_ControllerStateType , AUTOMATIC) ControllerMode);
 Std_ReturnType CanIf_GetControllerMode(uint8 ControllerId, CanIf_ControllerModeType *ControllerModePtr);
-FUNC(void,CANIF_CODE) CanIf_DeInit(void);
-Std_ReturnType CanIf_SetPduMode(uint8 ControllerId, CanIf_PduModeType PduModeRequest);
-Std_ReturnType CanIf_GetPduMode(uint8 ControllerId, CanIf_PduModeType* PduModePtr);
+FUNC(void,CANIF_CODE) CanIf_DeInit(void);*/
+//Std_ReturnType CanIf_SetPduMode(uint8 ControllerId, CanIf_PduModeType PduModeRequest);
+/*Std_ReturnType CanIf_GetPduMode(uint8 ControllerId, CanIf_PduModeType* PduModePtr);
 void CanIf_Init(const CanIf_ConfigType* ConfigPtr);
 void CanIf_TxConfirmation (PduIdType CanTxPduId);
 Std_ReturnType CanIf_SetTrcvMode( uint8 TransceiverId, CanTrcv_TrcvModeType TransceiverMode );
 Std_ReturnType CanIf_GetTrcvMode( uint8 TransceiverId, CanTrcv_TrcvModeType* TransceiverModePtr );
 Std_ReturnType CanIf_Transmit(PduIdType TxPduId, const PduInfoType* PduInfoPtr);
 Std_ReturnType CanIf_RxIndication(const Can_HwType* MailBox, const PduInfoType* PduInfoPtr);
-Std_ReturnType CanIf_ReadRxPduData(PduIdType CanIfRxSduId, PduInfoType* CanIfRxInfoPtr);
+Std_ReturnType CanIf_ReadRxPduData(PduIdType CanIfRxSduId, PduInfoType* CanIfRxInfoPtr);*/
 #endif	/* CANIF_H */

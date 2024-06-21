@@ -40,6 +40,8 @@
 #ifndef __DRIVERLIB_INTERRUPT_H__
 #define __DRIVERLIB_INTERRUPT_H__
 
+
+#include "../stdint.h"
 //*****************************************************************************
 //
 // If building with a C++ compiler, make all of the definitions in this header
@@ -64,6 +66,7 @@ extern "C"
 // Prototypes for the APIs.
 //
 //*****************************************************************************
+	
 extern bool IntMasterEnable(void);
 extern bool IntMasterDisable(void);
 extern void IntRegister(uint32_t ui32Interrupt, void (*pfnHandler)(void));

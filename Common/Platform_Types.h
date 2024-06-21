@@ -28,7 +28,7 @@
 #include "Lib/inc/hw_timer.h"
 
 #include "Lib/driverlib/pin_map.h"
-#include "Lib/driverlib/can.h"
+#include "Lib/driverlib/can_lab.h"
 #include "Lib/driverlib/interrupt.h"
 #include "Lib/driverlib/sysctl.h"
 #include "Lib/driverlib/gpio.h"

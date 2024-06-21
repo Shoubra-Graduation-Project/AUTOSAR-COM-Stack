@@ -1,11 +1,10 @@
 #include "../inc/CanIf.h"
-#include "CanIf_Cfg.c"
 #include "../inc/CanIf_types.h"
 #include "../inc/CanIf_Cfg.h"
-#include "../COM module/include/ComStack_Types.h"
+#include "../../Common/ComStack_Types.h"
 #include "../../Common/Std_Types.h"
 #include "../../Common/Common_Macros.h"
-#include "../CanDrv/Inc/Can_GeneralTypes.h"
+#include "../../CanDrv/Inc/Can_GeneralTypes.h"
 #include "../../CanDrv/Inc/Can.h"
 #include "../../Det/inc/Det.h"
 #include "../../Common/Lib/driverlib/pin_map.h"
@@ -13,6 +12,19 @@
 #include "../../Common/Lib/driverlib/sysctl.h"
 #include "../../Common/Lib/driverlib/uart.h"
 #include "../../Common/Integrator.h"
+
+FUNC(Std_ReturnType,CANIF_CODE) CanIf_SetControllerMode(VAR(uint8_t,AUTOMATIC) ControllerId,VAR(Can_ControllerStateType , AUTOMATIC) ControllerMode);
+Std_ReturnType CanIf_GetControllerMode(uint8 ControllerId, CanIf_ControllerModeType *ControllerModePtr);
+FUNC(void,CANIF_CODE) CanIf_DeInit(void);
+Std_ReturnType CanIf_SetPduMode(uint8 ControllerId, CanIf_PduModeType PduModeRequest);
+Std_ReturnType CanIf_GetPduMode(uint8 ControllerId, CanIf_PduModeType* PduModePtr);
+void CanIf_Init(const CanIf_ConfigType* ConfigPtr);
+void CanIf_TxConfirmation (PduIdType CanTxPduId);
+Std_ReturnType CanIf_SetTrcvMode( uint8 TransceiverId, CanTrcv_TrcvModeType TransceiverMode );
+Std_ReturnType CanIf_GetTrcvMode( uint8 TransceiverId, CanTrcv_TrcvModeType* TransceiverModePtr );
+Std_ReturnType CanIf_Transmit(PduIdType TxPduId, const PduInfoType* PduInfoPtr);
+Std_ReturnType CanIf_RxIndication(const Can_HwType* MailBox, const PduInfoType* PduInfoPtr);
+Std_ReturnType CanIf_ReadRxPduData(PduIdType CanIfRxSduId, PduInfoType* CanIfRxInfoPtr);
 
 extern CanIf_ConfigType CanIf;
 
@@ -51,8 +63,8 @@ struct {
 #if CANIF_PUBLIC_READRXPDU_NOTIFY_STATUS_API
         bool rxInd;
 #endif
-    } rxLpdu[CANIF_NUM_RX_LPDU_ID];
-} CanIf_LPduDataType;
+}rxLpdu[CANIF_NUM_RX_LPDU_ID];
+
 
 
 #if(CanIfPublicReadRxPduDataApi == true)
@@ -87,6 +99,8 @@ PduInfoType* CanifBuffer;
 
 static void ClearTxBuffers(uint8 controller) {
     // reset all pending tx requests
+		CanIf_LPduDataType lPduData;
+		CanIf_HthDataType hthData;
     for(PduIdType i = 0; i < CANIF_NUM_TX_PDU_ID; i++) {
         if(CanIf_ConfigPtr->TxPduCfg[i].controller == controller) {
 #if CANIF_PUBLIC_READTXPDU_NOTIFY_STATUS_API
@@ -106,6 +120,8 @@ static void ClearTxBuffers(uint8 controller) {
 
 static void ClearRxBuffers(uint8 controller) {
     // reset buffers
+		CanIf_HthDataType hthData;
+	 CanIf_LPduDataType lPduData;
     for(PduIdType i = 0; i < CANIF_NUM_RX_LPDU_ID; i++) {
         if(CanIf_ConfigPtr->RxLpduCfg[i].controller == controller) {
 #if CANIF_PUBLIC_READRXPDU_NOTIFY_STATUS_API
@@ -177,15 +193,15 @@ FUNC(Std_ReturnType,CANIF_CODE) CanIf_SetControllerMode(VAR(uint8,AUTOMATIC) Con
     {
         /*MISRA*/
     }
-    CanIf_SetPduMode();
-    Can_SetControllerMode();
+    //CanIf_SetPduMode();
+    //Can_SetControllerMode();
      if (CAN_CS_SLEEP == ControllerMode)
     {
-        CanIf_SetPduMode(controllerId, CANIF_OFFLINE);
+        CanIf_SetPduMode(ControllerId, CANIF_OFFLINE);
     }
     else if (CAN_CS_STOPPED == ControllerMode)
     {
-        CanIf_SetPduMode(controllerId, CANIF_TX_OFFLINE);
+        CanIf_SetPduMode(ControllerId, CANIF_TX_OFFLINE);
     }
 
      if ( ErrorStatus == E_NOT_OK )
@@ -206,7 +222,7 @@ FUNC(Std_ReturnType,CANIF_CODE) CanIf_SetControllerMode(VAR(uint8,AUTOMATIC) Con
     }
   
   
-    return Can_SetControllerMode(controllerId, ControllerMode);
+    return Can_SetControllerMode(ControllerId, ControllerMode);
 
   
 }
@@ -266,7 +282,7 @@ FUNC(Std_ReturnType,CANIF_CODE) CanIf_GetControllerMode(VAR(uint8 ,AUTOMATIC) Co
     }
     if ( ErrorStatus == E_NOT_OK )
     {
-        ErrorStatus = Can_GetControllerMode(ControllerId, ControllerModePtr);
+        //ErrorStatus = Can_GetControllerMode(ControllerId, ControllerModePtr);
 
     }	else
     {
@@ -692,7 +708,7 @@ void CanIf_TxConfirmation (PduIdType CanTxPduId)
                 else if (TxPduPtr->CanIfTxPduUserTxConfirmationUL
                         == PDUR)
                 {
-                    PduR_CanIfTxConfirmation(CanTxPduId);
+                    Com_TxConfirmation(CanTxPduId, E_OK);
                 }
                 else
                 {
@@ -835,7 +851,7 @@ Std_ReturnType CanIf_RxIndication(const Can_HwType* MailBox, const PduInfoType* 
     // Check if MailBox->HOH has Invalid Value
     /* SWS_CANIF_00416 */
     if ((MailBox->Hoh) > NUMBER_OF_HOH) {
-        Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, CANIF_RX_INDICATION_ID, CANIF_E_PARAM_HRH);
+        Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, CANIF_RX_INDICATION_ID, CANIF_E_PARAM_POINTER);
         return E_NOT_OK;
     }
   
@@ -849,11 +865,11 @@ Std_ReturnType CanIf_RxIndication(const Can_HwType* MailBox, const PduInfoType* 
     // Check if Data Lenght has invalid Value
     /* SWS_CANIF_00417 */
     if ((PduInfoPtr->SduLength) > SDU_LENGTH) {
-        Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, CANIF_RX_INDICATION_ID, CANIF_E_PARAM_DLC);
+        Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, CANIF_RX_INDICATION_ID, CANIF_E_PARAM_POINTER);
         return E_NOT_OK;
     }
 
-    CanIf_Channel_t Controller_ID = (CanIf_Channel_t)RxEntry->CanIfRxPduHrhIdRef->CanIfBufferHthRef->CanIfHthCanCtrlIdRef->CanIfCtrlId;
+    CanIf_Channel_t Controller_ID = (CanIf_Channel_t)RxEntry->CanIfRxPduHrhIdRef->CanIfHrhCanCtrlIdRef->CanIfCtrlId;
 
     //Check PDU Mode
     if (CanIf_GetPduMode(Controller_ID, &PduMode) != E_OK) {
@@ -879,7 +895,7 @@ Std_ReturnType CanIf_RxIndication(const Can_HwType* MailBox, const PduInfoType* 
     // Check if Data Length has invalid Value
     /* SWS_CANIF_00417 */
     if ((PduInfoPtr->SduLength) != (RxPduIndex->CanIfRxPduDataLength)) {
-        Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, CANIF_RX_INDICATION_ID, CANIF_E_PARAM_DLC);
+        Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, CANIF_RX_INDICATION_ID, CANIF_E_INVALID_TXPDUID);
         return E_NOT_OK;
     }
 
@@ -889,7 +905,7 @@ Std_ReturnType CanIf_RxIndication(const Can_HwType* MailBox, const PduInfoType* 
 
     /* Confirmation to Upper Layer (COM)*/
     //(RxPduIndex->CanIfRxPduUserRxIndicationUL);
-		Com_RxIndication (RxPduIndex, PduInfoPtr);
+		Com_RxIndication (RxPduIndex->CanIfRxPduId, PduInfoPtr);
 	
     return RET;
 }

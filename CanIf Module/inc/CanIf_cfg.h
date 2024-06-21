@@ -8,6 +8,7 @@
 #ifndef CANIF_CFG_H
 #define	CANIF_CFG_H
 
+
 /// number of hths referenced by canif
 #define CANIF_NUM_HTHS                            NUM_OF_HTHS
 /// number of driver units
@@ -53,7 +54,7 @@
 
 typedef enum
 {
-	CANIF_NUMBER_OF_DYNAMIC_CANTXPDUIDS
+	CANIF_NUMBER_OF_DYNAMIC_CANTXPDUIDS = 1
 } CanIf_DynamicTxLPduIdType;
 
 

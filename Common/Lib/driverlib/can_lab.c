@@ -46,15 +46,15 @@
 
 #include <stdbool.h>
 #include <stdint.h>
-#include "inc/hw_can.h"
-#include "inc/hw_ints.h"
-#include "inc/hw_nvic.h"
-#include "inc/hw_memmap.h"
-#include "inc/hw_sysctl.h"
-#include "inc/hw_types.h"
-#include "driverlib/can.h"
-#include "driverlib/debug.h"
-#include "driverlib/interrupt.h"
+#include "../inc/hw_can.h"
+#include "../inc/hw_ints.h"
+#include "../inc/hw_nvic.h"
+#include "../inc/hw_memmap.h"
+#include "../inc/hw_sysctl.h"
+#include "../inc/hw_types.h"
+#include "can_lab.h"
+#include "debug.h"
+#include "interrupt.h"
 
 //*****************************************************************************
 //
@@ -709,8 +709,7 @@ CANBitRateSet(uint32_t ui32Base, uint32_t ui32SourceClock,
 //! \return None.
 //
 //*****************************************************************************
-void
-CANBitTimingSet(uint32_t ui32Base, tCANBitClkParms *psClkParms)
+void CANBitTimingSet(uint32_t ui32Base, tCANBitClkParms *psClkParms)
 {
     uint32_t ui32BitReg, ui32SavedInit;
 
