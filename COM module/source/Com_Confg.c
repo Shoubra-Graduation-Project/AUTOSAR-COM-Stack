@@ -81,25 +81,33 @@ ComFilter_type Filters[1]=
 	}
 };
 
-const ComGroupSignal_type ComGSignals[2] =
+ComGroupSignal_type ComGSignals[4] =
 {
 		
    {    
-       0, 16, 0, NULL, LITTLE_ENDIAN, NULL, 1, UINT16, NULL, TRIGGERED, 0, ComGSignalBuffer_0, 0, 0, ComGSignalFGBuffer_0,TIMEOUT_REPLACE, 0
+       10, 8, 0, NULL, LITTLE_ENDIAN, NULL, 1, UINT8, NULL, TRIGGERED, 0, ComGSignalBuffer_0, 0, 0, ComGSignalFGBuffer_0,TIMEOUT_REPLACE, 0
    },
 		
    {
-       32, 8, 0, NULL, LITTLE_ENDIAN, NULL, 1, UINT8, NULL, TRIGGERED, 2, ComGSignalBuffer_1, 1, 1, ComGSignalFGBuffer_1,TIMEOUT_REPLACE, 0
+       10, 8, 0, NULL, LITTLE_ENDIAN, NULL, 1, UINT8, NULL, TRIGGERED, 2, ComGSignalBuffer_1, 1, 1, ComGSignalFGBuffer_1,TIMEOUT_REPLACE, 0
+   },
+		
+   {
+       10, 8, 0, NULL, LITTLE_ENDIAN, NULL, 1, UINT8, NULL, TRIGGERED, 2, ComGSignalBuffer_1, 1, 2, ComGSignalFGBuffer_1,TIMEOUT_REPLACE, 0
+   },
+		
+   {
+       10, 8, 0, NULL, LITTLE_ENDIAN, NULL, 1, UINT8, NULL, TRIGGERED, 2, ComGSignalBuffer_1, 1, 3, ComGSignalFGBuffer_1,TIMEOUT_REPLACE, 0
    }
 	 
    
 };
 
 
-const ComSignal_type ComSignal[8] = 
+ComSignal_type ComSignal[8] = 
 {
     {	//signal1
-			 0, 8, INVALIDATE_REPLACE, NULL, 0, 32768, 0, NULL, NULL, TIMEOUT_REPLACE, NULL, LITTLE_ENDIAN, 
+			 0, 8, INVALIDATE_REPLACE, NULL, 0, 32768, 0, NULL, NULL, TIMEOUT_REPLACE, "A", LITTLE_ENDIAN, 
 			  NULL, 1, UINT8, 0, NULL, NULL, TRIGGERED, 8, ComSignalBuffer_0, ComSignalFGBuffer_0, ComSignalBGBuffer_0, 0, 0, 0, 1, 0, &Filters[0]
     },
 		{	//signal2
@@ -133,19 +141,19 @@ const ComSignal_type ComSignal[8] =
 
 };
 
-const ComGroupSignal_type* GroupSignalListSignalGroup_0[] =
+ComGroupSignal_type* GroupSignalListSignalGroup_0[] =
 {
 	&ComGSignals[0],
 		NULL
 };
 
-const ComGroupSignal_type* GroupSignalListSignalGroup_1[] =
+ComGroupSignal_type* GroupSignalListSignalGroup_1[] =
 {
 	&ComGSignals[1],
 		NULL
 };
 
-const ComSignalGroup_type  ComSignalGroup[2]=
+ComSignalGroup_type  ComSignalGroup[2]=
 {
   {
 			INVALIDATE_REPLACE, NULL, 0, 0, 0, NULL, NULL, TIMEOUT_REPLACE, 0, NULL, 2, TRIGGERED, 24,
@@ -195,10 +203,10 @@ ComTxModeFalse_type ComTxModeFalse[2] =
 ComTxIPdu_type ComTxIPdu[] =
 {
 	{
-		1, CONFIRMATION, 255, &ComTxModeTrue[0], &ComTxModeFalse[0], 0, 1, 0, 0, TIMERS_TIMER0A, 'A', 0
+		1, CONFIRMATION, 0, &ComTxModeTrue[0], &ComTxModeFalse[0], 0, 1, 0, 0, TIMERS_TIMER0A, 'A', 0
 	},
 	{
-		1, CONFIRMATION, 255, &ComTxModeTrue[1], &ComTxModeFalse[1], 0, 1, 0, 0, TIMERS_TIMER0A, 'A', 0
+		1, CONFIRMATION, 0, &ComTxModeTrue[1], &ComTxModeFalse[1], 0, 1, 0, 0, TIMERS_TIMER0A, 'A', 0
 	}
 };
 
@@ -212,14 +220,14 @@ ComIPduCounter_type ComIPduCounter[2] =
 	}	
 };
 
-const ComMainFunctionTx_type ComMainFunctionTx[]=
+ComMainFunctionTx_type ComMainFunctionTx[]=
 {
 	{
 		0, NULL
 	}
 };
 
-const ComMainFunctionRx_type ComMainFunctionRx[]=
+ComMainFunctionRx_type ComMainFunctionRx[]=
 {
 	{
 		0
@@ -229,48 +237,60 @@ const ComMainFunctionRx_type ComMainFunctionRx[]=
 ComIPduGroup_type ComIPduGroups[1] =
 {
 	{
-		0, STOPPED, 0, 2
+		0, STARTED, 0, 2
 	}
 	
 };
 
-const ComSignal_type* SignalListIPdu_0[] =
+ComSignal_type* SignalListIPdu_0[] =
 {
 	&ComSignal[0],
 	&ComSignal[1],
 		NULL
 };
 
-const ComSignal_type* SignalListIPdu_1[] =
+ComSignal_type* SignalListIPdu_1[] =
 {
 	&ComSignal[2],
 	&ComSignal[3],
 		NULL
 };
 
-const ComSignal_type* SignalListIPdu_2[] =
+ComSignal_type* SignalListIPdu_2[] =
 {
 	&ComSignal[4],
 	&ComSignal[5],
 		NULL
 };
 
-const ComSignal_type* SignalListIPdu_3[] =
+ComSignal_type* SignalListIPdu_3[] =
 {
 	&ComSignal[6],
 	&ComSignal[7],
 		NULL
 };
 
-const ComSignalGroup_type* SignalGroupListIPdu_0[] =
+ComSignalGroup_type* SignalGroupListIPdu_0[] =
 {
 	&ComSignalGroup[0],
 		NULL
 };
 
-const ComSignalGroup_type* SignalGroupListIPdu_2[] =
+ComSignalGroup_type* SignalGroupListIPdu_1[] =
 {
 	&ComSignalGroup[1],
+		NULL
+};
+
+ComSignalGroup_type* SignalGroupListIPdu_2[] =
+{
+	&ComSignalGroup[2],
+		NULL
+};
+
+ComSignalGroup_type* SignalGroupListIPdu_3[] =
+{
+	&ComSignalGroup[3],
 		NULL
 };
 
@@ -290,14 +310,14 @@ PduInfoType PduInfo[4] =
 	}
 };
 
-const ComIPdu_type ComIPdu[6] = 
+ComIPdu_type ComIPdu[6] = 
 {
   { // IPdu 1
 	  0, &ComIPduCounter[0], COM_SEND, 0, DEFERRED, NULL, NORMAL, NULL, NULL, &ComIPduGroups[0], SignalGroupListIPdu_0, 
 		SignalListIPdu_0, &PduIDs[0], &ComTxIPdu[0], ComIPduBuffer_1, 64, 0, &PduInfo[0]
   },
 	{ // IPdu 2
-		0, &ComIPduCounter[1], COM_SEND, 1, DEFERRED, NULL, NORMAL, NULL, NULL, &ComIPduGroups[0], NULL, SignalListIPdu_1, 
+		0, &ComIPduCounter[1], COM_SEND, 1, DEFERRED, NULL, NORMAL, NULL, NULL, &ComIPduGroups[0], SignalGroupListIPdu_1, SignalListIPdu_1, 
 		&PduIDs[1], &ComTxIPdu[0], ComIPduBuffer_2, 64, 0, &PduInfo[1]
 	},
   { // IPdu 3
@@ -305,7 +325,7 @@ const ComIPdu_type ComIPdu[6] =
 		&PduIDs[2], &ComTxIPdu[1], ComIPduBuffer_3, 64, 0, &PduInfo[2]
   },
 	{ // IPdu 4
-		0, &ComIPduCounter[1], COM_RECEIVE, 3, DEFERRED, NULL, NORMAL, NULL, NULL, NULL, NULL, SignalListIPdu_3, &PduIDs[3], 
+		0, &ComIPduCounter[1], COM_RECEIVE, 3, DEFERRED, NULL, NORMAL, NULL, NULL, NULL, SignalGroupListIPdu_3, SignalListIPdu_3, &PduIDs[3], 
 		&ComTxIPdu[1], ComIPduBuffer_4, 64, 0, &PduInfo[3]
   }
 
@@ -313,7 +333,7 @@ const ComIPdu_type ComIPdu[6] =
 
 
 
-const ComIPdu_type* IPduList[] =
+ComIPdu_type* IPduList[] =
 {
 	&ComIPdu[0],
 	&ComIPdu[1],
@@ -322,13 +342,13 @@ const ComIPdu_type* IPduList[] =
 	NULL
 };
 
-const ComIPduGroup_type* IPduGroupList[] =
+ComIPduGroup_type* IPduGroupList[] =
 {
 	&ComIPduGroups[0],
 	NULL
 };
 
-const ComSignal_type* SignalList[] =
+ComSignal_type* SignalList[] =
 {
 	&ComSignal[0],
 	&ComSignal[1],
@@ -341,14 +361,14 @@ const ComSignal_type* SignalList[] =
 	NULL
 };
 
-const ComSignalGroup_type* SignalGroupList[] =
+ComSignalGroup_type* SignalGroupList[] =
 {
 	&ComSignalGroup[0],
 	&ComSignalGroup[1],
 	NULL
 };
 
-const ComGroupSignal_type* GroupSignalList[] =
+ComGroupSignal_type* GroupSignalList[] =
 {
 	&ComGSignals[0],
 	&ComGSignals[1],

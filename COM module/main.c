@@ -5,6 +5,7 @@
 #include "include/Com_Cfg.h"
 #include "./PLL.h"
 #include "./include/PeriodicMode_HelpingFUnctions.h"
+#include "./include/SchM_Com.h"
 
 #define GPIO_PORTF_DIR_R        (*((volatile unsigned long *)0x40025400))
 #define GPIO_PORTF_AFSEL_R      (*((volatile unsigned long *)0x40025420))
@@ -20,7 +21,6 @@
 #define GREEN     0x08
 #define WHEELSIZE 8           // must be an integer multiple of 2
                               //    red, yellow,    green, light blue, blue, purple,   white,          dark
-const long COLORWHEEL[WHEELSIZE] = {RED, RED+GREEN, GREEN, GREEN+BLUE, BLUE, BLUE+RED, RED+GREEN+BLUE, 0};
 #define SYSCTL_RCGC2_R          (*((volatile unsigned long *)0x400FE108))
 #define SYSCTL_RCGC2_GPIOF      0x00000020  // port F Clock Gating Control
 
@@ -28,15 +28,11 @@ void DisableInterrupts(void); // Disable interrupts
 void EnableInterrupts(void);  // Enable interrupts
 void WaitForInterrupt(void);  // low power mode
 
-void UserTask(void){
-  static int i = 0;
-  LEDS = COLORWHEEL[i&(WHEELSIZE-1)];
-  i = i + 1;
-}
+
 
 
 //debug code
-int x = 5;
+
 int main(void){
 	/*ComTxMode_type mode1_struct;
 	ComTxMode_type * mode1 = & mode1_struct;
@@ -54,12 +50,12 @@ int main(void){
 	ComTxIPdu_type * txPdu = &txPdu_struct;
 	
 	ComTxIPdu_type txPdu2_struct;
-	ComTxIPdu_type * txPdu2 = &txPdu2_struct;
+	ComTxIPdu_type * txPdu2 = &txPdu2_struct;*/
 	
 	ComIPdu_type pdu_struct;
 	ComIPdu_type * pdu = &pdu_struct;
 	
-	ComIPdu_type pdu2_struct;
+	/*ComIPdu_type pdu2_struct;
 	ComIPdu_type * pdu2 = &pdu2_struct;
 		
 	mode1_struct.ComTxModeTimePeriod = 1000;
@@ -81,9 +77,8 @@ int main(void){
 	pdu2_struct.ComTxIPdu = txPdu2;*/
 	
 	volatile unsigned long delay;
-	ComIPdu_type * pdu = ComConfig.ComIPdu[0];
-	ComIPdu_type * pdu2 = ComConfig.ComIPdu[1];
-	
+	int returnVal= 0;
+	int x = 5;
   PLL_Init();                      // bus clock at 80 MHz
   SYSCTL_RCGC2_R |= SYSCTL_RCGC2_GPIOF; // activate port F
   delay = SYSCTL_RCGC2_R;          // allow time to finish activating
@@ -93,14 +88,15 @@ int main(void){
                                    // configure PF3-1 as GPIO
   GPIO_PORTF_PCTL_R = (GPIO_PORTF_PCTL_R&0xFFFF000F)+0x00000000;
   GPIO_PORTF_AMSEL_R = 0;          // disable analog functionality on PF
-  LEDS = 0;                        // turn all LEDs off
 	
 	
   EnableInterrupts();
-	Com_InitPeriodicModeForIPdu(pdu);
+	//Com_Init(&ComConfig);
+	Com_InvalidateSignal(32768);
+	/*Com_InitPeriodicModeForIPdu(pdu);
 	x = 10;
 	Com_InitPeriodicModeForIPdu(pdu2);
-	x = 15;
+	x = 15;*/
   while(1){
     
   }

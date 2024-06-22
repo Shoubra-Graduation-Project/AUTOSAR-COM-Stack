@@ -17,7 +17,7 @@
 #include <cstddef>
 
 
-static Com_StatusType initStatus = COM_UNINIT;
+static Com_StatusType initStatus = COM_INIT;
 //const Com_ConfigType * ComConfig;
 //const Com_ConfigType * ComConfig;
 
@@ -116,12 +116,12 @@ void Com_Init (const Com_ConfigType* config)
 			}
 			
 			// For each signal group at the I-PDU
-			for (ComInitSignalGroupId = 0; IPdu[ComInitSignalGroupId].ComIPduSignalGroupRef[ComInitSignalGroupId] != NULL; ComInitSignalGroupId++)
+			for (ComInitSignalGroupId = 0; IPdu->ComIPduSignalGroupRef[ComInitSignalGroupId] != NULL; ComInitSignalGroupId++)
 			{
 					uint8 shadowBufferSize = 0;
 					uint8 i;
 					/* Get SignalGroup */
-					SignalGroup = IPdu[ComInitSignalGroupId].ComIPduSignalGroupRef[ComInitSignalGroupId];
+					SignalGroup = IPdu->ComIPduSignalGroupRef[ComInitSignalGroupId];
 
 					//[SWS_Com_00117] The AUTOSAR COM module shall clear all update-bits during initialization
 					CLEARBIT(IPdu->ComIPduDataPtr, SignalGroup->ComUpdateBitPosition);
@@ -538,7 +538,7 @@ uint8 Com_SendSignal (Com_SignalIdType SignalId, const void* SignalDataPtr)
 		}
 		else
 		{
-			ComSignal_type* signalStruct =  GET_SIGNAL(SignalId);
+			ComSignal_type* signalStruct =  GET_SIGNAL(SignalId%COM_MIN_SIGNAL);
 			if(signalStruct == NULL)
 			{
 				returnValue = COM_SERVICE_NOT_AVAILABLE;
@@ -1318,11 +1318,11 @@ uint8 Com_InvalidateSignal(Com_SignalIdType SignalId)
 	}
 	else
 	{
-		ComSignal_type* signal = GET_SIGNAL(SignalId);
+		ComSignal_type* signal = GET_SIGNAL(SignalId-COM_MIN_SIGNAL);
 		if(signal != NULL)
 		{
 			ComIPdu_type* IPdu = GET_IPDU(signal->ComIPduHandleId);
-			if(IPdu == NULL || signal->ComSignalDataInvalidValue == NULL || (IPdu->ComIPduGroupRef != NULL && IPdu->ComIPduGroupRef->IpduGroupFlag == STOPPED) )
+			if(signal->ComSignalDataInvalidValue == NULL || IPdu == NULL || (IPdu->ComIPduGroupRef != NULL && IPdu->ComIPduGroupRef->IpduGroupFlag == STOPPED) )
 			{
 				returnValue = COM_SERVICE_NOT_AVAILABLE;
 			}
