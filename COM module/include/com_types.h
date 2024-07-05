@@ -576,7 +576,7 @@ typedef struct {
 	void * ComBGBuffer; 
 
 	/* I-PDU that contain this signal ---------> Not in SWS*/
-	const uint16 ComIPduHandleId;
+	uint16 ComIPduHandleId;
     
 	/* -----> Not in SWS*/
 	float32 DeadlineMonitoringTimer;
@@ -673,7 +673,7 @@ typedef struct {
 	 ComTxIPdu_type *ComTxIPdu;
     
 	/*Pointer to IPDU data ---->  Not in SWS*/
-    void const * ComIPduDataPtr;
+    void * ComIPduDataPtr;
 
 	/*Size of IPDU ---->  Not in SWS*/
 	const uint8 ComIPduLength;

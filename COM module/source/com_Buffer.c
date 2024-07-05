@@ -325,13 +325,13 @@ void Com_WriteSignalDataToPduBuffer(const uint16 signalId, const void *signalDat
 	uint8 i;
 
     // Get signal
-	const ComSignal_type * Signal =  GET_SIGNAL(signalId);
+	ComSignal_type * Signal =  GET_SIGNAL(signalId);
 
 	// Get PDU
-	const ComIPdu_type *IPdu = GET_IPDU(Signal->ComIPduHandleId);
+	ComIPdu_type *IPdu = GET_IPDU(Signal->ComIPduHandleId);
 
     // Set pduBuffer to the ComIPduDataPtr pointer
-	void  const * PduBuffer = IPdu->ComIPduDataPtr;
+	void * PduBuffer = IPdu->ComIPduDataPtr;
 
 
     

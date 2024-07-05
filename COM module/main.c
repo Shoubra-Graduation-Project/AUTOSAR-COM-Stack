@@ -6,6 +6,7 @@
 #include "./PLL.h"
 #include "./include/PeriodicMode_HelpingFUnctions.h"
 #include "./include/SchM_Com.h"
+#include "../Common/integrator.h"
 
 #define GPIO_PORTF_DIR_R        (*((volatile unsigned long *)0x40025400))
 #define GPIO_PORTF_AFSEL_R      (*((volatile unsigned long *)0x40025420))
@@ -91,8 +92,11 @@ int main(void){
 	
 	
   EnableInterrupts();
-	//Com_Init(&ComConfig);
-	Com_InvalidateSignal(32768);
+	Com_Init(&ComConfig);
+	//Com_InvalidateSignalGroup(0);
+	Com_SendSignal(32768, &x);
+	//PduR_ComTransmit(E_OK, 0, ComConfig.ComIPdu[0]->PduInfo);
+	//com_packSignalsToPdu(ComConfig.ComIPdu[0]);
 	/*Com_InitPeriodicModeForIPdu(pdu);
 	x = 10;
 	Com_InitPeriodicModeForIPdu(pdu2);
