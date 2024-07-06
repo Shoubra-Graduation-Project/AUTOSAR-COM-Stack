@@ -238,7 +238,7 @@ void CopyGroupSignalFromFGtoAddress(const Com_SignalGroupIdType SignalGroup_id, 
 void CopySignalFromFGtoAddress(const Com_SignalIdType Signal_id,void *dataAddress)
 { 
     // Get Signal
-    const ComSignal_type * Signal = GET_SIGNAL(Signal_id);
+    const ComSignal_type * Signal = GET_SIGNAL(Signal_id-32768);
 
     // memcpy(dest, src, size)
     memcpy((uint8*)dataAddress,(uint8*)Signal->ComFGBuffer,(Signal->ComBitSize)/8);
@@ -286,7 +286,7 @@ void CopySignalGroupfromSBtoFG(Com_SignalGroupIdType SignalGroupId)
 void CopySignalfromBGtoFG(Com_SignalIdType Signal_id)
 {
     // Get Signal
-    const ComSignal_type * Signal = GET_SIGNAL(Signal_id);
+    const ComSignal_type * Signal = GET_SIGNAL(Signal_id-32768);
     
     // memcpy(dest, src, size)
     memcpy((uint8*)Signal->ComFGBuffer, (uint8*)Signal->ComBGBuffer,(Signal->ComBitSize)/8);
@@ -325,7 +325,7 @@ void Com_WriteSignalDataToPduBuffer(const uint16 signalId, const void *signalDat
 	uint8 i;
 
     // Get signal
-	ComSignal_type * Signal =  GET_SIGNAL(signalId);
+	ComSignal_type * Signal =  GET_SIGNAL(signalId-32768);
 
 	// Get PDU
 	ComIPdu_type *IPdu = GET_IPDU(Signal->ComIPduHandleId);
@@ -351,7 +351,7 @@ void Com_WriteSignalDataToPduBuffer(const uint16 signalId, const void *signalDat
 	    signalMask = 255;
         if( i == 0)
         {
-            pduMask = mask >> (8 - BitOffsetInByte);
+            pduMask = pduMask >> (8 - BitOffsetInByte);
             signalMask = signalMask >> BitOffsetInByte;
             *pduBufferBytes = (* pduBufferBytes) & pduMask;
             data = (* dataBytes) & signalMask;
@@ -361,7 +361,7 @@ void Com_WriteSignalDataToPduBuffer(const uint16 signalId, const void *signalDat
         }
         else if(i==signalLength)
         {
-            pduMask = mask << BitOffsetInByte;
+            pduMask = pduMask << BitOffsetInByte;
             signalMask = signalMask << (8 - BitOffsetInByte);
             *pduBufferBytes = (* pduBufferBytes) & pduMask;
             data = (* dataBytes) & signalMask;
@@ -370,7 +370,7 @@ void Com_WriteSignalDataToPduBuffer(const uint16 signalId, const void *signalDat
         }
         else
         {
-            pduMask = mask << BitOffsetInByte;
+            pduMask = pduMask << BitOffsetInByte;
             signalMask = signalMask << (8 - BitOffsetInByte);
             *pduBufferBytes = (* pduBufferBytes) & pduMask;
             data = (* dataBytes) & signalMask;
@@ -381,7 +381,7 @@ void Com_WriteSignalDataToPduBuffer(const uint16 signalId, const void *signalDat
 
             pduMask = 255;
             signalMask = 255;
-            pduMask = mask >> (8 - BitOffsetInByte);
+            pduMask = pduMask >> (8 - BitOffsetInByte);
             signalMask = signalMask >> BitOffsetInByte;
             *pduBufferBytes = (* pduBufferBytes) & pduMask;
             data = (* dataBytes) & signalMask;
@@ -472,7 +472,7 @@ void Com_WriteGroupSignalDataToPduBuffer(const uint16 groupSignalId, const void 
 	    signalMask = 255;
         if( i == 0)
         {
-            pduMask = mask >> (8 - BitOffsetInByte);
+            pduMask = pduMask >> (8 - BitOffsetInByte);
             signalMask = signalMask >> BitOffsetInByte;
             *pduBufferBytes = (* pduBufferBytes) & pduMask;
             data = (* dataBytes) & signalMask;
@@ -482,7 +482,7 @@ void Com_WriteGroupSignalDataToPduBuffer(const uint16 groupSignalId, const void 
         }
         else if(i==signalLength)
         {
-            pduMask = mask << BitOffsetInByte;
+            pduMask = pduMask << BitOffsetInByte;
             signalMask = signalMask << (8 - BitOffsetInByte);
             *pduBufferBytes = (* pduBufferBytes) & pduMask;
             data = (* dataBytes) & signalMask;
@@ -491,7 +491,7 @@ void Com_WriteGroupSignalDataToPduBuffer(const uint16 groupSignalId, const void 
         }
         else
         {
-            pduMask = mask << BitOffsetInByte;
+            pduMask = pduMask << BitOffsetInByte;
             signalMask = signalMask << (8 - BitOffsetInByte);
             *pduBufferBytes = (* pduBufferBytes) & pduMask;
             data = (* dataBytes) & signalMask;
@@ -502,7 +502,7 @@ void Com_WriteGroupSignalDataToPduBuffer(const uint16 groupSignalId, const void 
 
             pduMask = 255;
             signalMask = 255;
-            pduMask = mask >> (8 - BitOffsetInByte);
+            pduMask = pduMask >> (8 - BitOffsetInByte);
             signalMask = signalMask >> BitOffsetInByte;
             *pduBufferBytes = (* pduBufferBytes) & pduMask;
             data = (* dataBytes) & signalMask;
@@ -534,5 +534,5 @@ void Com_WriteGroupSignalDataToPdu(const Com_SignalIdType signalId, const void *
 {
 	
 	// Get data
-	Com_WriteSignalDataToPduBuffer(signalId, signalData);
+	Com_WriteGroupSignalDataToPduBuffer(signalId, signalData);
 }

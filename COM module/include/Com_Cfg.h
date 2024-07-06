@@ -3,7 +3,7 @@
 
 #include "Com.h"
 
-#define COM_NUM_OF_IPDU 1
+#define COM_NUM_OF_IPDU 4
 #define COM_NUM_OF_SIGNAL 8
 
 #define COM_SIGNAL_INIT_VALUE (uint8)0xFF

@@ -37,12 +37,16 @@ uint8 ComSignalBGBuffer_7 [1] = {0};
 
 uint8 ComGSignalBuffer_0[1] = {0};
 uint8 ComGSignalBuffer_1[1] = {0};
+uint8 ComGSignalBuffer_2[1] = {0};
+uint8 ComGSignalBuffer_3[1] = {0};
 
 uint8 ComGSignalFGBuffer_0[1] = {0};
 uint8 ComGSignalFGBuffer_1[1] = {0};
+uint8 ComGSignalFGBuffer_2[1] = {0};
+uint8 ComGSignalFGBuffer_3[1] = {0};
 
 
-uint8 ComIPduBuffer_1[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+uint8 ComIPduBuffer_1[8] = {3, 5, 15, 17, 23, 82, 14, 9};
 uint8 ComIPduBuffer_2[8] = {0, 0, 0, 0, 0, 0, 0, 0};
 uint8 ComIPduBuffer_3[8] = {0, 0, 0, 0, 0, 0, 0, 0};
 uint8 ComIPduBuffer_4[8] = {0, 0, 0, 0, 0, 0, 0, 0};
@@ -53,6 +57,7 @@ uint8 ComIPduBuffer_6[8] = {0, 0, 0, 0, 0, 0, 0, 0};
 uint8 ComShadowBuffer_0[4] = {0, 0, 0, 0};
 uint8 ComShadowBuffer_1[4] = {0, 0, 0, 0};
 uint8 ComShadowBuffer_2[4] = {0, 0, 0, 0};
+uint8 ComShadowBuffer_3[4] = {0, 0, 0, 0};
 
 
 uint8 ComFGBuffer_0[4] = {0, 0, 0, 0};
@@ -63,6 +68,7 @@ uint8 ComFGBuffer_3[4] = {0, 0, 0, 0};
 uint8 ComBGBuffer_0[4] = {0, 0, 0, 0};
 uint8 ComBGBuffer_1[4] = {0, 0, 0, 0};
 uint8 ComBGBuffer_2[4] = {0, 0, 0, 0};
+uint8 ComBGBuffer_3[4] = {0, 0, 0, 0};
 
 uint8 ComSignalGroupBuffer_0[5] = {0, 0, 0, 0, 0};
 
@@ -85,19 +91,19 @@ ComGroupSignal_type ComGSignals[4] =
 {
 		
    {    
-       10, 8, 0, NULL, LITTLE_ENDIAN, NULL, 1, UINT8, NULL, TRIGGERED, 0, ComGSignalBuffer_0, 0, 0, ComGSignalFGBuffer_0,TIMEOUT_REPLACE, 0
+       32, 8, 0, NULL, LITTLE_ENDIAN, "G", 1, UINT8, NULL, TRIGGERED, 0, ComGSignalBuffer_0, 0, 0, ComGSignalFGBuffer_0,TIMEOUT_REPLACE, 0
    },
 		
    {
-       10, 8, 0, NULL, LITTLE_ENDIAN, NULL, 1, UINT8, NULL, TRIGGERED, 2, ComGSignalBuffer_1, 1, 1, ComGSignalFGBuffer_1,TIMEOUT_REPLACE, 0
+       32, 8, 0, NULL, LITTLE_ENDIAN, "G", 1, UINT8, NULL, TRIGGERED, 2, ComGSignalBuffer_1, 1, 1, ComGSignalFGBuffer_1,TIMEOUT_REPLACE, 0
    },
 		
    {
-       10, 8, 0, NULL, LITTLE_ENDIAN, NULL, 1, UINT8, NULL, TRIGGERED, 2, ComGSignalBuffer_1, 1, 2, ComGSignalFGBuffer_1,TIMEOUT_REPLACE, 0
+       32, 8, 0, NULL, LITTLE_ENDIAN, "G", 1, UINT8, NULL, TRIGGERED, 2, ComGSignalBuffer_1, 1, 2, ComGSignalFGBuffer_1,TIMEOUT_REPLACE, 0
    },
 		
    {
-       10, 8, 0, NULL, LITTLE_ENDIAN, NULL, 1, UINT8, NULL, TRIGGERED, 2, ComGSignalBuffer_1, 1, 3, ComGSignalFGBuffer_1,TIMEOUT_REPLACE, 0
+       32, 8, 0, NULL, LITTLE_ENDIAN, "G", 1, UINT8, NULL, TRIGGERED, 2, ComGSignalBuffer_1, 1, 3, ComGSignalFGBuffer_1,TIMEOUT_REPLACE, 0
    }
 	 
    
@@ -107,36 +113,36 @@ ComGroupSignal_type ComGSignals[4] =
 ComSignal_type ComSignal[8] = 
 {
     {	//signal1
-			 0, 8, INVALIDATE_REPLACE, NULL, 0, 32768, 0, NULL, NULL, TIMEOUT_REPLACE, "A", LITTLE_ENDIAN, 
-			  NULL, 1, UINT8, 0, NULL, NULL, TRIGGERED, 8, ComSignalBuffer_0, ComSignalFGBuffer_0, ComSignalBGBuffer_0, 0, 0, 0, 1, 0, &Filters[0]
+			 0, 8, INVALIDATE_REPLACE, NULL, 0, 32768, 0, NULL, NULL, TIMEOUT_REPLACE, "v", LITTLE_ENDIAN, 
+			  "a", 1, UINT8, 0, NULL, NULL, TRIGGERED, 8, ComSignalBuffer_0, ComSignalFGBuffer_0, ComSignalBGBuffer_0, 0, 0, 0, 1, 0, &Filters[0]
     },
 		{	//signal2
-			 32, 8, INVALIDATE_REPLACE, NULL, 0, 32769, 0, NULL, NULL, TIMEOUT_REPLACE, NULL, LITTLE_ENDIAN, 
-				NULL, 1, UINT8, 0, NULL, NULL, TRIGGERED_ON_CHANGE, 40, ComSignalBuffer_1, ComSignalFGBuffer_1, ComSignalBGBuffer_1, 0, 0, 0, 1, 0, &Filters[0]
+			 9, 8, INVALIDATE_REPLACE, NULL, 0, 32769, 0, NULL, NULL, TIMEOUT_REPLACE, "v", LITTLE_ENDIAN, 
+				"a", 1, UINT8, 0, NULL, NULL, TRIGGERED_ON_CHANGE, 17, ComSignalBuffer_1, ComSignalFGBuffer_1, ComSignalBGBuffer_1, 0, 0, 0, 1, 0, &Filters[0]
 		},
 		{	//signal3
-			 0, 8, INVALIDATE_REPLACE, NULL, 0, 32770, 0, NULL, NULL, TIMEOUT_REPLACE, NULL, LITTLE_ENDIAN, 
-				NULL, 1, UINT8, 0, NULL, NULL, TRIGGERED, 8, ComSignalBuffer_2, ComSignalFGBuffer_2, ComSignalBGBuffer_2, 1, 0, 0, 1, 0, &Filters[0]
+			 0, 8, INVALIDATE_REPLACE, NULL, 0, 32770, 0, NULL, NULL, TIMEOUT_REPLACE, "v", LITTLE_ENDIAN, 
+				"a", 1, UINT8, 0, NULL, NULL, TRIGGERED, 8, ComSignalBuffer_2, ComSignalFGBuffer_2, ComSignalBGBuffer_2, 1, 0, 0, 1, 0, &Filters[0]
 		},
 		{	//signal4
-			 32, 8, INVALIDATE_REPLACE, NULL, 0, 32771, 0, NULL, NULL, TIMEOUT_REPLACE, NULL, LITTLE_ENDIAN, 
-				NULL, 1, UINT8, 0, NULL, NULL, PENDING, 40, ComSignalBuffer_3, ComSignalFGBuffer_3, ComSignalBGBuffer_3, 1, 0, 0, 1, 0, &Filters[0]
+			 9, 8, INVALIDATE_REPLACE, NULL, 0, 32771, 0, NULL, NULL, TIMEOUT_REPLACE, "v", LITTLE_ENDIAN, 
+				"a", 1, UINT8, 0, NULL, NULL, PENDING, 17, ComSignalBuffer_3, ComSignalFGBuffer_3, ComSignalBGBuffer_3, 1, 0, 0, 1, 0, &Filters[0]
 		},
 		{	//signal5
-			 0, 8, INVALIDATE_REPLACE, NULL, 0, 32772, 0, NULL, NULL, TIMEOUT_REPLACE, NULL, LITTLE_ENDIAN, 
-				NULL, 1, UINT8, 0, NULL, NULL, TRIGGERED, 8, ComSignalBuffer_4, ComSignalFGBuffer_4, ComSignalBGBuffer_4, 2, 0, 0, 1, 0, &Filters[0]
+			 0, 8, INVALIDATE_REPLACE, NULL, 0, 32772, 0, NULL, NULL, TIMEOUT_REPLACE, "v", LITTLE_ENDIAN, 
+				"a", 1, UINT8, 0, NULL, NULL, TRIGGERED, 8, ComSignalBuffer_4, ComSignalFGBuffer_4, ComSignalBGBuffer_4, 2, 0, 0, 1, 0, &Filters[0]
 		},
 		{	//signal6
-			 32, 8, INVALIDATE_REPLACE, NULL, 0, 32773, 0, NULL, NULL, TIMEOUT_REPLACE, NULL, LITTLE_ENDIAN, 
-				NULL, 1, UINT8, 0, NULL, NULL, TRIGGERED, 40, ComSignalBuffer_5, ComSignalFGBuffer_5, ComSignalBGBuffer_5, 2, 0, 0, 1, 0, &Filters[0]
+			 9, 8, INVALIDATE_REPLACE, NULL, 0, 32773, 0, NULL, NULL, TIMEOUT_REPLACE, "v", LITTLE_ENDIAN, 
+				"a", 1, UINT8, 0, NULL, NULL, TRIGGERED, 17, ComSignalBuffer_5, ComSignalFGBuffer_5, ComSignalBGBuffer_5, 2, 0, 0, 1, 0, &Filters[0]
 		},
 		{	//signal7
-			 0, 8, INVALIDATE_REPLACE, NULL, 0, 32774, 0, NULL, NULL, TIMEOUT_REPLACE, NULL, LITTLE_ENDIAN, 
-				NULL, 1, UINT8, 0, NULL, NULL, TRIGGERED_ON_CHANGE, 8, ComSignalBuffer_6, ComSignalFGBuffer_6, ComSignalBGBuffer_6, 3, 0, 0, 1, 0, &Filters[0]
+			 0, 8, INVALIDATE_REPLACE, NULL, 0, 32774, 0, NULL, NULL, TIMEOUT_REPLACE, "v", LITTLE_ENDIAN, 
+				"a", 1, UINT8, 0, NULL, NULL, TRIGGERED_ON_CHANGE, 8, ComSignalBuffer_6, ComSignalFGBuffer_6, ComSignalBGBuffer_6, 3, 0, 0, 1, 0, &Filters[0]
 		},
 		{	//signal8
-			 32, 8, INVALIDATE_REPLACE, NULL, 0, 32775, 0, NULL, NULL, TIMEOUT_REPLACE, NULL, LITTLE_ENDIAN, 
-				NULL, 1, UINT8, 0, NULL, NULL, TRIGGERED, 40, ComSignalBuffer_7, ComSignalFGBuffer_7, ComSignalBGBuffer_7, 3, 0, 0, 1, 0, &Filters[0]
+			 9, 8, INVALIDATE_REPLACE, NULL, 0, 32775, 0, NULL, NULL, TIMEOUT_REPLACE, "v", LITTLE_ENDIAN, 
+				"a", 1, UINT8, 0, NULL, NULL, TRIGGERED, 17, ComSignalBuffer_7, ComSignalFGBuffer_7, ComSignalBGBuffer_7, 3, 0, 0, 1, 0, &Filters[0]
 		}
 
 };
@@ -153,15 +159,35 @@ ComGroupSignal_type* GroupSignalListSignalGroup_1[] =
 		NULL
 };
 
-ComSignalGroup_type  ComSignalGroup[2]=
+ComGroupSignal_type* GroupSignalListSignalGroup_2[] =
+{
+	&ComGSignals[2],
+		NULL
+};
+
+ComGroupSignal_type* GroupSignalListSignalGroup_3[] =
+{
+	&ComGSignals[3],
+		NULL
+};
+
+ComSignalGroup_type  ComSignalGroup[4]=
 {
   {
-			INVALIDATE_REPLACE, NULL, 0, 0, 0, NULL, NULL, TIMEOUT_REPLACE, 0, NULL, 2, TRIGGERED, 24,
+			INVALIDATE_REPLACE, NULL, 0, 0, 0, NULL, NULL, TIMEOUT_REPLACE, 0, NULL, 2, TRIGGERED, 40,
 			GroupSignalListSignalGroup_0, ComShadowBuffer_0, ComFGBuffer_0, ComBGBuffer_0, 0, &ComSignalGroupBuffer_0[0], 0, 1, 0, &Filters[0]
 	},
 	{
-			INVALIDATE_REPLACE, NULL, 0, 0, 0, NULL, NULL, TIMEOUT_REPLACE, 0, NULL, 1, TRIGGERED, 24,
+			INVALIDATE_REPLACE, NULL, 0, 0, 0, NULL, NULL, TIMEOUT_REPLACE, 0, NULL, 1, TRIGGERED, 40,
 			GroupSignalListSignalGroup_1, ComShadowBuffer_1, ComFGBuffer_1, ComBGBuffer_1, 0, &ComSignalGroupBuffer_0[1], 0, 1, 0, &Filters[0]
+	},
+	{
+			INVALIDATE_REPLACE, NULL, 0, 0, 0, NULL, NULL, TIMEOUT_REPLACE, 0, NULL, 1, TRIGGERED, 40,
+			GroupSignalListSignalGroup_2, ComShadowBuffer_2, ComFGBuffer_2, ComBGBuffer_2, 0, &ComSignalGroupBuffer_0[2], 0, 1, 0, &Filters[0]
+	},
+	{
+			INVALIDATE_REPLACE, NULL, 0, 0, 0, NULL, NULL, TIMEOUT_REPLACE, 0, NULL, 1, TRIGGERED, 40,
+			GroupSignalListSignalGroup_3, ComShadowBuffer_3, ComFGBuffer_3, ComBGBuffer_3, 0, &ComSignalGroupBuffer_0[3], 0, 1, 0, &Filters[0]
 	}
 
 };
@@ -210,13 +236,19 @@ ComTxIPdu_type ComTxIPdu[] =
 	}
 };
 
-ComIPduCounter_type ComIPduCounter[2] =
+ComIPduCounter_type ComIPduCounter[4] =
 {
 	{
-		NULL, 8, 10, 1, 0
+		NULL, 4, 60, 1, 0
 	},
 	{
-		NULL, 4, 10, 1, 0
+		NULL, 4, 60, 1, 0
+	},
+	{
+		NULL, 4, 60, 1, 0
+	},
+	{
+		NULL, 4, 60, 1, 0
 	}	
 };
 
@@ -237,7 +269,7 @@ ComMainFunctionRx_type ComMainFunctionRx[]=
 ComIPduGroup_type ComIPduGroups[1] =
 {
 	{
-		0, STARTED, 0, 2
+		0, STOPPED, 0, 2
 	}
 	
 };
@@ -310,9 +342,9 @@ PduInfoType PduInfo[4] =
 	}
 };
 
-ComIPdu_type ComIPdu[6] = 
+ComIPdu_type ComIPdu[4] = 
 {
-  { // IPdu 1
+  { // IPdu 1 
 	  0, &ComIPduCounter[0], COM_SEND, 0, DEFERRED, NULL, NORMAL, NULL, NULL, &ComIPduGroups[0], SignalGroupListIPdu_0, 
 		SignalListIPdu_0, &PduIDs[0], &ComTxIPdu[0], ComIPduBuffer_1, 64, 0, &PduInfo[0]
   },
@@ -321,11 +353,11 @@ ComIPdu_type ComIPdu[6] =
 		&PduIDs[1], &ComTxIPdu[0], ComIPduBuffer_2, 64, 0, &PduInfo[1]
 	},
   { // IPdu 3
-    0, &ComIPduCounter[0], COM_RECEIVE, 2, DEFERRED, NULL, NORMAL, NULL, NULL, NULL, SignalGroupListIPdu_2, SignalListIPdu_2, 
+    0, &ComIPduCounter[2], COM_RECEIVE, 2, DEFERRED, NULL, NORMAL, NULL, NULL, NULL, SignalGroupListIPdu_2, SignalListIPdu_2, 
 		&PduIDs[2], &ComTxIPdu[1], ComIPduBuffer_3, 64, 0, &PduInfo[2]
   },
 	{ // IPdu 4
-		0, &ComIPduCounter[1], COM_RECEIVE, 3, DEFERRED, NULL, NORMAL, NULL, NULL, NULL, SignalGroupListIPdu_3, SignalListIPdu_3, &PduIDs[3], 
+		0, &ComIPduCounter[3], COM_RECEIVE, 3, DEFERRED, NULL, NORMAL, NULL, NULL, NULL, SignalGroupListIPdu_3, SignalListIPdu_3, &PduIDs[3], 
 		&ComTxIPdu[1], ComIPduBuffer_4, 64, 0, &PduInfo[3]
   }
 

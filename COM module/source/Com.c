@@ -18,6 +18,7 @@
 
 
 static Com_StatusType initStatus = COM_INIT;
+int how = 1;
 //const Com_ConfigType * ComConfig;
 //const Com_ConfigType * ComConfig;
 
@@ -1322,9 +1323,20 @@ uint8 Com_InvalidateSignal(Com_SignalIdType SignalId)
 		if(signal != NULL)
 		{
 			ComIPdu_type* IPdu = GET_IPDU(signal->ComIPduHandleId);
-			if(signal->ComSignalDataInvalidValue == NULL || IPdu == NULL || (IPdu->ComIPduGroupRef != NULL && IPdu->ComIPduGroupRef->IpduGroupFlag == STOPPED) )
+			if(signal->ComSignalDataInvalidValue == NULL)
 			{
 				returnValue = COM_SERVICE_NOT_AVAILABLE;
+				how = 5;
+			}
+			else if(IPdu == NULL)
+			{
+				returnValue = COM_SERVICE_NOT_AVAILABLE;
+				how = 10;
+			}
+			else if(IPdu->ComIPduGroupRef != NULL && IPdu->ComIPduGroupRef->IpduGroupFlag == STARTED)
+			{
+				returnValue = COM_SERVICE_NOT_AVAILABLE;
+				how = 20;
 			}
 			else
 			{

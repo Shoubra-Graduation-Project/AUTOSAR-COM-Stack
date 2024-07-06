@@ -4,7 +4,8 @@
 #include "include/Com.h"
 #include "include/Com_Cfg.h"
 #include "./PLL.h"
-#include "./include/PeriodicMode_HelpingFUnctions.h"
+#include "./include/PeriodicMode_HelpingFunctions.h"
+#include "./include/Com_HelpingFunctions.h"
 #include "./include/SchM_Com.h"
 #include "../Common/integrator.h"
 
@@ -35,48 +36,8 @@ void WaitForInterrupt(void);  // low power mode
 //debug code
 
 int main(void){
-	/*ComTxMode_type mode1_struct;
-	ComTxMode_type * mode1 = & mode1_struct;
 	
-	ComTxMode_type mode2_struct;
-	ComTxMode_type * mode2 = & mode2_struct;
-	
-	ComTxModeTrue_type true_struct;
-	ComTxModeTrue_type * True = &true_struct;
-	
-	ComTxModeFalse_type false_struct;
-	ComTxModeFalse_type * False = &false_struct;
-
-	ComTxIPdu_type txPdu_struct;
-	ComTxIPdu_type * txPdu = &txPdu_struct;
-	
-	ComTxIPdu_type txPdu2_struct;
-	ComTxIPdu_type * txPdu2 = &txPdu2_struct;*/
-	
-	ComIPdu_type pdu_struct;
-	ComIPdu_type * pdu = &pdu_struct;
-	
-	/*ComIPdu_type pdu2_struct;
-	ComIPdu_type * pdu2 = &pdu2_struct;
-		
-	mode1_struct.ComTxModeTimePeriod = 1000;
-	mode2_struct.ComTxModeTimePeriod = 1000;
-	true_struct.ComTxMode = mode1;
-	false_struct.ComTxMode = mode2;
-	txPdu_struct.ComCurrentTransmissionSelection = 1;
-	//txPdu_struct.ComTxTimerID = TIMERS_TIMER0A;
-	//txPdu_struct.ComTxTimerBlock = 'A';
-	//txPdu_struct.ComTxTimerNumber = 0;
-	txPdu_struct.ComTxModeTrue = True;
-	pdu_struct.ComTxIPdu = txPdu;
-	
-	txPdu2_struct.ComCurrentTransmissionSelection = 0;
-	//txPdu2_struct.ComTxTimerID = TIMERS_TIMER0A;
-	//txPdu2_struct.ComTxTimerBlock = 'A';
-	//txPdu2_struct.ComTxTimerNumber = 0;
-	txPdu2_struct.ComTxModeFalse = False;
-	pdu2_struct.ComTxIPdu = txPdu2;*/
-	
+	ComIPdu_type * IPdu = ComConfig.ComIPdu[0];
 	volatile unsigned long delay;
 	int returnVal= 0;
 	int x = 5;
@@ -86,22 +47,19 @@ int main(void){
   GPIO_PORTF_DIR_R |= 0x0E;        // make PF3-1 output (PF3-1 built-in LEDs)
   GPIO_PORTF_AFSEL_R &= ~0x0E;     // disable alt funct on PF3-1
   GPIO_PORTF_DEN_R |= 0x0E;        // enable digital I/O on PF3-1
-                                   // configure PF3-1 as GPIO
   GPIO_PORTF_PCTL_R = (GPIO_PORTF_PCTL_R&0xFFFF000F)+0x00000000;
   GPIO_PORTF_AMSEL_R = 0;          // disable analog functionality on PF
-	
-	
   EnableInterrupts();
+	
+	/*-------------------------------Start COM Senario-----------------------------------*/
 	Com_Init(&ComConfig);
-	//Com_InvalidateSignalGroup(0);
 	Com_SendSignal(32768, &x);
-	//PduR_ComTransmit(E_OK, 0, ComConfig.ComIPdu[0]->PduInfo);
-	//com_packSignalsToPdu(ComConfig.ComIPdu[0]);
-	/*Com_InitPeriodicModeForIPdu(pdu);
-	x = 10;
-	Com_InitPeriodicModeForIPdu(pdu2);
-	x = 15;*/
-  while(1){
-    
-  }
+	Com_InvalidateSignal(32769);
+	Com_SendSignal(0, &x);
+	Com_SendSignalGroup(0);
+	com_packSignalsToPdu(IPdu);
+	IPdu->ComIPduCounter->ComCurrentCounterValue = IPdu->ComIPduCounter->ComCurrentCounterValue + 1;
+	Com_writeCounterValueToPduBuffer(IPdu, (uint8)IPdu->ComIPduCounter->ComCurrentCounterValue);
+	
+  while(1){}
 }
