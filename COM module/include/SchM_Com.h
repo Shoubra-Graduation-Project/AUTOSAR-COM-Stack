@@ -16,5 +16,6 @@ void Com_MainFunctionTx(void);
 void DirectModeSequence(ComIPdu_type *IPdu);
 void PeriodicModeSequence(ComIPdu_type *IPdu);
 void CheckRXIpdu(ComIPdu_type IPdu);
+void Com_MainFunctionRx(void);
 #endif
 

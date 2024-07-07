@@ -269,7 +269,7 @@ ComMainFunctionRx_type ComMainFunctionRx[]=
 ComIPduGroup_type ComIPduGroups[1] =
 {
 	{
-		0, STOPPED, 0, 2
+		0, STARTED, 0, 2
 	}
 	
 };
@@ -397,6 +397,8 @@ ComSignalGroup_type* SignalGroupList[] =
 {
 	&ComSignalGroup[0],
 	&ComSignalGroup[1],
+	&ComSignalGroup[2],
+	&ComSignalGroup[3],
 	NULL
 };
 
@@ -404,6 +406,8 @@ ComGroupSignal_type* GroupSignalList[] =
 {
 	&ComGSignals[0],
 	&ComGSignals[1],
+	&ComGSignals[2],
+	&ComGSignals[3],
 	NULL
 };
 

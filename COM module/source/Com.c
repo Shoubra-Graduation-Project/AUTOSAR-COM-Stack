@@ -1069,7 +1069,22 @@ void Com_RxIndication (PduIdType RxPduId, const PduInfoType* PduInfoPtr)
 	}
 	else
 	{
-		 uint16 signalid,signalgroupid;
+		uint8 signalId, signalgroupId, groupsignalId;
+		ComIPdu_type* IPdu = GET_IPDU(RxPduId);
+		for(signalId=0; IPdu->ComIPduSignalRef[signalId] != NULL; signalId++)
+		{
+			ComSignal_type* signal = IPdu->ComIPduSignalRef[signalId];
+			*((uint8*)(signal->ComBGBuffer)) =  signalId*2;
+		}
+		for(signalgroupId=0; IPdu->ComIPduSignalGroupRef[signalgroupId] != NULL; signalgroupId++)
+		{
+			ComSignalGroup_type* signalgroup = IPdu->ComIPduSignalGroupRef[signalgroupId];
+			*((uint8*)(signalgroup->ComBGBuffer)) = 5;
+			*((uint8*)(signalgroup->ComBGBuffer)+1) = 6;
+			*((uint8*)(signalgroup->ComBGBuffer)+2) = 7;
+			*((uint8*)(signalgroup->ComBGBuffer)+3) = 8;
+		}
+		/* uint16 signalid,signalgroupid;
      ComIPdu_type *Ipdu=GET_IPDU(RxPduId);
 	   ComIPdu_type *Ipdu_Rx=(ComIPdu_type *)PduInfoPtr->SduDataPtr;
 
@@ -1093,7 +1108,7 @@ void Com_RxIndication (PduIdType RxPduId, const PduInfoType* PduInfoPtr)
 		{
 
 		}
-		/*data sequence check*/
+		//data sequence check
 		excounter=check_Data_Sequence(Ipdu);
         recounter=check_Data_Sequence(Ipdu_Rx);
         result=power(Ipdu->ComIPduCounter->ComIPduCounterSize);
@@ -1135,7 +1150,7 @@ void Com_RxIndication (PduIdType RxPduId, const PduInfoType* PduInfoPtr)
 
 	}
 	return;
-
+	*/
 	}
 
  }

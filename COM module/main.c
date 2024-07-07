@@ -51,7 +51,7 @@ int main(void){
   GPIO_PORTF_AMSEL_R = 0;          // disable analog functionality on PF
   EnableInterrupts();
 	
-	/*-------------------------------Start COM Senario-----------------------------------*/
+	/*-------------------------------Start COM Send Senario-----------------------------------*/
 	Com_Init(&ComConfig);
 	Com_SendSignal(32768, &x);
 	Com_InvalidateSignal(32769);
@@ -61,5 +61,11 @@ int main(void){
 	IPdu->ComIPduCounter->ComCurrentCounterValue = IPdu->ComIPduCounter->ComCurrentCounterValue + 1;
 	Com_writeCounterValueToPduBuffer(IPdu, (uint8)IPdu->ComIPduCounter->ComCurrentCounterValue);
 	
+	/*-------------------------------Start COM Recieve Senario-----------------------------------*/
+	Com_RxIndication(2, IPdu->PduInfo);
+	//Com_MainFunctionRx();
+	CopySignalGroupfromBGtoSB(2);
+	//CopySignalfromBGtoFG(4);
+	//CopySignalfromBGtoFG(5);
   while(1){}
 }

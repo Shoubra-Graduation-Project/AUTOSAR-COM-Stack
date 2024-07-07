@@ -408,7 +408,7 @@ void CheckRXIpdu(ComIPdu_type IPdu)
 					Signal = IPdu.ComIPduSignalRef[ComMainRxSignalId];
 	
 					Com_MainFunctionRxSignal(*Signal);
-					CopySignalfromBGtoFG(ComMainRxSignalId);	 
+					CopySignalfromBGtoFG(ComMainRxSignalId + (2 * IPdu.ComIPduHandleId) );	 
 			}
 
 			for (ComMainRxSignalGroupId = 0; IPdu.ComIPduSignalGroupRef[ComMainRxSignalGroupId] != NULL; ComMainRxSignalGroupId++)
@@ -417,7 +417,7 @@ void CheckRXIpdu(ComIPdu_type IPdu)
 
 					Com_MainFunctionRxSignalGroup(*SignalGroup);
 
-					CopySignalGroupfromBGtoSB(ComMainRxSignalGroupId);
+					CopySignalGroupfromBGtoSB(IPdu.ComIPduHandleId);
 
 			}         
 
