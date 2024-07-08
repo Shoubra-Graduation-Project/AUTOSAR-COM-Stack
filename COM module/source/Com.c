@@ -1074,7 +1074,7 @@ void Com_RxIndication (PduIdType RxPduId, const PduInfoType* PduInfoPtr)
 		for(signalId=0; IPdu->ComIPduSignalRef[signalId] != NULL; signalId++)
 		{
 			ComSignal_type* signal = IPdu->ComIPduSignalRef[signalId];
-			*((uint8*)(signal->ComBGBuffer)) =  signalId*2;
+			*((uint8*)(signal->ComBGBuffer)) =  signalId*2 + 1;
 		}
 		for(signalgroupId=0; IPdu->ComIPduSignalGroupRef[signalgroupId] != NULL; signalgroupId++)
 		{

@@ -9,6 +9,8 @@
 #define	CANIF_CFG_H
 
 
+
+
 /// number of hths referenced by canif
 #define CANIF_NUM_HTHS                            NUM_OF_HTHS
 /// number of driver units

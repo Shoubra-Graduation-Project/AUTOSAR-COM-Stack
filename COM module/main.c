@@ -8,6 +8,7 @@
 #include "./include/Com_HelpingFunctions.h"
 #include "./include/SchM_Com.h"
 #include "../Common/integrator.h"
+#include "../CanIf Module/inc/CanIf_cfg.h"
 
 #define GPIO_PORTF_DIR_R        (*((volatile unsigned long *)0x40025400))
 #define GPIO_PORTF_AFSEL_R      (*((volatile unsigned long *)0x40025420))
@@ -40,7 +41,7 @@ int main(void){
 	ComIPdu_type * IPdu = ComConfig.ComIPdu[0];
 	volatile unsigned long delay;
 	int returnVal= 0;
-	int x = 5;
+	int x = 5, y = 0, z = 0, m = 0;
   PLL_Init();                      // bus clock at 80 MHz
   SYSCTL_RCGC2_R |= SYSCTL_RCGC2_GPIOF; // activate port F
   delay = SYSCTL_RCGC2_R;          // allow time to finish activating
@@ -60,12 +61,14 @@ int main(void){
 	com_packSignalsToPdu(IPdu);
 	IPdu->ComIPduCounter->ComCurrentCounterValue = IPdu->ComIPduCounter->ComCurrentCounterValue + 1;
 	Com_writeCounterValueToPduBuffer(IPdu, (uint8)IPdu->ComIPduCounter->ComCurrentCounterValue);
-	
+	CanIf_Init(&CanIf);
+	PduR_ComTransmit(E_OK, IPdu->ComIPduHandleId, IPdu->PduInfo);
 	/*-------------------------------Start COM Recieve Senario-----------------------------------*/
-	Com_RxIndication(2, IPdu->PduInfo);
-	//Com_MainFunctionRx();
-	CopySignalGroupfromBGtoSB(2);
-	//CopySignalfromBGtoFG(4);
-	//CopySignalfromBGtoFG(5);
+	/*Com_RxIndication(2, IPdu->PduInfo);
+	Com_MainFunctionRx();
+	Com_ReceiveSignal(32772, &y);
+	Com_ReceiveSignal(32773, &z);
+	Com_ReceiveSignalGroup(2);
+	Com_ReceiveSignal(2, &m);*/
   while(1){}
 }

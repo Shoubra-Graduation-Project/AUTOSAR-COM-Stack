@@ -62,7 +62,7 @@ uint8 ComShadowBuffer_3[4] = {0, 0, 0, 0};
 
 uint8 ComFGBuffer_0[4] = {0, 0, 0, 0};
 uint8 ComFGBuffer_1[4] = {0, 0, 0, 0};
-uint8 ComFGBuffer_2[4] = {0, 0, 0, 0};
+uint8 ComFGBuffer_2[4] = {7, 7, 7, 7};
 uint8 ComFGBuffer_3[4] = {0, 0, 0, 0};
 
 uint8 ComBGBuffer_0[4] = {0, 0, 0, 0};
@@ -99,11 +99,11 @@ ComGroupSignal_type ComGSignals[4] =
    },
 		
    {
-       32, 8, 0, NULL, LITTLE_ENDIAN, "G", 1, UINT8, NULL, TRIGGERED, 2, ComGSignalBuffer_1, 1, 2, ComGSignalFGBuffer_1,TIMEOUT_REPLACE, 0
+       32, 8, 0, NULL, LITTLE_ENDIAN, "G", 1, UINT8, NULL, TRIGGERED, 2, ComGSignalBuffer_1, 2, 2, ComGSignalFGBuffer_1,TIMEOUT_REPLACE, 0
    },
 		
    {
-       32, 8, 0, NULL, LITTLE_ENDIAN, "G", 1, UINT8, NULL, TRIGGERED, 2, ComGSignalBuffer_1, 1, 3, ComGSignalFGBuffer_1,TIMEOUT_REPLACE, 0
+       32, 8, 0, NULL, LITTLE_ENDIAN, "G", 1, UINT8, NULL, TRIGGERED, 2, ComGSignalBuffer_1, 3, 3, ComGSignalFGBuffer_1,TIMEOUT_REPLACE, 0
    }
 	 
    
@@ -179,15 +179,15 @@ ComSignalGroup_type  ComSignalGroup[4]=
 	},
 	{
 			INVALIDATE_REPLACE, NULL, 0, 0, 0, NULL, NULL, TIMEOUT_REPLACE, 0, NULL, 1, TRIGGERED, 40,
-			GroupSignalListSignalGroup_1, ComShadowBuffer_1, ComFGBuffer_1, ComBGBuffer_1, 0, &ComSignalGroupBuffer_0[1], 0, 1, 0, &Filters[0]
+			GroupSignalListSignalGroup_1, ComShadowBuffer_1, ComFGBuffer_1, ComBGBuffer_1, 1, &ComSignalGroupBuffer_0[1], 0, 1, 0, &Filters[0]
 	},
 	{
 			INVALIDATE_REPLACE, NULL, 0, 0, 0, NULL, NULL, TIMEOUT_REPLACE, 0, NULL, 1, TRIGGERED, 40,
-			GroupSignalListSignalGroup_2, ComShadowBuffer_2, ComFGBuffer_2, ComBGBuffer_2, 0, &ComSignalGroupBuffer_0[2], 0, 1, 0, &Filters[0]
+			GroupSignalListSignalGroup_2, ComShadowBuffer_2, ComFGBuffer_2, ComBGBuffer_2, 2, &ComSignalGroupBuffer_0[2], 0, 1, 0, &Filters[0]
 	},
 	{
 			INVALIDATE_REPLACE, NULL, 0, 0, 0, NULL, NULL, TIMEOUT_REPLACE, 0, NULL, 1, TRIGGERED, 40,
-			GroupSignalListSignalGroup_3, ComShadowBuffer_3, ComFGBuffer_3, ComBGBuffer_3, 0, &ComSignalGroupBuffer_0[3], 0, 1, 0, &Filters[0]
+			GroupSignalListSignalGroup_3, ComShadowBuffer_3, ComFGBuffer_3, ComBGBuffer_3, 3, &ComSignalGroupBuffer_0[3], 0, 1, 0, &Filters[0]
 	}
 
 };
